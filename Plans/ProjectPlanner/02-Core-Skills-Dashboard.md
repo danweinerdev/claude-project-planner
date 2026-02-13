@@ -3,7 +3,7 @@ title: "Core Skills & Dashboard"
 type: phase
 plan: ProjectPlanner
 phase: 2
-status: in-progress
+status: complete
 created: 2026-02-13
 updated: 2026-02-13
 deliverable: "Working /plan, /breakdown, /debrief, /dashboard, /status skills and HTML dashboard generator"
@@ -28,7 +28,7 @@ tasks:
     status: complete
   - id: "2.7"
     title: "Self-test with ProjectPlanner plan"
-    status: in-progress
+    status: complete
 ---
 
 # Phase 2: Core Skills & Dashboard

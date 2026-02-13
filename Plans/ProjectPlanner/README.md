@@ -13,26 +13,26 @@ phases:
     doc: "01-Bootstrap.md"
   - id: 2
     title: "Core Skills & Dashboard"
-    status: in-progress
+    status: complete
     doc: "02-Core-Skills-Dashboard.md"
   - id: 3
     title: "Research & Brainstorm"
-    status: planned
+    status: complete
     doc: "03-Research-Brainstorm.md"
     depends_on: [2]
   - id: 4
     title: "Specify & Design"
-    status: planned
+    status: complete
     doc: "04-Specify-Design.md"
     depends_on: [2]
   - id: 5
     title: "Retro Skill"
-    status: planned
+    status: complete
     doc: "05-Retro-Skill.md"
     depends_on: [2]
   - id: 6
     title: "Extended Dashboard"
-    status: planned
+    status: in-progress
     doc: "06-Extended-Dashboard.md"
     depends_on: [3, 4, 5]
   - id: 7

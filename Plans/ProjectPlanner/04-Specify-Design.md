@@ -3,23 +3,23 @@ title: "Specify & Design"
 type: phase
 plan: ProjectPlanner
 phase: 4
-status: planned
+status: complete
 created: 2026-02-13
 updated: 2026-02-13
 deliverable: "Working /specify, /design skills and review agents"
 tasks:
   - id: "4.1"
     title: "Create spec-reviewer agent"
-    status: planned
+    status: complete
   - id: "4.2"
     title: "Create plan-reviewer agent"
-    status: planned
+    status: complete
   - id: "4.3"
     title: "Create /specify skill"
-    status: planned
+    status: complete
   - id: "4.4"
     title: "Create /design skill"
-    status: planned
+    status: complete
 ---
 
 # Phase 4: Specify & Design
