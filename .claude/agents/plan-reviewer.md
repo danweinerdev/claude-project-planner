@@ -28,7 +28,7 @@ Evaluate the document against these four lenses:
 - Are the phase boundaries logical?
 
 ### 3. Convention Compliance
-- Does frontmatter follow `shared/frontmatter-schema.md`?
+- Does frontmatter follow `Shared/frontmatter-schema.md`?
 - Are file names following project conventions?
 - Is the plan hierarchy (Plan > Phase > Task > Subtask) used correctly?
 - Are status values valid?

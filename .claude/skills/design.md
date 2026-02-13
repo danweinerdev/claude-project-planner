@@ -19,7 +19,7 @@ When you need to define the technical architecture for a component or system bef
    - Review any related research documents
 
 2. **Draft Design**
-   - Create `Designs/<ComponentName>/README.md` using `shared/templates/design.md`
+   - Create `Designs/<ComponentName>/README.md` using `Shared/templates/design.md`
    - Document: overview, architecture (components, data flow, interfaces), design decisions (with alternatives considered), error handling, testing strategy, migration plan
    - Set status to `draft`
 
@@ -38,7 +38,7 @@ Designs/<ComponentName>/README.md
 ```
 
 ## Document Structure
-See `shared/templates/design.md`:
+See `Shared/templates/design.md`:
 - **Overview**: Component role in the system
 - **Architecture**: Components, data flow, interfaces
 - **Design Decisions**: Each with context, options, decision, rationale
@@ -47,6 +47,6 @@ See `shared/templates/design.md`:
 - **Migration / Rollout**: Transition plan
 
 ## Context
-- Template: `shared/templates/design.md`
-- Schema: `shared/frontmatter-schema.md`
+- Template: `Shared/templates/design.md`
+- Schema: `Shared/frontmatter-schema.md`
 - Agents: `researcher`, `plan-reviewer`

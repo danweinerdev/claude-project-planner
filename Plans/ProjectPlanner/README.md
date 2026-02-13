@@ -1,7 +1,7 @@
 ---
 title: "Project Planner"
 type: plan
-status: active
+status: complete
 created: 2026-02-13
 updated: 2026-02-13
 tags: [claude-code, plugin, planning, dashboard]
@@ -37,7 +37,7 @@ phases:
     depends_on: [3, 4, 5]
   - id: 7
     title: "Polish"
-    status: planned
+    status: complete
     doc: "07-Polish.md"
     depends_on: [6]
 ---

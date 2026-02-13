@@ -16,7 +16,7 @@ When you need to define the requirements for a feature before designing or imple
    - Review any related research or brainstorm documents
 
 2. **Draft Specification**
-   - Create `Specs/<FeatureName>/README.md` using `shared/templates/spec.md`
+   - Create `Specs/<FeatureName>/README.md` using `Shared/templates/spec.md`
    - Write: overview, goals, non-goals, requirements (functional + non-functional), user stories, acceptance criteria, constraints, dependencies
    - Set status to `draft`
 
@@ -35,7 +35,7 @@ Specs/<FeatureName>/README.md
 ```
 
 ## Document Structure
-See `shared/templates/spec.md`:
+See `Shared/templates/spec.md`:
 - **Overview**: Feature purpose
 - **Goals / Non-Goals**: Scope boundaries
 - **Requirements**: Functional and non-functional
@@ -44,6 +44,6 @@ See `shared/templates/spec.md`:
 - **Constraints / Dependencies / Open Questions**
 
 ## Context
-- Template: `shared/templates/spec.md`
-- Schema: `shared/frontmatter-schema.md`
+- Template: `Shared/templates/spec.md`
+- Schema: `Shared/frontmatter-schema.md`
 - Agents: `researcher`, `spec-reviewer`

@@ -15,7 +15,7 @@ project-planner/
 │   ├── settings.local.json
 │   ├── skills/                   # Slash-command skills
 │   └── agents/                   # Subagent definitions
-├── shared/
+├── Shared/
 │   ├── frontmatter-schema.md     # Single source of truth for artifact metadata
 │   └── templates/                # Document templates
 ├── Research/                     # Research artifacts (flat)
@@ -38,7 +38,7 @@ project-planner/
 ## Conventions
 
 ### Frontmatter
-All artifacts use YAML frontmatter as the machine-readable data layer. See `shared/frontmatter-schema.md` for the complete schema. The dashboard reads exclusively from frontmatter — no markdown table parsing.
+All artifacts use YAML frontmatter as the machine-readable data layer. See `Shared/frontmatter-schema.md` for the complete schema. The dashboard reads exclusively from frontmatter — no markdown table parsing.
 
 ### Plan Hierarchy
 ```
@@ -62,7 +62,7 @@ Plan (README.md)       <- like a Jira Project
 - Specs/Designs: `<Name>/README.md`
 
 ### Templates
-Always use templates from `shared/templates/` when creating new artifacts. Replace `{{PLACEHOLDERS}}` with actual values.
+Always use templates from `Shared/templates/` when creating new artifacts. Replace `{{PLACEHOLDERS}}` with actual values.
 
 ## Skills
 
@@ -87,6 +87,35 @@ Always use templates from `shared/templates/` when creating new artifacts. Repla
 | `plan-reviewer` | Sonnet | Reviews plans for completeness, feasibility, conventions |
 | `spec-reviewer` | Haiku | Reviews specs for testability, completeness, ambiguity |
 
+## Workflow Lifecycle
+
+The typical flow through skills:
+```
+/research → /brainstorm → /specify → /design → /plan → /breakdown → [implement] → /debrief → /retro
+```
+Use `/dashboard` or `/status` at any point to check progress.
+
+## Artifact Status Values
+
+| Type | Statuses |
+|------|----------|
+| research | `draft`, `active`, `archived` |
+| brainstorm | `draft`, `active`, `archived` |
+| spec | `draft`, `review`, `approved`, `implemented`, `superseded` |
+| design | `draft`, `review`, `approved`, `implemented`, `superseded` |
+| debrief | `draft`, `complete` |
+| retro | `draft`, `complete` |
+
 ## Dashboard
 
 Generated via `make dashboard` (or `make open` to also open in browser). Python 3, stdlib only. Reads YAML frontmatter from all artifact types, generates static HTML in `Dashboard/`.
+
+### Dashboard Pages
+- `index.html` — stats bar, nav links, in-progress phases, plan cards, recent activity
+- `<plan>/index.html` — plan detail with phase status table
+- `<plan>/<phase>.html` — phase detail with task table and content
+- `knowledge.html` — research + brainstorm index
+- `specs.html` — specifications index
+- `designs.html` — designs index
+- `retros.html` — retrospectives index
+- `knowledge/<slug>.html`, `specs/<slug>.html`, etc. — artifact detail pages

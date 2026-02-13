@@ -22,7 +22,7 @@ After completing a significant piece of work (a plan, a sprint, a milestone) to 
    - Optionally review recent debriefs from `Plans/*/notes/` for context
 
 3. **Write Retrospective**
-   - Create `Retro/YYYY-MM-DD-<slug>.md` using `shared/templates/retro.md`
+   - Create `Retro/YYYY-MM-DD-<slug>.md` using `Shared/templates/retro.md`
    - Date is today's date
    - Fill in: What Went Well, What Could Be Improved, Action Items, Key Metrics, Takeaways
    - Set status to `draft` (user can mark `complete` after review)
@@ -36,7 +36,7 @@ Retro/YYYY-MM-DD-<slug>.md
 ```
 
 ## Document Structure
-See `shared/templates/retro.md`:
+See `Shared/templates/retro.md`:
 - **What Went Well**: Things to continue doing
 - **What Could Be Improved**: Things to change
 - **Action Items**: Specific, actionable improvements (checklist)
@@ -44,6 +44,6 @@ See `shared/templates/retro.md`:
 - **Takeaways**: Summary of key lessons
 
 ## Context
-- Template: `shared/templates/retro.md`
-- Schema: `shared/frontmatter-schema.md`
+- Template: `Shared/templates/retro.md`
+- Schema: `Shared/frontmatter-schema.md`
 - Retro directory: `Retro/`

@@ -42,4 +42,4 @@ Text summary displayed directly — no files created or modified. This is a read
 
 ## Context
 - Plans directory: `Plans/`
-- Schema: `shared/frontmatter-schema.md`
+- Schema: `Shared/frontmatter-schema.md`

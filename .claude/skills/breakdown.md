@@ -35,7 +35,7 @@ When a plan phase needs more detail: additional tasks, subtask checklists, imple
 Updates existing phase document(s) in place. No new files created unless new phases are needed.
 
 ## Document Structure
-Follows the same structure as phase docs — see `shared/frontmatter-schema.md`.
+Follows the same structure as phase docs — see `Shared/frontmatter-schema.md`.
 
 Task sections in the body:
 ```markdown
@@ -50,5 +50,5 @@ Implementation guidance, edge cases, etc.
 ```
 
 ## Context
-- Schema: `shared/frontmatter-schema.md`
+- Schema: `Shared/frontmatter-schema.md`
 - Target plan: `Plans/<PlanName>/`

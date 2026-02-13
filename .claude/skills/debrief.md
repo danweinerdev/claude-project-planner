@@ -24,7 +24,7 @@ When a plan phase has been completed (or substantially completed) and you want t
      - Insights to carry forward
 
 3. **Write Debrief**
-   - Create `Plans/<PlanName>/notes/<NN>-<Phase-Name>.md` using `shared/templates/debrief.md`
+   - Create `Plans/<PlanName>/notes/<NN>-<Phase-Name>.md` using `Shared/templates/debrief.md`
    - Fill in all sections: Decisions Made, Requirements Assessment, Deviations, Risks & Issues, Lessons Learned, Impact on Subsequent Phases
    - The filename mirrors the phase doc number (e.g., `01-Core-Setup.md` -> `notes/01-Core-Setup.md`)
 
@@ -40,7 +40,7 @@ Plans/<PlanName>/notes/<NN>-<Phase-Name>.md
 ```
 
 ## Document Structure
-See `shared/templates/debrief.md`:
+See `Shared/templates/debrief.md`:
 - **Decisions Made**: Key choices with rationale
 - **Requirements Assessment**: Acceptance criteria met/not met
 - **Deviations**: What changed from plan and why
@@ -49,6 +49,6 @@ See `shared/templates/debrief.md`:
 - **Impact on Subsequent Phases**: Downstream changes needed
 
 ## Context
-- Template: `shared/templates/debrief.md`
-- Schema: `shared/frontmatter-schema.md`
+- Template: `Shared/templates/debrief.md`
+- Schema: `Shared/frontmatter-schema.md`
 - Target plan: `Plans/<PlanName>/`

@@ -20,7 +20,7 @@ When you need to generate and evaluate multiple approaches to a problem before c
    - Consider both conventional and creative approaches
 
 3. **Evaluate**
-   - Create `Brainstorm/<topic-slug>.md` using `shared/templates/brainstorm.md`
+   - Create `Brainstorm/<topic-slug>.md` using `Shared/templates/brainstorm.md`
    - Build a comparison matrix against the criteria
    - Make a recommendation with rationale
 
@@ -33,7 +33,7 @@ Brainstorm/<topic-slug>.md
 ```
 
 ## Document Structure
-See `shared/templates/brainstorm.md`:
+See `Shared/templates/brainstorm.md`:
 - **Problem Statement**: What we're solving
 - **Ideas**: Each with description, pros, cons, effort
 - **Evaluation**: Comparison matrix
@@ -41,5 +41,5 @@ See `shared/templates/brainstorm.md`:
 - **Next Steps**: What to do with the decision
 
 ## Context
-- Template: `shared/templates/brainstorm.md`
-- Schema: `shared/frontmatter-schema.md`
+- Template: `Shared/templates/brainstorm.md`
+- Schema: `Shared/frontmatter-schema.md`

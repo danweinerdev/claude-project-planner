@@ -27,8 +27,8 @@ When you need to break down a feature, project, or initiative into an actionable
    - Present the structure to the user for feedback before writing files
 
 3. **Create Plan Files**
-   - Create `Plans/<PlanName>/README.md` using `shared/templates/plan-readme.md`
-   - Create numbered phase docs using `shared/templates/plan-phase.md`
+   - Create `Plans/<PlanName>/README.md` using `Shared/templates/plan-readme.md`
+   - Create numbered phase docs using `Shared/templates/plan-phase.md`
    - Create `Plans/<PlanName>/notes/` directory for future debriefs
    - Populate frontmatter with all phase/task metadata
    - Write body content with task details, subtask checklists, and acceptance criteria
@@ -51,21 +51,21 @@ Plans/<PlanName>/
 ## Document Structure
 
 ### README.md
-See `shared/frontmatter-schema.md` for the plan frontmatter schema. Body contains:
+See `Shared/frontmatter-schema.md` for the plan frontmatter schema. Body contains:
 - **Overview**: What the plan delivers and why
 - **Architecture**: High-level technical approach
 - **Key Decisions**: Major choices and rationale
 - **Dependencies**: External prerequisites
 
 ### Phase Docs
-See `shared/frontmatter-schema.md` for the phase frontmatter schema. Body contains:
+See `Shared/frontmatter-schema.md` for the phase frontmatter schema. Body contains:
 - **Overview**: What the phase delivers
 - **Task sections**: Headed by task ID (e.g., `## 1.1: Task Title`) with subtask checklists
 - **Acceptance Criteria**: Phase-level completion criteria
 
 ## Context
-- Templates: `shared/templates/plan-readme.md`, `shared/templates/plan-phase.md`
-- Schema: `shared/frontmatter-schema.md`
+- Templates: `Shared/templates/plan-readme.md`, `Shared/templates/plan-phase.md`
+- Schema: `Shared/frontmatter-schema.md`
 - Existing plans: `Plans/`
 - Related specs: `Specs/`
 - Related designs: `Designs/`
