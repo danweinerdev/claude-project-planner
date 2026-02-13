@@ -1,0 +1,13 @@
+# Generated dashboard
+Dashboard/
+
+# Python
+__pycache__/
+*.py[cod]
+
+# Editor
+*.swp
+*.swo
+*~
+.idea/
+.vscode/
