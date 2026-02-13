@@ -32,7 +32,7 @@ phases:
     depends_on: [2]
   - id: 6
     title: "Extended Dashboard"
-    status: in-progress
+    status: complete
     doc: "06-Extended-Dashboard.md"
     depends_on: [3, 4, 5]
   - id: 7

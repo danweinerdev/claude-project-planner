@@ -267,6 +267,21 @@ class PlanData:
     slug: str = ""
     overview: str = ""
 
+@dataclass
+class Artifact:
+    """Generic artifact: research, brainstorm, spec, design, debrief, retro."""
+    title: str = ""
+    type: str = ""          # research, brainstorm, spec, design, debrief, retro
+    status: str = "draft"
+    created: str = ""
+    updated: str = ""
+    tags: list[str] = field(default_factory=list)
+    related: list[str] = field(default_factory=list)
+    path: Path = field(default_factory=Path)
+    slug: str = ""
+    content: str = ""
+    category: str = ""      # directory name (Research, Brainstorm, etc.)
+
 
 # ---------------------------------------------------------------------------
 # Parsing
@@ -396,6 +411,56 @@ def parse_plan(plan_dir: Path) -> Optional[PlanData]:
         plan.phases.append(phase)
 
     return plan
+
+
+def parse_artifact(file_path: Path, category: str) -> Optional[Artifact]:
+    """Parse a markdown file with frontmatter into an Artifact."""
+    text = file_path.read_text()
+    meta, body = parse_frontmatter(text)
+
+    if not meta:
+        return None
+
+    return Artifact(
+        title=str(meta.get("title", file_path.stem)),
+        type=str(meta.get("type", category.lower())),
+        status=str(meta.get("status", "draft")),
+        created=str(meta.get("created", "")),
+        updated=str(meta.get("updated", "")),
+        tags=meta.get("tags", []) or [],
+        related=meta.get("related", []) or [],
+        path=file_path,
+        slug=slugify(file_path.stem),
+        content=body,
+        category=category,
+    )
+
+
+def scan_artifacts(base_dir: Path, category: str) -> list[Artifact]:
+    """Scan a directory for markdown artifacts. Handles both flat and subdirectory layouts."""
+    artifacts = []
+    cat_dir = base_dir / category
+
+    if not cat_dir.exists():
+        return artifacts
+
+    # Flat layout: Research/topic.md
+    for md in sorted(cat_dir.glob("*.md")):
+        art = parse_artifact(md, category)
+        if art:
+            artifacts.append(art)
+
+    # Subdirectory layout: Specs/Feature/README.md
+    for sub in sorted(cat_dir.iterdir()):
+        if sub.is_dir():
+            readme = sub / "README.md"
+            if readme.exists():
+                art = parse_artifact(readme, category)
+                if art:
+                    art.slug = slugify(sub.name)
+                    artifacts.append(art)
+
+    return artifacts
 
 
 # ---------------------------------------------------------------------------
@@ -803,6 +868,32 @@ h2 { font-size: 1.25rem; font-weight: 600; margin-bottom: 1rem; }
     margin-bottom: 0.5rem;
 }
 
+/* Navigation link cards */
+.nav-links {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-bottom: 1rem;
+}
+.nav-link-card {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1.25rem;
+    font-weight: 500;
+    color: var(--text);
+    text-decoration: none;
+    transition: border-color 0.2s;
+}
+.nav-link-card:hover { border-color: var(--accent); color: var(--accent); text-decoration: none; }
+.nav-link-count {
+    font-size: 0.75rem;
+    padding: 0.125rem 0.5rem;
+    border-radius: 12px;
+    background: var(--bg-tertiary);
+    color: var(--text-muted);
+}
+
 .generated {
     margin-top: 2rem;
     text-align: center;
@@ -890,8 +981,11 @@ def page_html(title: str, body: str, config: dict,
 # Page generators
 # ---------------------------------------------------------------------------
 
-def generate_index(plans: list[PlanData], config: dict) -> str:
+def generate_index(plans: list[PlanData], config: dict,
+                   all_artifacts: dict[str, list[Artifact]] = None) -> str:
     """Main dashboard index page."""
+    if all_artifacts is None:
+        all_artifacts = {}
 
     # Sort: in-progress first, then planned, then complete
     order = {"in-progress": 0, "active": 0, "approved": 1, "draft": 1,
@@ -981,6 +1075,64 @@ def generate_index(plans: list[PlanData], config: dict) -> str:
 
     desc = html.escape(config.get("description", ""))
 
+    # Navigation links to other sections
+    nav_links = []
+    research = all_artifacts.get("Research", [])
+    brainstorm = all_artifacts.get("Brainstorm", [])
+    specs = all_artifacts.get("Specs", [])
+    designs = all_artifacts.get("Designs", [])
+    retros = all_artifacts.get("Retro", [])
+
+    if research or brainstorm:
+        count = len(research) + len(brainstorm)
+        nav_links.append(f'<a href="knowledge.html" class="nav-link-card card">Knowledge Base <span class="nav-link-count">{count}</span></a>')
+    if specs:
+        nav_links.append(f'<a href="specs.html" class="nav-link-card card">Specs <span class="nav-link-count">{len(specs)}</span></a>')
+    if designs:
+        nav_links.append(f'<a href="designs.html" class="nav-link-card card">Designs <span class="nav-link-count">{len(designs)}</span></a>')
+    if retros:
+        nav_links.append(f'<a href="retros.html" class="nav-link-card card">Retros <span class="nav-link-count">{len(retros)}</span></a>')
+
+    nav_section = ""
+    if nav_links:
+        nav_section = f'''
+        <section>
+            <div class="nav-links">{''.join(nav_links)}</div>
+        </section>'''
+
+    # Recent activity
+    recent_items = []
+    for cat_name, items in all_artifacts.items():
+        for art in items:
+            if art.updated or art.created:
+                date = art.updated or art.created
+                recent_items.append((date, art.type, art.title, cat_name))
+
+    for plan in plans:
+        if plan.updated or plan.created:
+            date = plan.updated or plan.created
+            recent_items.append((date, "plan", plan.title, "Plans"))
+
+    recent_items.sort(key=lambda x: x[0], reverse=True)
+    recent_section = ""
+    if recent_items[:5]:
+        recent_rows = []
+        for date, atype, title, cat in recent_items[:5]:
+            recent_rows.append(f'''
+                <div class="phase-item">
+                    <span class="phase-icon">{status_icon(atype if atype in ("plan",) else "active")}</span>
+                    <span class="phase-name">{html.escape(title)}</span>
+                    <span class="tag">{html.escape(atype)}</span>
+                    <span class="phase-progress-text">{date}</span>
+                </div>''')
+        recent_section = f'''
+        <section>
+            <h2>Recent Activity</h2>
+            <div class="card">
+                <div class="phase-list">{''.join(recent_rows)}</div>
+            </div>
+        </section>'''
+
     body = f'''
     <header>
         <h1>{html.escape(config.get("title", "Project Planner"))}</h1>
@@ -1005,12 +1157,15 @@ def generate_index(plans: list[PlanData], config: dict) -> str:
         </div>
     </header>
 
+    {nav_section}
     {ip_section}
 
     <section>
         <h2>All Plans</h2>
         <div class="plans-grid">{''.join(cards)}</div>
-    </section>'''
+    </section>
+
+    {recent_section}'''
 
     return page_html("Dashboard", body, config,
                      [("Dashboard", None)], depth=0)
@@ -1202,6 +1357,181 @@ def generate_phase_page(plan: PlanData, phase: PhaseData, config: dict) -> str:
         depth=1)
 
 
+def generate_knowledge_page(research: list[Artifact], brainstorm: list[Artifact],
+                            config: dict) -> str:
+    """Knowledge base page: research + brainstorm index."""
+    sections = []
+
+    for label, items in [("Research", research), ("Brainstorm", brainstorm)]:
+        if not items:
+            continue
+        cards = []
+        for art in sorted(items, key=lambda a: a.created or "", reverse=True):
+            tags_html = ""
+            if art.tags:
+                tag_spans = "".join(f'<span class="tag">{html.escape(str(t))}</span>' for t in art.tags)
+                tags_html = f'<div class="tags" style="margin-top:0.5rem">{tag_spans}</div>'
+
+            overview = extract_overview(art.content)
+            cards.append(f'''
+                <div class="card" style="margin-bottom:0.75rem">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem">
+                        <h3 style="font-size:1rem"><a href="knowledge/{art.slug}.html">{html.escape(art.title)}</a></h3>
+                        {badge_html(art.status)}
+                    </div>
+                    {f'<p class="subtitle" style="font-size:0.875rem">{html.escape(overview)}</p>' if overview else ''}
+                    {tags_html}
+                    <div style="font-size:0.75rem;color:var(--text-muted);margin-top:0.5rem">{art.created}</div>
+                </div>''')
+
+        sections.append(f'''
+        <section>
+            <h2>{label} ({len(items)})</h2>
+            {''.join(cards)}
+        </section>''')
+
+    body = f'''
+    <header>
+        <h1>Knowledge Base</h1>
+        <p class="subtitle">Research and brainstorm artifacts</p>
+    </header>
+    {''.join(sections) if sections else '<p class="subtitle">No research or brainstorm artifacts yet.</p>'}'''
+
+    return page_html("Knowledge Base", body, config,
+                     [("Dashboard", "index.html"), ("Knowledge", None)], depth=0)
+
+
+def generate_retros_page(retros: list[Artifact], config: dict) -> str:
+    """Retrospectives index page."""
+    cards = []
+    for art in sorted(retros, key=lambda a: a.created or "", reverse=True):
+        overview = extract_overview(art.content)
+        tags_html = ""
+        if art.tags:
+            tag_spans = "".join(f'<span class="tag">{html.escape(str(t))}</span>' for t in art.tags)
+            tags_html = f'<div class="tags" style="margin-top:0.5rem">{tag_spans}</div>'
+
+        cards.append(f'''
+            <div class="card" style="margin-bottom:0.75rem">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem">
+                    <h3 style="font-size:1rem"><a href="retros/{art.slug}.html">{html.escape(art.title)}</a></h3>
+                    {badge_html(art.status)}
+                </div>
+                {f'<p class="subtitle" style="font-size:0.875rem">{html.escape(overview)}</p>' if overview else ''}
+                {tags_html}
+                <div style="font-size:0.75rem;color:var(--text-muted);margin-top:0.5rem">{art.created}</div>
+            </div>''')
+
+    body = f'''
+    <header>
+        <h1>Retrospectives</h1>
+        <p class="subtitle">Learnings and reflections</p>
+    </header>
+    <section>
+        {''.join(cards) if cards else '<p class="subtitle">No retrospectives yet.</p>'}
+    </section>'''
+
+    return page_html("Retrospectives", body, config,
+                     [("Dashboard", "index.html"), ("Retros", None)], depth=0)
+
+
+def generate_artifact_list_page(artifacts: list[Artifact], category: str,
+                                subtitle: str, config: dict) -> str:
+    """Generic artifact list page for specs/designs."""
+    cards = []
+    for art in sorted(artifacts, key=lambda a: a.created or "", reverse=True):
+        overview = extract_overview(art.content)
+        tags_html = ""
+        if art.tags:
+            tag_spans = "".join(f'<span class="tag">{html.escape(str(t))}</span>' for t in art.tags)
+            tags_html = f'<div class="tags" style="margin-top:0.5rem">{tag_spans}</div>'
+
+        dir_slug = category.lower()
+        cards.append(f'''
+            <div class="card" style="margin-bottom:0.75rem">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem">
+                    <h3 style="font-size:1rem"><a href="{dir_slug}/{art.slug}.html">{html.escape(art.title)}</a></h3>
+                    {badge_html(art.status)}
+                </div>
+                {f'<p class="subtitle" style="font-size:0.875rem">{html.escape(overview)}</p>' if overview else ''}
+                {tags_html}
+                <div style="font-size:0.75rem;color:var(--text-muted);margin-top:0.5rem">{art.created}</div>
+            </div>''')
+
+    body = f'''
+    <header>
+        <h1>{category}</h1>
+        <p class="subtitle">{html.escape(subtitle)}</p>
+    </header>
+    <section>
+        {''.join(cards) if cards else f'<p class="subtitle">No {category.lower()} yet.</p>'}
+    </section>'''
+
+    return page_html(category, body, config,
+                     [("Dashboard", "index.html"), (category, None)], depth=0)
+
+
+def generate_artifact_detail_page(art: Artifact, category: str,
+                                  list_page: str, config: dict) -> str:
+    """Detail page for a single artifact (research, brainstorm, spec, design, retro)."""
+    # Meta cards
+    meta = [f'''
+        <div class="meta-card">
+            <h4>Status</h4>
+            <div style="display:flex;align-items:center;gap:0.5rem">
+                <span style="font-size:1.5rem">{status_icon(art.status)}</span>
+                {badge_html(art.status)}
+            </div>
+        </div>''']
+
+    if art.created:
+        meta.append(f'''
+        <div class="meta-card">
+            <h4>Created</h4>
+            <p>{html.escape(art.created)}</p>
+        </div>''')
+
+    if art.tags:
+        tag_spans = "".join(f'<span class="tag">{html.escape(str(t))}</span>' for t in art.tags)
+        meta.append(f'''
+        <div class="meta-card">
+            <h4>Tags</h4>
+            <div class="tags">{tag_spans}</div>
+        </div>''')
+
+    if art.related:
+        rel_links = "".join(f'<li>{html.escape(str(r))}</li>' for r in art.related)
+        meta.append(f'''
+        <div class="meta-card">
+            <h4>Related</h4>
+            <ul style="list-style:none;font-size:0.875rem">{rel_links}</ul>
+        </div>''')
+
+    content_html = ""
+    if art.content:
+        content_html = f'''
+        <section>
+            <div class="content">{md_to_html(art.content)}</div>
+        </section>'''
+
+    body = f'''
+    <header>
+        <h1>{html.escape(art.title)}</h1>
+        <p class="subtitle"><a href="../{list_page}">{category}</a></p>
+    </header>
+
+    <div class="meta-grid">{''.join(meta)}</div>
+
+    {content_html}'''
+
+    dir_slug = category.lower() if category != "Knowledge" else "knowledge"
+    return page_html(
+        art.title, body, config,
+        [("Dashboard", "../index.html"), (category, f"../{list_page}"),
+         (art.title, None)],
+        depth=1)
+
+
 # ---------------------------------------------------------------------------
 # Main
 # ---------------------------------------------------------------------------
@@ -1235,11 +1565,21 @@ def main():
 
     print(f"Parsed {len(plans)} plans")
 
+    # Parse all artifact types
+    all_artifacts: dict[str, list[Artifact]] = {}
+    for category in ("Research", "Brainstorm", "Specs", "Designs", "Retro"):
+        items = scan_artifacts(script_dir, category)
+        if items:
+            all_artifacts[category] = items
+            print(f"  {category}: {len(items)} artifacts")
+
     # Generate index
-    (output_dir / "index.html").write_text(generate_index(plans, config))
+    (output_dir / "index.html").write_text(
+        generate_index(plans, config, all_artifacts))
+
+    total_pages = 1
 
     # Generate plan + phase pages
-    total_pages = 1
     for plan in plans:
         plan_out = output_dir / plan.slug
         plan_out.mkdir(parents=True, exist_ok=True)
@@ -1255,6 +1595,61 @@ def main():
         pc, _, pt = plan_progress(plan)
         status = overall_plan_status(plan)
         print(f"  {plan.name}: {status} ({pc}/{pt} phases)")
+
+    # Generate knowledge base page (research + brainstorm)
+    research = all_artifacts.get("Research", [])
+    brainstorm = all_artifacts.get("Brainstorm", [])
+    if research or brainstorm:
+        (output_dir / "knowledge.html").write_text(
+            generate_knowledge_page(research, brainstorm, config))
+        total_pages += 1
+
+        # Detail pages
+        knowledge_dir = output_dir / "knowledge"
+        knowledge_dir.mkdir(exist_ok=True)
+        for art in research + brainstorm:
+            (knowledge_dir / f"{art.slug}.html").write_text(
+                generate_artifact_detail_page(art, "Knowledge", "knowledge.html", config))
+            total_pages += 1
+
+    # Generate specs pages
+    specs = all_artifacts.get("Specs", [])
+    if specs:
+        (output_dir / "specs.html").write_text(
+            generate_artifact_list_page(specs, "Specs", "Feature specifications", config))
+        total_pages += 1
+        specs_dir = output_dir / "specs"
+        specs_dir.mkdir(exist_ok=True)
+        for art in specs:
+            (specs_dir / f"{art.slug}.html").write_text(
+                generate_artifact_detail_page(art, "Specs", "specs.html", config))
+            total_pages += 1
+
+    # Generate designs pages
+    designs = all_artifacts.get("Designs", [])
+    if designs:
+        (output_dir / "designs.html").write_text(
+            generate_artifact_list_page(designs, "Designs", "Technical architecture documents", config))
+        total_pages += 1
+        designs_dir = output_dir / "designs"
+        designs_dir.mkdir(exist_ok=True)
+        for art in designs:
+            (designs_dir / f"{art.slug}.html").write_text(
+                generate_artifact_detail_page(art, "Designs", "designs.html", config))
+            total_pages += 1
+
+    # Generate retros pages
+    retros = all_artifacts.get("Retro", [])
+    if retros:
+        (output_dir / "retros.html").write_text(
+            generate_retros_page(retros, config))
+        total_pages += 1
+        retros_dir = output_dir / "retros"
+        retros_dir.mkdir(exist_ok=True)
+        for art in retros:
+            (retros_dir / f"{art.slug}.html").write_text(
+                generate_artifact_detail_page(art, "Retros", "retros.html", config))
+            total_pages += 1
 
     print(f"\nGenerated {total_pages} pages in {output_dir}/")
 
