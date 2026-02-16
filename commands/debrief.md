@@ -45,6 +45,9 @@ When a plan phase has been completed (or substantially completed) and you want t
      - The plan README's `phases[]` array
    - Update `updated` dates
 
+5. **Regenerate Dashboard**
+   - Run `make dashboard` from the planning root to update the HTML dashboard
+
 ## Output
 ```
 Plans/<PlanName>/notes/<NN>-<Phase-Name>.md

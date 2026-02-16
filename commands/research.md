@@ -38,6 +38,9 @@ When you need to gather and synthesize information about a topic before making d
 4. **Link**
    - Add cross-references to related artifacts in the `related` frontmatter field
 
+5. **Regenerate Dashboard**
+   - Run `make dashboard` from the planning root to update the HTML dashboard
+
 ## Output
 ```
 Research/<topic-slug>.md

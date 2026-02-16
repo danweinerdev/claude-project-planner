@@ -40,6 +40,9 @@ When you need to define the requirements for a feature before designing or imple
    - Show the user the review results and final spec
    - If approved, set status to `approved`
 
+5. **Regenerate Dashboard**
+   - Run `make dashboard` from the planning root to update the HTML dashboard
+
 ## Output
 ```
 Specs/<FeatureName>/README.md

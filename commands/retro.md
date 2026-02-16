@@ -41,6 +41,9 @@ After completing a significant piece of work (a plan, a sprint, a milestone) to 
 4. **Link**
    - Add references to related plans or debriefs in `related` frontmatter
 
+5. **Regenerate Dashboard**
+   - Run `make dashboard` from the planning root to update the HTML dashboard
+
 ## Output
 ```
 Retro/YYYY-MM-DD-<slug>.md

@@ -38,6 +38,9 @@ When you need to generate and evaluate multiple approaches to a problem before c
 4. **Link**
    - Add cross-references to related research or specs in `related` frontmatter
 
+5. **Regenerate Dashboard**
+   - Run `make dashboard` from the planning root to update the HTML dashboard
+
 ## Output
 ```
 Brainstorm/<topic-slug>.md

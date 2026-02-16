@@ -49,6 +49,9 @@ When you need to break down a feature, project, or initiative into an actionable
    - Address any issues raised by the reviewer
    - Update plan status to `approved` once review passes
 
+5. **Regenerate Dashboard**
+   - Run `make dashboard` from the planning root to update the HTML dashboard
+
 ## Output
 ```
 Plans/<PlanName>/

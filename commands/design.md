@@ -43,6 +43,9 @@ When you need to define the technical architecture for a component or system bef
    - Show the user the review results and final design
    - If approved, set status to `approved`
 
+5. **Regenerate Dashboard**
+   - Run `make dashboard` from the planning root to update the HTML dashboard
+
 ## Output
 ```
 Designs/<ComponentName>/README.md

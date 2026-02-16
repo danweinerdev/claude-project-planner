@@ -42,6 +42,9 @@ When a plan phase needs more detail: additional tasks, subtask checklists, imple
    - If new phases were identified during breakdown, add them to the plan README frontmatter
    - Update the `updated` date
 
+5. **Regenerate Dashboard**
+   - Run `make dashboard` from the planning root to update the HTML dashboard
+
 ## Output
 Updates existing phase document(s) in place. No new files created unless new phases are needed.
 
