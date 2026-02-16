@@ -115,6 +115,7 @@ Use `/planner:dashboard` or `/planner:status` at any point to check progress.
 The planning root's `planning-config.json` drives all path resolution:
 - `mode`: `"standalone"` (own repo) or `"embedded"` (subdirectory of project)
 - `planningRoot`: `"."` for standalone, subdirectory name for embedded
+- `dashboard`: `true` (default) or `false` to disable dashboard generation
 - `repositories`: map of external repo keys to GitHub URLs (standalone mode)
 - `planMapping`: map of plan names to target repos
 - `planRepository`: key for the planning repo itself

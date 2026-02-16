@@ -1636,6 +1636,11 @@ def main():
         config_path = planning_root / "dashboard-config.json"
     config = load_config(config_path)
 
+    # Check if dashboard generation is disabled
+    if config.get("dashboard") is False:
+        print("Dashboard generation is disabled (dashboard: false in config)")
+        return
+
     # Load local config (for repo paths, not committed)
     local_config_path = planning_root / "planning-config.local.json"
     if local_config_path.exists():

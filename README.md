@@ -257,6 +257,8 @@ Point multiple code repos at one shared planning repo using an absolute `plannin
 
 A static HTML dashboard generated from artifact frontmatter. Python 3 stdlib only — no dependencies.
 
+To disable dashboard generation, set `"dashboard": false` in `planning-config.json`.
+
 ```bash
 make dashboard        # generate
 make open             # generate and open in browser
