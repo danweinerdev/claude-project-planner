@@ -1,4 +1,7 @@
-.PHONY: dashboard open clean
+test:
+	@.venv/bin/python -m pytest tests/ -v
+
+.PHONY: dashboard open clean test
 
 dashboard:
 	@python3 generate-dashboard.py

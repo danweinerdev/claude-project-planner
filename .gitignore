@@ -7,6 +7,8 @@ planning-config.local.json
 # Python
 __pycache__/
 *.py[cod]
+.venv/
+.pytest_cache/
 
 # Editor
 *.swp
