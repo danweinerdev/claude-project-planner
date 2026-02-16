@@ -6,11 +6,13 @@ description: "Investigate a topic and produce a structured research document. Tr
 # /research — Investigate a Topic
 
 ## Path Resolution
-All artifact paths in this skill are relative to the **planning root**.
+**Artifacts** (Plans/, Research/, Specs/, etc.) are read from and written to the **planning root**.
 Read `planning-config.json` (at repo root) to find the planning root:
 - `planningRoot` of `"."` or absent → artifacts at repository root
 - `planningRoot` of `"<dir>"` → artifacts under `<dir>/` from repo root
 - `planningRoot` of `"/absolute/path"` → artifacts in an external directory (standalone planning repo)
+
+**Templates and schema** (`Shared/`) are read from the **plugin directory** (the project-planner repo loaded via `--plugin-dir`), not from the planning root.
 
 Run dashboard commands (`make dashboard`) from the planning root directory.
 
