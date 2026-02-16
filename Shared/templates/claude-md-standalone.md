@@ -1,22 +1,19 @@
-# Project Planner
+# {{TITLE}}
 
-A Claude Code plugin for structured project planning with lifecycle skills, review agents, and an HTML dashboard.
+{{DESCRIPTION}}
 
 ## Directory Structure
 
 ```
-project-planner/
+{{PLANNING_ROOT}}/
 ├── CLAUDE.md                     # This file
 ├── Makefile                      # make dashboard / make open / make clean
 ├── generate-dashboard.py         # Dashboard generator (Python 3, stdlib only)
 ├── planning-config.json          # Planning configuration
 ├── .gitignore
-├── .claude-plugin/
-│   └── plugin.json               # Plugin manifest (name: "planner")
-├── commands/                     # Slash commands (auto-namespaced /planner:*)
-├── agents/                       # Subagent definitions
 ├── .claude/
-│   └── settings.local.json
+│   ├── skills/                   # Slash-command skills
+│   └── agents/                   # Subagent definitions
 ├── Shared/
 │   ├── frontmatter-schema.md     # Single source of truth for artifact metadata
 │   └── templates/                # Document templates
@@ -70,17 +67,16 @@ Always use templates from `Shared/templates/` when creating new artifacts. Repla
 
 | Skill | Purpose |
 |-------|---------|
-| `/planner:init` | Bootstrap a new project-planner instance |
-| `/planner:research` | Investigate a topic → `Research/<topic>.md` |
-| `/planner:brainstorm` | Explore possibilities → `Brainstorm/<topic>.md` |
-| `/planner:specify` | Write requirements → `Specs/<feature>/README.md` |
-| `/planner:design` | Technical architecture → `Designs/<component>/README.md` |
-| `/planner:plan` | Create implementation plan → `Plans/<Name>/` |
-| `/planner:breakdown` | Add detail to plan phases |
-| `/planner:debrief` | After-action notes for completed phases |
-| `/planner:retro` | Capture learnings → `Retro/YYYY-MM-DD-<slug>.md` |
-| `/planner:dashboard` | Regenerate HTML dashboard |
-| `/planner:status` | Quick status summary (read-only) |
+| `/research` | Investigate a topic → `Research/<topic>.md` |
+| `/brainstorm` | Explore possibilities → `Brainstorm/<topic>.md` |
+| `/specify` | Write requirements → `Specs/<feature>/README.md` |
+| `/design` | Technical architecture → `Designs/<component>/README.md` |
+| `/plan` | Create implementation plan → `Plans/<Name>/` |
+| `/breakdown` | Add detail to plan phases |
+| `/debrief` | After-action notes for completed phases |
+| `/retro` | Capture learnings → `Retro/YYYY-MM-DD-<slug>.md` |
+| `/dashboard` | Regenerate HTML dashboard |
+| `/status` | Quick status summary (read-only) |
 
 ## Agents
 
@@ -94,9 +90,9 @@ Always use templates from `Shared/templates/` when creating new artifacts. Repla
 
 The typical flow through skills:
 ```
-/planner:init → /planner:research → /planner:brainstorm → /planner:specify → /planner:design → /planner:plan → /planner:breakdown → [implement] → /planner:debrief → /planner:retro
+/research → /brainstorm → /specify → /design → /plan → /breakdown → [implement] → /debrief → /retro
 ```
-Use `/planner:dashboard` or `/planner:status` at any point to check progress.
+Use `/dashboard` or `/status` at any point to check progress.
 
 ## Artifact Status Values
 

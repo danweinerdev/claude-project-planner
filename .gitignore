@@ -1,6 +1,9 @@
 # Generated dashboard
 Dashboard/
 
+# Local config (paths, not committed)
+planning-config.local.json
+
 # Python
 __pycache__/
 *.py[cod]

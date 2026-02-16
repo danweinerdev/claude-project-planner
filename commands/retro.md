@@ -5,6 +5,15 @@ description: "Capture learnings and reflections in a retrospective. Triggers: /r
 
 # /retro — Capture Learnings
 
+## Path Resolution
+All artifact paths in this skill are relative to the **planning root**.
+Read `planning-config.json` (at repo root) to find the planning root:
+- `planningRoot` of `"."` or absent → artifacts at repository root
+- `planningRoot` of `"<dir>"` → artifacts under `<dir>/` from repo root
+- `planningRoot` of `"/absolute/path"` → artifacts in an external directory (standalone planning repo)
+
+Run dashboard commands (`make dashboard`) from the planning root directory.
+
 ## When to Use
 After completing a significant piece of work (a plan, a sprint, a milestone) to capture what went well, what could be improved, and action items for the future.
 

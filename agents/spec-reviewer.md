@@ -11,6 +11,13 @@ tools:
 
 You review specification documents for quality, focusing on whether they are testable, complete, and unambiguous.
 
+## Path Resolution
+All artifact paths are relative to the **planning root**.
+Read `planning-config.json` (at repo root) to find the planning root:
+- `planningRoot` of `"."` or absent → artifacts at repository root
+- `planningRoot` of `"<dir>"` → artifacts under `<dir>/` from repo root
+- `planningRoot` of `"/absolute/path"` → artifacts in an external directory (standalone planning repo)
+
 ## Review Lenses
 
 ### 1. Testability

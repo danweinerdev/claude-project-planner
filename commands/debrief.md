@@ -5,6 +5,15 @@ description: "Write after-action notes for a completed plan phase. Triggers: /de
 
 # /debrief — After-Action Phase Notes
 
+## Path Resolution
+All artifact paths in this skill are relative to the **planning root**.
+Read `planning-config.json` (at repo root) to find the planning root:
+- `planningRoot` of `"."` or absent → artifacts at repository root
+- `planningRoot` of `"<dir>"` → artifacts under `<dir>/` from repo root
+- `planningRoot` of `"/absolute/path"` → artifacts in an external directory (standalone planning repo)
+
+Run dashboard commands (`make dashboard`) from the planning root directory.
+
 ## When to Use
 When a plan phase has been completed (or substantially completed) and you want to capture what happened: decisions made, deviations from plan, lessons learned, and impact on future phases.
 

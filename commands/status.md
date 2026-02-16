@@ -5,6 +5,13 @@ description: "Show a quick status summary of all plans and in-progress work. Tri
 
 # /status — Quick Status Summary
 
+## Path Resolution
+All artifact paths in this skill are relative to the **planning root**.
+Read `planning-config.json` (at repo root) to find the planning root:
+- `planningRoot` of `"."` or absent → artifacts at repository root
+- `planningRoot` of `"<dir>"` → artifacts under `<dir>/` from repo root
+- `planningRoot` of `"/absolute/path"` → artifacts in an external directory (standalone planning repo)
+
 ## When to Use
 When you want a quick overview of project status without regenerating the dashboard.
 

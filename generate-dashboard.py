@@ -266,6 +266,8 @@ class PlanData:
     path: Path = field(default_factory=Path)
     slug: str = ""
     overview: str = ""
+    target_repo: str = ""
+    target_repo_url: str = ""
 
 @dataclass
 class Artifact:
@@ -894,6 +896,27 @@ h2 { font-size: 1.25rem; font-weight: 600; margin-bottom: 1rem; }
     color: var(--text-muted);
 }
 
+/* Quick links (repo links, source links) */
+.quick-links {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+.quick-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.25rem 0.75rem;
+    font-size: 0.8125rem;
+    color: var(--accent);
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    text-decoration: none;
+    transition: border-color 0.2s;
+}
+.quick-link:hover { border-color: var(--accent); text-decoration: none; }
+
 .generated {
     margin-top: 2rem;
     text-align: center;
@@ -914,6 +937,37 @@ def load_config(path: Path) -> dict:
         return json.loads(path.read_text())
     except (json.JSONDecodeError, IOError):
         return {}
+
+
+def get_repo_url(config: dict, repo_key: str) -> str:
+    """Get GitHub URL for a repository by key."""
+    repos = config.get("repositories", {})
+    if repo_key in repos:
+        github = repos[repo_key].get("github", "")
+        if github:
+            return f"https://github.com/{github}"
+    return ""
+
+
+def get_planning_repo_url(config: dict) -> str:
+    """Get the GitHub URL for the planning repository."""
+    plan_repo = config.get("planRepository", "")
+    if not plan_repo:
+        return ""
+    return get_repo_url(config, plan_repo)
+
+
+def apply_config_to_plans(plans: list[PlanData], config: dict) -> None:
+    """Apply configuration to plans (target repos, etc.)."""
+    plan_mapping = config.get("planMapping", {})
+
+    for plan in plans:
+        if plan.name in plan_mapping:
+            mapping = plan_mapping[plan.name]
+            repo_key = mapping.get("repo", "")
+            if repo_key:
+                plan.target_repo = repo_key
+                plan.target_repo_url = get_repo_url(config, repo_key)
 
 
 def status_icon(status: str) -> str:
@@ -1219,6 +1273,19 @@ def generate_plan_page(plan: PlanData, config: dict) -> str:
                 <td style="color:var(--text-muted)">{html.escape(phase.deliverable)}</td>
             </tr>''')
 
+    # Repo links
+    repo_links_html = ""
+    links = []
+    planning_repo_url = get_planning_repo_url(config)
+    if planning_repo_url:
+        readme_path = f"Plans/{plan.name}/README.md"
+        links.append(f'<a href="{planning_repo_url}/blob/main/{readme_path}" class="quick-link">&#x1F4C4; Plan Source</a>')
+    if plan.target_repo_url:
+        repo_name = plan.target_repo.split('/')[-1] if '/' in plan.target_repo else plan.target_repo
+        links.append(f'<a href="{plan.target_repo_url}" class="quick-link">&#x1F527; {html.escape(repo_name)} Repository</a>')
+    if links:
+        repo_links_html = f'<div class="quick-links" style="margin-top:0.75rem">{"".join(links)}</div>'
+
     body = f'''
     <header>
         <div class="plan-detail-header">
@@ -1228,6 +1295,7 @@ def generate_plan_page(plan: PlanData, config: dict) -> str:
         {f'<p class="subtitle">{html.escape(plan.overview)}</p>' if plan.overview else ''}
         {tags_html}
         <div style="margin-top:1rem">{progress_html}</div>
+        {repo_links_html}
     </header>
 
     <section>
@@ -1337,6 +1405,23 @@ def generate_phase_page(plan: PlanData, phase: PhaseData, config: dict) -> str:
         <div class="meta-card">
             <h4>Deliverable</h4>
             <p>{html.escape(phase.deliverable)}</p>
+        </div>''')
+
+    # Quick links
+    links = [f'<a href="index.html" class="quick-link">&#x2190; {html.escape(plan.name)} Overview</a>']
+    planning_repo_url = get_planning_repo_url(config)
+    if planning_repo_url:
+        doc_path = f"Plans/{plan.name}/{phase.doc}" if phase.doc else ""
+        if doc_path:
+            links.append(f'<a href="{planning_repo_url}/blob/main/{doc_path}" class="quick-link">&#x1F4DD; Phase Source</a>')
+    if plan.target_repo_url:
+        repo_name = plan.target_repo.split('/')[-1] if '/' in plan.target_repo else plan.target_repo
+        links.append(f'<a href="{plan.target_repo_url}" class="quick-link">&#x1F527; {html.escape(repo_name)} Repository</a>')
+    if len(links) > 1:
+        meta.append(f'''
+        <div class="meta-card">
+            <h4>Links</h4>
+            <div class="quick-links">{"".join(links)}</div>
         </div>''')
 
     body = f'''
@@ -1537,15 +1622,32 @@ def generate_artifact_detail_page(art: Artifact, category: str,
 # ---------------------------------------------------------------------------
 
 def main():
-    script_dir = Path(__file__).parent
-    plans_dir = script_dir / "Plans"
-    output_dir = script_dir / "Dashboard"
+    planning_root = Path(__file__).parent
+    plans_dir = planning_root / "Plans"
+    output_dir = planning_root / "Dashboard"
 
     if not plans_dir.exists():
         print("No Plans/ directory found — creating empty dashboard.")
         plans_dir.mkdir(exist_ok=True)
 
-    config = load_config(script_dir / "dashboard-config.json")
+    # Load configuration (planning-config.json, with dashboard-config.json fallback)
+    config_path = planning_root / "planning-config.json"
+    if not config_path.exists():
+        config_path = planning_root / "dashboard-config.json"
+    config = load_config(config_path)
+
+    # Load local config (for repo paths, not committed)
+    local_config_path = planning_root / "planning-config.local.json"
+    if local_config_path.exists():
+        local_config = load_config(local_config_path)
+        for repo_key, repo_data in local_config.get("repositories", {}).items():
+            if repo_key in config.get("repositories", {}):
+                config["repositories"][repo_key].update(repo_data)
+            else:
+                config.setdefault("repositories", {})[repo_key] = repo_data
+
+    if config.get("repositories"):
+        print(f"Loaded config with {len(config['repositories'])} repositories")
 
     # Clean and recreate output
     if output_dir.exists():
@@ -1565,10 +1667,13 @@ def main():
 
     print(f"Parsed {len(plans)} plans")
 
+    # Apply config to plans (target repos, etc.)
+    apply_config_to_plans(plans, config)
+
     # Parse all artifact types
     all_artifacts: dict[str, list[Artifact]] = {}
     for category in ("Research", "Brainstorm", "Specs", "Designs", "Retro"):
-        items = scan_artifacts(script_dir, category)
+        items = scan_artifacts(planning_root, category)
         if items:
             all_artifacts[category] = items
             print(f"  {category}: {len(items)} artifacts")

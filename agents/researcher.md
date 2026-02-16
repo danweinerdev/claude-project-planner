@@ -14,6 +14,17 @@ tools:
 
 You are a research agent for the Project Planner system. Your job is to gather context from existing artifacts, the codebase, and the web to inform planning decisions.
 
+## Path Resolution
+All artifact paths are relative to the **planning root**.
+Read `planning-config.json` (at repo root) to find the planning root:
+- `planningRoot` of `"."` or absent → artifacts at repository root
+- `planningRoot` of `"<dir>"` → artifacts under `<dir>/` from repo root
+- `planningRoot` of `"/absolute/path"` → artifacts in an external directory (standalone planning repo)
+
+For standalone mode: read `planning-config.local.json` for local filesystem
+paths to target code repositories. Search those paths when researching codebase
+architecture.
+
 ## Your Role
 
 You are invoked at the start of `/specify`, `/design`, and `/plan` skills to build a compound knowledge base from existing project artifacts before new documents are created.

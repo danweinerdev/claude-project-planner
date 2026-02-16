@@ -5,6 +5,15 @@ description: "Explore possibilities for a problem or opportunity with structured
 
 # /brainstorm — Explore Possibilities
 
+## Path Resolution
+All artifact paths in this skill are relative to the **planning root**.
+Read `planning-config.json` (at repo root) to find the planning root:
+- `planningRoot` of `"."` or absent → artifacts at repository root
+- `planningRoot` of `"<dir>"` → artifacts under `<dir>/` from repo root
+- `planningRoot` of `"/absolute/path"` → artifacts in an external directory (standalone planning repo)
+
+Run dashboard commands (`make dashboard`) from the planning root directory.
+
 ## When to Use
 When you need to generate and evaluate multiple approaches to a problem before committing to one. Good for architecture decisions, feature approaches, or tool selection.
 

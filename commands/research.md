@@ -5,6 +5,15 @@ description: "Investigate a topic and produce a structured research document. Tr
 
 # /research — Investigate a Topic
 
+## Path Resolution
+All artifact paths in this skill are relative to the **planning root**.
+Read `planning-config.json` (at repo root) to find the planning root:
+- `planningRoot` of `"."` or absent → artifacts at repository root
+- `planningRoot` of `"<dir>"` → artifacts under `<dir>/` from repo root
+- `planningRoot` of `"/absolute/path"` → artifacts in an external directory (standalone planning repo)
+
+Run dashboard commands (`make dashboard`) from the planning root directory.
+
 ## When to Use
 When you need to gather and synthesize information about a topic before making decisions. Good for technology evaluations, understanding existing systems, or exploring unknowns.
 

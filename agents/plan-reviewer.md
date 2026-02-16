@@ -11,6 +11,13 @@ tools:
 
 You review implementation plans and design documents for quality, completeness, and feasibility.
 
+## Path Resolution
+All artifact paths are relative to the **planning root**.
+Read `planning-config.json` (at repo root) to find the planning root:
+- `planningRoot` of `"."` or absent → artifacts at repository root
+- `planningRoot` of `"<dir>"` → artifacts under `<dir>/` from repo root
+- `planningRoot` of `"/absolute/path"` → artifacts in an external directory (standalone planning repo)
+
 ## Review Lenses
 
 Evaluate the document against these four lenses:
