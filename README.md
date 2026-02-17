@@ -4,7 +4,7 @@ A [Claude Code](https://docs.anthropic.com/en/docs/claude-code) plugin for struc
 
 ## How It Works
 
-Project Planner is a Claude Code **plugin**. When loaded, it registers 11 slash commands (namespaced under `/planner:*`) and 3 review agents that Claude can delegate to. All artifacts are Markdown files with YAML frontmatter — the dashboard generator reads frontmatter exclusively, so there's no brittle table parsing.
+Project Planner is a Claude Code **plugin**. When loaded, it registers 17 slash commands (namespaced under `/planner:*`) and 3 review agents that Claude can delegate to. All artifacts are Markdown files with YAML frontmatter — the dashboard generator reads frontmatter exclusively, so there's no brittle table parsing.
 
 ```mermaid
 graph LR
@@ -74,6 +74,8 @@ Then run `./claude.sh` from any worktree to get planning commands and context.
 
 All commands are namespaced as `/planner:*` automatically by the plugin system.
 
+### Lifecycle Commands
+
 | Command | Purpose | Output |
 |---------|---------|--------|
 | `/planner:init` | Bootstrap a new planner instance | `planning-config.json`, directory structure |
@@ -83,14 +85,25 @@ All commands are namespaced as `/planner:*` automatically by the plugin system.
 | `/planner:design` | Technical architecture | `Designs/<component>/README.md` |
 | `/planner:plan` | Create implementation plan | `Plans/<Name>/README.md` + phase docs |
 | `/planner:breakdown` | Add detail to plan phases | Updates phase `.md` with tasks/subtasks |
+| `/planner:implement` | Execute a plan phase | Code + updated task/phase statuses |
+| `/planner:simplify` | Post-implementation cleanup | Simplified code, tests verified |
 | `/planner:debrief` | After-action notes | `Plans/<Name>/notes/<phase>.md` |
 | `/planner:retro` | Capture learnings | `Retro/YYYY-MM-DD-<slug>.md` |
+
+### Utility Commands
+
+| Command | Purpose | Output |
+|---------|---------|--------|
+| `/planner:poke-holes` | Adversarial critical analysis | Inline findings (no artifact) |
+| `/planner:tend` | Artifact hygiene | Updates stale statuses, tags, conventions |
+| `/planner:diagram` | Generate Mermaid diagrams | `Diagrams/<subject>.md` or inline |
+| `/planner:excavate` | Progressive codebase discovery | `Research/<codebase>.md` |
 | `/planner:dashboard` | Regenerate HTML dashboard | `Dashboard/` |
 | `/planner:status` | Quick status summary | Text output (read-only) |
 
 ## Workflow Lifecycle
 
-Commands follow a natural planning progression. You don't have to use every step — jump in wherever makes sense.
+Commands follow a natural planning progression. You don't have to use every step — jump in wherever makes sense. Utility commands can be used at any point.
 
 ```mermaid
 graph TD
@@ -100,38 +113,46 @@ graph TD
     specify --> design["/planner:design"]
     design --> plan["/planner:plan"]
     plan --> breakdown["/planner:breakdown"]
-    breakdown --> implement["Implement"]
-    implement --> debrief["/planner:debrief"]
+    breakdown --> implement["/planner:implement"]
+    implement --> simplify["/planner:simplify"]
+    simplify --> debrief["/planner:debrief"]
     debrief --> retro["/planner:retro"]
 
-    status["/planner:status"]
-    dashboard["/planner:dashboard"]
+    poke["⚡ /planner:poke-holes"]
+    tend["🔧 /planner:tend"]
+    diagram["📊 /planner:diagram"]
+    excavate["🔍 /planner:excavate"]
+    status["📋 /planner:status"]
+    dashboard["📈 /planner:dashboard"]
 
-    status -. "check anytime" .-> research
-    dashboard -. "check anytime" .-> research
+    poke -. "before approving" .-> specify
+    poke -. "before approving" .-> design
+    poke -. "before approving" .-> plan
+    excavate -. "understand code" .-> research
 
     classDef discovery fill:#4a6741,stroke:#333,color:#fff
     classDef definition fill:#5a4a7a,stroke:#333,color:#fff
     classDef execution fill:#6a5a3a,stroke:#333,color:#fff
+    classDef implementation fill:#7a4a4a,stroke:#333,color:#fff
     classDef review fill:#3a5a6a,stroke:#333,color:#fff
-    classDef monitor fill:#555,stroke:#333,color:#fff
-    classDef impl fill:#7a4a4a,stroke:#333,color:#fff
+    classDef utility fill:#555,stroke:#333,color:#fff
 
     class init,research,brainstorm discovery
     class specify,design definition
     class plan,breakdown execution
+    class implement,simplify implementation
     class debrief,retro review
-    class status,dashboard monitor
-    class implement impl
+    class poke,tend,diagram,excavate,status,dashboard utility
 ```
 
 | Phase | Commands | What happens |
 |-------|----------|-------------|
-| **Discovery** | `research`, `brainstorm` | Gather context, explore options |
+| **Discovery** | `research`, `brainstorm`, `excavate` | Gather context, explore options, map codebases |
 | **Definition** | `specify`, `design` | Lock down requirements and architecture |
 | **Execution** | `plan`, `breakdown` | Structure work into phases, tasks, subtasks |
-| **Implementation** | *(your code)* | Build it |
+| **Implementation** | `implement`, `simplify` | Build it, then clean it up |
 | **Review** | `debrief`, `retro` | Capture what happened and what you learned |
+| **Utilities** | `poke-holes`, `tend`, `diagram`, `status`, `dashboard` | Challenge, maintain, visualize, monitor |
 
 ## Plan Hierarchy
 
@@ -257,13 +278,16 @@ Point multiple code repos at one shared planning repo using an absolute `plannin
 
 A static HTML dashboard generated from artifact frontmatter. Python 3 stdlib only — no dependencies.
 
-To disable dashboard generation, set `"dashboard": false` in `planning-config.json`.
+All artifact-mutating skills auto-regenerate the dashboard after writing. You can also trigger it manually:
 
 ```bash
 make dashboard        # generate
 make open             # generate and open in browser
 make clean            # remove generated files
+make test             # run test suite
 ```
+
+To disable dashboard generation, set `"dashboard": false` in `planning-config.json`.
 
 ### Pages
 
@@ -280,7 +304,7 @@ make clean            # remove generated files
 ## Directory Structure
 
 ```
-project-planner/
+project-planner/                   # The plugin itself (not your project)
 ├── .claude-plugin/
 │   └── plugin.json               # Plugin manifest (name: "planner")
 ├── commands/                     # Slash commands → /planner:*
@@ -289,12 +313,18 @@ project-planner/
 │   ├── dashboard.md
 │   ├── debrief.md
 │   ├── design.md
+│   ├── diagram.md
+│   ├── excavate.md
+│   ├── implement.md
 │   ├── init.md
 │   ├── plan.md
+│   ├── poke-holes.md
 │   ├── research.md
 │   ├── retro.md
+│   ├── simplify.md
 │   ├── specify.md
-│   └── status.md
+│   ├── status.md
+│   └── tend.md
 ├── agents/                       # Review agents
 │   ├── researcher.md
 │   ├── plan-reviewer.md
@@ -302,17 +332,12 @@ project-planner/
 ├── Shared/
 │   ├── frontmatter-schema.md     # Artifact metadata schema
 │   └── templates/                # Document templates
-├── generate-dashboard.py         # Dashboard generator (Python 3, stdlib only)
-├── Makefile                      # make dashboard / make open / make clean
-├── planning-config.json          # Planning configuration
+├── dashboard/                    # Dashboard generator package
+├── generate-dashboard.py         # Dashboard entry point (Python 3, stdlib only)
+├── tests/                        # pytest test suite
+├── Makefile                      # make dashboard / make open / make clean / make test
 ├── CLAUDE.md                     # Claude Code project instructions
-├── Plans/                        # Implementation plans
-├── Research/                     # Research artifacts
-├── Brainstorm/                   # Brainstorm artifacts
-├── Specs/                        # Specifications
-├── Designs/                      # Technical designs
-├── Retro/                        # Retrospectives
-└── Dashboard/                    # Generated HTML (gitignored)
+└── README.md
 ```
 
 ## Requirements
