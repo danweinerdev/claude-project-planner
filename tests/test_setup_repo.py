@@ -76,7 +76,9 @@ class TestSetupRepoMain:
             link.symlink_to(fake_target)
 
             main([str(repo)])
-            assert not link.exists()
+            # Symlink should be replaced by a regular file copy
+            assert not link.is_symlink()
+            assert link.exists()  # now a regular file from sync
 
     def test_nonexistent_repo_exits(self):
         with pytest.raises(SystemExit):
