@@ -73,7 +73,7 @@ Once all tasks are complete (or all remaining tasks are blocked):
 **All tasks complete:**
 - Update phase status to `complete` in both the phase doc and plan README
 - Update `updated` dates
-- Suggest running `/debrief` to capture what happened
+- Suggest running `/code-review` to verify alignment with the plan, then `/debrief` to capture what happened
 
 **Some tasks blocked:**
 - Keep phase status as `in-progress`

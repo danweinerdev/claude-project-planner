@@ -9,6 +9,7 @@ from .common import (
     clean_stale_symlinks,
     resolve_repo_path,
     setup_planning_config,
+    sync_skills_and_agents,
     write_launcher,
 )
 
@@ -48,7 +49,14 @@ def main(argv: list[str] | None = None) -> None:
     if cleaned:
         print(f"Cleaned {cleaned} stale planner symlinks (now using --add-dir)")
 
-    # 3. Launcher script
+    # 3. Sync skills and agents
+    created, overwritten = sync_skills_and_agents(repo_path, PLANNER_DIR)
+    if created or overwritten:
+        print(f"Skills & agents: {created} created, {overwritten} updated")
+    else:
+        print("Skills & agents: up to date")
+
+    # 4. Launcher script
     write_launcher(repo_path, planning_root, PLANNER_DIR)
 
     # Summary

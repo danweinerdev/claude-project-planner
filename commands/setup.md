@@ -8,7 +8,7 @@ description: "Set up or re-setup a repository for project-planner. Overwrites ex
 ## When to Use
 When you want to configure a repository (the current working directory or a specified path) to work with the project-planner plugin. This sets up `planning-config.json`, a `claude.sh` launcher script, and cleans stale symlinks.
 
-**Idempotent and safe to re-run.** Always overwrites existing setup files (`claude.sh`, `planning-config.json`, `worktree-add.sh`) with fresh versions. This is the correct way to repair or update a previously configured repo — for example after moving the planner directory, changing the planning root, or updating the project-planner plugin.
+**Idempotent and safe to re-run.** Always overwrites existing setup files (`claude.sh`, `planning-config.json`, `worktree-add.sh`) and syncs skills and agents to their latest versions. This is the correct way to repair or update a previously configured repo — for example after moving the planner directory, changing the planning root, adding new skills/agents, or updating the project-planner plugin.
 
 Automatically detects whether the target is a **bare repo** (worktree workflow) or a **normal repo** and runs the appropriate setup.
 
@@ -90,10 +90,12 @@ Every run unconditionally overwrites these files with fresh versions:
 
 | Repo type | Files overwritten |
 |-----------|-------------------|
-| Normal | `claude.sh` (or `claude.cmd`), `planning-config.json` |
+| Normal | `claude.sh` (or `claude.cmd`), `planning-config.json`, `.claude/skills/*.md`, `.claude/agents/*.md` |
 | Bare (worktree) | `worktree-add.sh` |
 
-The generated `worktree-add.sh` itself also overwrites `claude.sh` and `planning-config.json` inside each worktree when run. Existing worktrees are not affected until `worktree-add.sh` is re-run on them.
+Skills and agents are copied from the planner's `commands/` and `agents/` directories into the target repo's `.claude/skills/` and `.claude/agents/` directories. New files are created; existing files are overwritten with the latest version. This ensures repos always have the current set of skills and agents.
+
+The generated `worktree-add.sh` itself also overwrites `claude.sh`, `planning-config.json`, and skills/agents inside each worktree when run. Existing worktrees are not affected until `worktree-add.sh` is re-run on them.
 
 ## Arguments
 

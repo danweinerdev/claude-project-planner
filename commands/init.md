@@ -108,11 +108,11 @@ Read each source file and write it to the target. The source location is the dir
 Skills go to `<projectRoot>/.claude/skills/` and agents to `<projectRoot>/.claude/agents/`. These MUST be under `.claude/` for Claude Code skill discovery.
 
 Copy all skills from the project-planner source:
-- `brainstorm.md`, `breakdown.md`, `dashboard.md`, `debrief.md`, `design.md`
+- `brainstorm.md`, `breakdown.md`, `code-review.md`, `dashboard.md`, `debrief.md`, `design.md`
 - `init.md`, `plan.md`, `research.md`, `retro.md`, `specify.md`, `status.md`
 
 Copy all agents:
-- `researcher.md`, `plan-reviewer.md`, `spec-reviewer.md`
+- `code-reviewer.md`, `researcher.md`, `plan-reviewer.md`, `spec-reviewer.md`
 
 ### 8. Write or Append CLAUDE.md
 
@@ -153,7 +153,7 @@ Display:
 ### Created
 - Directory structure (Plans/, Research/, Brainstorm/, Specs/, Designs/, Retro/)
 - planning-config.json
-- Skills (11) and agents (3)
+- Skills (12) and agents (4)
 - CLAUDE.md
 - generate-dashboard.py + Makefile
 

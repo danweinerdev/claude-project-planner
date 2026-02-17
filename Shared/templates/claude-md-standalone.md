@@ -73,6 +73,7 @@ Always use templates from `Shared/templates/` when creating new artifacts. Repla
 | `/design` | Technical architecture → `Designs/<component>/README.md` |
 | `/plan` | Create implementation plan → `Plans/<Name>/` |
 | `/breakdown` | Add detail to plan phases |
+| `/code-review` | Review code against the plan — drift, gaps, blind spots |
 | `/debrief` | After-action notes for completed phases |
 | `/retro` | Capture learnings → `Retro/YYYY-MM-DD-<slug>.md` |
 | `/dashboard` | Regenerate HTML dashboard |
@@ -85,12 +86,13 @@ Always use templates from `Shared/templates/` when creating new artifacts. Repla
 | `researcher` | Sonnet | Gathers context from artifacts, codebase, and web |
 | `plan-reviewer` | Sonnet | Reviews plans for completeness, feasibility, conventions |
 | `spec-reviewer` | Haiku | Reviews specs for testability, completeness, ambiguity |
+| `code-reviewer` | Sonnet | Reviews code changes against plan, specs, and designs |
 
 ## Workflow Lifecycle
 
 The typical flow through skills:
 ```
-/research → /brainstorm → /specify → /design → /plan → /breakdown → [implement] → /debrief → /retro
+/research → /brainstorm → /specify → /design → /plan → /breakdown → [implement] → /code-review → /debrief → /retro
 ```
 Use `/dashboard` or `/status` at any point to check progress.
 

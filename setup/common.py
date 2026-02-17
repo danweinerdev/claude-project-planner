@@ -90,6 +90,38 @@ def clean_stale_symlinks(target_path: Path, planner_dir: Path) -> int:
     return cleaned
 
 
+def sync_skills_and_agents(target_path: Path, planner_dir: Path) -> tuple[int, int]:
+    """Copy skills and agents from planner to target repo's .claude/ directory.
+
+    Copies commands/*.md → .claude/skills/ and agents/*.md → .claude/agents/.
+    Overwrites existing files to ensure they stay current.
+
+    Returns (created, overwritten) counts.
+    """
+    created = 0
+    overwritten = 0
+
+    mappings = [
+        (planner_dir / "commands", target_path / ".claude" / "skills"),
+        (planner_dir / "agents", target_path / ".claude" / "agents"),
+    ]
+
+    for source_dir, target_dir in mappings:
+        if not source_dir.is_dir():
+            continue
+        target_dir.mkdir(parents=True, exist_ok=True)
+        for source_file in sorted(source_dir.glob("*.md")):
+            dest_file = target_dir / source_file.name
+            existed = dest_file.exists()
+            dest_file.write_text(source_file.read_text())
+            if existed:
+                overwritten += 1
+            else:
+                created += 1
+
+    return created, overwritten
+
+
 def write_launcher(target_path: Path, planning_root: Path, planner_dir: Path) -> None:
     """Write a cross-platform Claude launcher script. Overwrites any existing launcher."""
     is_windows = platform.system() == "Windows"

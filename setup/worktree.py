@@ -172,7 +172,38 @@ if [[ $CLEANED -gt 0 ]]; then
 fi
 
 # --------------------------------------------------------------------------
-# Step 5: Write claude.sh
+# Step 5: Sync skills and agents from planner
+# --------------------------------------------------------------------------
+CREATED=0
+UPDATED=0
+
+for mapping in "commands:.claude/skills" "agents:.claude/agents"; do
+    SRC_DIR="$PLANNER_DIR/${{mapping%%:*}}"
+    DST_DIR="$WT_PATH/${{mapping##*:}}"
+
+    [[ -d "$SRC_DIR" ]] || continue
+    mkdir -p "$DST_DIR"
+
+    for src_file in "$SRC_DIR"/*.md; do
+        [[ -e "$src_file" ]] || continue
+        dst_file="$DST_DIR/$(basename "$src_file")"
+        if [[ -f "$dst_file" ]]; then
+            UPDATED=$((UPDATED + 1))
+        else
+            CREATED=$((CREATED + 1))
+        fi
+        cp "$src_file" "$dst_file"
+    done
+done
+
+if [[ $((CREATED + UPDATED)) -gt 0 ]]; then
+    echo "Skills & agents: $CREATED created, $UPDATED updated"
+else
+    echo "Skills & agents: up to date"
+fi
+
+# --------------------------------------------------------------------------
+# Step 6: Write claude.sh
 # --------------------------------------------------------------------------
 CLAUDE_SH="$WT_PATH/claude.sh"
 cat > "$CLAUDE_SH" << 'LAUNCHER'

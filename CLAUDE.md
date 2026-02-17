@@ -82,6 +82,7 @@ Always use templates from `Shared/templates/` when creating new artifacts. Repla
 | `/planner:breakdown` | Add detail to plan phases |
 | `/planner:implement` | Execute a plan phase — implement tasks, track progress |
 | `/planner:simplify` | Post-implementation code cleanup and simplification |
+| `/planner:code-review` | Review code against the plan — drift, gaps, blind spots |
 | `/planner:debrief` | After-action notes for completed phases |
 | `/planner:retro` | Capture learnings → `Retro/YYYY-MM-DD-<slug>.md` |
 | `/planner:poke-holes` | Adversarial critical analysis of any artifact |
@@ -99,12 +100,13 @@ Always use templates from `Shared/templates/` when creating new artifacts. Repla
 | `researcher` | Sonnet | Gathers context from artifacts, codebase, and web |
 | `plan-reviewer` | Sonnet | Reviews plans for completeness, feasibility, conventions |
 | `spec-reviewer` | Haiku | Reviews specs for testability, completeness, ambiguity |
+| `code-reviewer` | Sonnet | Reviews code changes against plan, specs, and designs |
 
 ## Workflow Lifecycle
 
 The typical flow through skills:
 ```
-/planner:init → /planner:research → /planner:brainstorm → /planner:specify → /planner:design → /planner:plan → /planner:breakdown → /planner:implement → /planner:simplify → /planner:debrief → /planner:retro
+/planner:init → /planner:research → /planner:brainstorm → /planner:specify → /planner:design → /planner:plan → /planner:breakdown → /planner:implement → /planner:code-review → /planner:simplify → /planner:debrief → /planner:retro
 ```
 Use `/planner:dashboard` or `/planner:status` at any point to check progress.
 Use `/planner:poke-holes` before approving any artifact. Use `/planner:tend` periodically for hygiene.
