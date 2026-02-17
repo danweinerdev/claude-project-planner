@@ -9,10 +9,13 @@ project-planner/
 ├── CLAUDE.md                     # This file
 ├── Makefile                      # make dashboard / make open / make clean
 ├── generate-dashboard.py         # Dashboard generator (Python 3, stdlib only)
+├── setup-repo.py                 # Configure a normal repo for planner
+├── setup-worktree.py             # Generate worktree-add.sh for bare repos
 ├── planning-config.json          # Planning configuration
 ├── .gitignore
 ├── .claude-plugin/
 │   └── plugin.json               # Plugin manifest (name: "planner")
+├── setup/                        # Shared library for setup tools
 ├── commands/                     # Slash commands (auto-namespaced /planner:*)
 ├── agents/                       # Subagent definitions
 ├── .claude/
@@ -85,6 +88,7 @@ Always use templates from `Shared/templates/` when creating new artifacts. Repla
 | `/planner:tend` | Artifact hygiene — verify statuses, tags, conventions |
 | `/planner:diagram` | Generate Mermaid diagrams from artifacts |
 | `/planner:excavate` | Progressive codebase discovery → `Research/<slug>.md` |
+| `/planner:setup` | Configure a repo for project-planner (auto-detects bare vs normal) |
 | `/planner:dashboard` | Regenerate HTML dashboard |
 | `/planner:status` | Quick status summary (read-only) |
 
