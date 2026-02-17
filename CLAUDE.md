@@ -77,8 +77,14 @@ Always use templates from `Shared/templates/` when creating new artifacts. Repla
 | `/planner:design` | Technical architecture → `Designs/<component>/README.md` |
 | `/planner:plan` | Create implementation plan → `Plans/<Name>/` |
 | `/planner:breakdown` | Add detail to plan phases |
+| `/planner:implement` | Execute a plan phase — implement tasks, track progress |
+| `/planner:simplify` | Post-implementation code cleanup and simplification |
 | `/planner:debrief` | After-action notes for completed phases |
 | `/planner:retro` | Capture learnings → `Retro/YYYY-MM-DD-<slug>.md` |
+| `/planner:poke-holes` | Adversarial critical analysis of any artifact |
+| `/planner:tend` | Artifact hygiene — verify statuses, tags, conventions |
+| `/planner:diagram` | Generate Mermaid diagrams from artifacts |
+| `/planner:excavate` | Progressive codebase discovery → `Research/<slug>.md` |
 | `/planner:dashboard` | Regenerate HTML dashboard |
 | `/planner:status` | Quick status summary (read-only) |
 
@@ -94,9 +100,11 @@ Always use templates from `Shared/templates/` when creating new artifacts. Repla
 
 The typical flow through skills:
 ```
-/planner:init → /planner:research → /planner:brainstorm → /planner:specify → /planner:design → /planner:plan → /planner:breakdown → [implement] → /planner:debrief → /planner:retro
+/planner:init → /planner:research → /planner:brainstorm → /planner:specify → /planner:design → /planner:plan → /planner:breakdown → /planner:implement → /planner:simplify → /planner:debrief → /planner:retro
 ```
 Use `/planner:dashboard` or `/planner:status` at any point to check progress.
+Use `/planner:poke-holes` before approving any artifact. Use `/planner:tend` periodically for hygiene.
+Use `/planner:excavate` to understand unfamiliar codebases. Use `/planner:diagram` to visualize any artifact.
 
 ## Artifact Status Values
 
