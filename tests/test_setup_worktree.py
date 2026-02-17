@@ -177,6 +177,15 @@ class TestMainCLI:
         assert "old content" not in script.read_text()
         assert "#!/usr/bin/env bash" in script.read_text()
 
+    def test_reports_generated_on_fresh(self, bare_repo, capsys):
+        main([str(bare_repo)])
+        assert "Generated" in capsys.readouterr().out
+
+    def test_reports_overwritten_on_existing(self, bare_repo, capsys):
+        (bare_repo / "worktree-add.sh").write_text("old")
+        main([str(bare_repo)])
+        assert "Overwritten" in capsys.readouterr().out
+
 
 @pytest.mark.skipif(platform.system() == "Windows", reason="bash not available")
 class TestGeneratedScriptExecution:

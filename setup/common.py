@@ -52,7 +52,7 @@ def resolve_repo_path(repo_arg: str, planner_dir: Path = PLANNER_DIR) -> Path:
 
 
 def setup_planning_config(target_path: Path, planning_root: Path) -> None:
-    """Write or update planning-config.json in the target directory."""
+    """Write or overwrite planning-config.json in the target directory."""
     config_file = target_path / "planning-config.json"
     expected = {"mode": "standalone", "planningRoot": str(planning_root)}
 
@@ -62,9 +62,9 @@ def setup_planning_config(target_path: Path, planning_root: Path) -> None:
             if existing.get("planningRoot") == str(planning_root):
                 print("planning-config.json: OK")
                 return
-            print(f"Fixing planning-config.json (was: {existing.get('planningRoot', '')})")
+            print(f"Overwriting planning-config.json (was: {existing.get('planningRoot', '')})")
         except (json.JSONDecodeError, IOError):
-            pass
+            print("Overwriting planning-config.json (was corrupt)")
     else:
         print("Creating planning-config.json")
 
@@ -91,11 +91,12 @@ def clean_stale_symlinks(target_path: Path, planner_dir: Path) -> int:
 
 
 def write_launcher(target_path: Path, planning_root: Path, planner_dir: Path) -> None:
-    """Write a cross-platform Claude launcher script."""
+    """Write a cross-platform Claude launcher script. Overwrites any existing launcher."""
     is_windows = platform.system() == "Windows"
+    launcher = target_path / ("claude.cmd" if is_windows else "claude.sh")
+    existed = launcher.exists()
 
     if is_windows:
-        launcher = target_path / "claude.cmd"
         lines = [
             "@echo off",
             f'claude --add-dir="{planning_root}" --plugin-dir="{planner_dir}" %*',
@@ -103,7 +104,6 @@ def write_launcher(target_path: Path, planning_root: Path, planner_dir: Path) ->
         ]
         launcher.write_text("\r\n".join(lines))
     else:
-        launcher = target_path / "claude.sh"
         lines = [
             "#!/usr/bin/env bash",
             "# Launch Claude Code with planning context and planner plugin",
@@ -117,4 +117,4 @@ def write_launcher(target_path: Path, planning_root: Path, planner_dir: Path) ->
         mode = launcher.stat().st_mode
         launcher.chmod(mode | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
 
-    print(f"{launcher.name}: written")
+    print(f"{launcher.name}: {'overwritten' if existed else 'written'}")

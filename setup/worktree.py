@@ -233,16 +233,18 @@ def main(argv: list[str] | None = None) -> None:
         print("  Expected .bare/ directory or a bare repository.", file=sys.stderr)
         sys.exit(1)
 
-    # Generate and write the script
+    # Generate and write the script (overwrites any existing)
     script_content = generate_script(planning_root, PLANNER_DIR)
     script_path = repo_path / "worktree-add.sh"
+    existed = script_path.exists()
     script_path.write_text(script_content)
 
     if platform.system() != "Windows":
         mode = script_path.stat().st_mode
         script_path.chmod(mode | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
 
-    print(f"Generated: {script_path}")
+    verb = "Overwritten" if existed else "Generated"
+    print(f"{verb}: {script_path}")
     print(f"  Planning root: {planning_root}")
     print(f"  Plugin dir:    {PLANNER_DIR}")
     print()

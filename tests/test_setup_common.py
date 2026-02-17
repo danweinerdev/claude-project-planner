@@ -147,7 +147,7 @@ class TestSetupPlanningConfig:
 
         config = json.loads(config_file.read_text())
         assert config["planningRoot"] == str(planning_root)
-        assert "Fixing" in capsys.readouterr().out
+        assert "Overwriting" in capsys.readouterr().out
 
     def test_existing_config_corrupt(self, tmp_path):
         (tmp_path / "planning-config.json").write_text("{bad json")
@@ -243,3 +243,14 @@ class TestWriteLauncher:
 
         assert "old content" not in launcher.read_text()
         assert "--add-dir" in launcher.read_text()
+
+    @pytest.mark.skipif(platform.system() == "Windows", reason="tests Unix launcher")
+    def test_reports_written_on_fresh(self, tmp_path, capsys):
+        write_launcher(tmp_path, Path("/p"), Path("/d"))
+        assert "written" in capsys.readouterr().out
+
+    @pytest.mark.skipif(platform.system() == "Windows", reason="tests Unix launcher")
+    def test_reports_overwritten_on_existing(self, tmp_path, capsys):
+        (tmp_path / "claude.sh").write_text("old")
+        write_launcher(tmp_path, Path("/p"), Path("/d"))
+        assert "overwritten" in capsys.readouterr().out

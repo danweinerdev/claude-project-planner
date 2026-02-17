@@ -1,12 +1,14 @@
 ---
 name: setup
-description: "Set up a repository for use with project-planner. Detects bare vs normal repos automatically. Triggers: /setup, setup repo, configure repo, setup worktree"
+description: "Set up or re-setup a repository for project-planner. Overwrites existing setup files. Auto-detects bare vs normal repos. Triggers: /setup, setup repo, configure repo, setup worktree, re-setup"
 ---
 
 # /setup — Configure Repository for Project Planner
 
 ## When to Use
 When you want to configure a repository (the current working directory or a specified path) to work with the project-planner plugin. This sets up `planning-config.json`, a `claude.sh` launcher script, and cleans stale symlinks.
+
+**Idempotent and safe to re-run.** Always overwrites existing setup files (`claude.sh`, `planning-config.json`, `worktree-add.sh`) with fresh versions. This is the correct way to repair or update a previously configured repo — for example after moving the planner directory, changing the planning root, or updating the project-planner plugin.
 
 Automatically detects whether the target is a **bare repo** (worktree workflow) or a **normal repo** and runs the appropriate setup.
 
@@ -48,7 +50,7 @@ Determine the plugin directory path — it is the parent of the `commands/` dire
 python3 <planner-dir>/setup-worktree.py <target-repo> [--planning-root <path>]
 ```
 
-This generates a `worktree-add.sh` script in the bare repo root. After generation, inform the user:
+This generates (or overwrites) a `worktree-add.sh` script in the bare repo root. After generation, inform the user:
 ```
 Worktree script generated. Usage:
   cd <repo> && ./worktree-add.sh <branch>
@@ -59,7 +61,7 @@ Worktree script generated. Usage:
 python3 <planner-dir>/setup-repo.py <target-repo> [--planning-root <path>]
 ```
 
-This directly writes `planning-config.json` and `claude.sh`/`claude.cmd` into the repo.
+This writes (or overwrites) `planning-config.json` and `claude.sh`/`claude.cmd` in the repo.
 
 ### 4. Report Results
 
@@ -72,7 +74,7 @@ Display what was created or updated:
 **Type:** normal repo / bare repo (worktree)
 **Planning root:** <path>
 
-### Created/Updated
+### Created/Overwritten
 - planning-config.json (normal) or worktree-add.sh (bare)
 - claude.sh launcher (normal only — worktrees get theirs via worktree-add.sh)
 - Cleaned N stale symlinks (if any)
@@ -81,6 +83,17 @@ Display what was created or updated:
 - Normal: `cd <repo> && ./claude.sh`
 - Bare: `cd <repo> && ./worktree-add.sh <branch>`
 ```
+
+## What Gets Overwritten
+
+Every run unconditionally overwrites these files with fresh versions:
+
+| Repo type | Files overwritten |
+|-----------|-------------------|
+| Normal | `claude.sh` (or `claude.cmd`), `planning-config.json` |
+| Bare (worktree) | `worktree-add.sh` |
+
+The generated `worktree-add.sh` itself also overwrites `claude.sh` and `planning-config.json` inside each worktree when run. Existing worktrees are not affected until `worktree-add.sh` is re-run on them.
 
 ## Arguments
 
