@@ -153,3 +153,12 @@ Generated via `make dashboard` (or `make open` to also open in browser). Python 
 - `designs.html` — designs index
 - `retros.html` — retrospectives index
 - `knowledge/<slug>.html`, `specs/<slug>.html`, etc. — artifact detail pages
+
+## Maintenance Rules
+
+When adding, removing, or renaming skills (`commands/`), agents (`agents/`), or modifying user-facing behavior in the setup library (`setup/`), update these files to stay in sync:
+- **`README.md`** — command/agent counts, tables, Mermaid diagrams, directory listing
+- **`CLAUDE.md`** — skill table, agent table, workflow lifecycle
+- **`commands/init.md`** — skill/agent copy lists and counts
+- **`Shared/templates/claude-md-standalone.md`** — skill table, agent table, workflow lifecycle
+- **`Shared/templates/claude-md-embedded.md`** — skill table

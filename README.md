@@ -4,7 +4,7 @@ A [Claude Code](https://docs.anthropic.com/en/docs/claude-code) plugin for struc
 
 ## How It Works
 
-Project Planner is a Claude Code **plugin**. When loaded, it registers 17 slash commands (namespaced under `/planner:*`) and 3 review agents that Claude can delegate to. All artifacts are Markdown files with YAML frontmatter — the dashboard generator reads frontmatter exclusively, so there's no brittle table parsing.
+Project Planner is a Claude Code **plugin**. When loaded, it registers 19 slash commands (namespaced under `/planner:*`) and 4 review agents that Claude can delegate to. All artifacts are Markdown files with YAML frontmatter — the dashboard generator reads frontmatter exclusively, so there's no brittle table parsing.
 
 ```mermaid
 graph LR
@@ -86,6 +86,7 @@ All commands are namespaced as `/planner:*` automatically by the plugin system.
 | `/planner:plan` | Create implementation plan | `Plans/<Name>/README.md` + phase docs |
 | `/planner:breakdown` | Add detail to plan phases | Updates phase `.md` with tasks/subtasks |
 | `/planner:implement` | Execute a plan phase | Code + updated task/phase statuses |
+| `/planner:code-review` | Review code against plan | Inline findings (drift, gaps, blind spots) |
 | `/planner:simplify` | Post-implementation cleanup | Simplified code, tests verified |
 | `/planner:debrief` | After-action notes | `Plans/<Name>/notes/<phase>.md` |
 | `/planner:retro` | Capture learnings | `Retro/YYYY-MM-DD-<slug>.md` |
@@ -99,6 +100,7 @@ All commands are namespaced as `/planner:*` automatically by the plugin system.
 | `/planner:diagram` | Generate Mermaid diagrams | `Diagrams/<subject>.md` or inline |
 | `/planner:excavate` | Progressive codebase discovery | `Research/<codebase>.md` |
 | `/planner:dashboard` | Regenerate HTML dashboard | `Dashboard/` |
+| `/planner:setup` | Configure a repo for planner | `planning-config.json`, `claude.sh`, skills/agents |
 | `/planner:status` | Quick status summary | Text output (read-only) |
 
 ## Workflow Lifecycle
@@ -114,7 +116,8 @@ graph TD
     design --> plan["/planner:plan"]
     plan --> breakdown["/planner:breakdown"]
     breakdown --> implement["/planner:implement"]
-    implement --> simplify["/planner:simplify"]
+    implement --> codereview["/planner:code-review"]
+    codereview --> simplify["/planner:simplify"]
     simplify --> debrief["/planner:debrief"]
     debrief --> retro["/planner:retro"]
 
@@ -140,7 +143,7 @@ graph TD
     class init,research,brainstorm discovery
     class specify,design definition
     class plan,breakdown execution
-    class implement,simplify implementation
+    class implement,codereview,simplify implementation
     class debrief,retro review
     class poke,tend,diagram,excavate,status,dashboard utility
 ```
@@ -150,9 +153,9 @@ graph TD
 | **Discovery** | `research`, `brainstorm`, `excavate` | Gather context, explore options, map codebases |
 | **Definition** | `specify`, `design` | Lock down requirements and architecture |
 | **Execution** | `plan`, `breakdown` | Structure work into phases, tasks, subtasks |
-| **Implementation** | `implement`, `simplify` | Build it, then clean it up |
+| **Implementation** | `implement`, `code-review`, `simplify` | Build it, verify it, then clean it up |
 | **Review** | `debrief`, `retro` | Capture what happened and what you learned |
-| **Utilities** | `poke-holes`, `tend`, `diagram`, `status`, `dashboard` | Challenge, maintain, visualize, monitor |
+| **Utilities** | `poke-holes`, `tend`, `diagram`, `setup`, `status`, `dashboard` | Challenge, maintain, visualize, configure, monitor |
 
 ## Plan Hierarchy
 
@@ -189,13 +192,14 @@ graph TD
 
 ## Agents
 
-The plugin includes 3 review agents that Claude can delegate to:
+The plugin includes 4 review agents that Claude can delegate to:
 
 | Agent | Model | Purpose |
 |-------|-------|---------|
 | `researcher` | Sonnet | Gathers context from artifacts, codebase, and web |
 | `plan-reviewer` | Sonnet | Reviews plans for completeness, feasibility, and conventions |
 | `spec-reviewer` | Haiku | Reviews specs for testability, completeness, and ambiguity |
+| `code-reviewer` | Sonnet | Reviews code changes against plan, specs, and designs |
 
 ## Deployment Modes
 
@@ -310,6 +314,7 @@ project-planner/                   # The plugin itself (not your project)
 ├── commands/                     # Slash commands → /planner:*
 │   ├── brainstorm.md
 │   ├── breakdown.md
+│   ├── code-review.md
 │   ├── dashboard.md
 │   ├── debrief.md
 │   ├── design.md
@@ -321,11 +326,13 @@ project-planner/                   # The plugin itself (not your project)
 │   ├── poke-holes.md
 │   ├── research.md
 │   ├── retro.md
+│   ├── setup.md
 │   ├── simplify.md
 │   ├── specify.md
 │   ├── status.md
 │   └── tend.md
 ├── agents/                       # Review agents
+│   ├── code-reviewer.md
 │   ├── researcher.md
 │   ├── plan-reviewer.md
 │   └── spec-reviewer.md
