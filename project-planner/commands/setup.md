@@ -43,7 +43,7 @@ For most setups the default is correct — skip the question if the user already
 
 The setup tools live in the **project-planner plugin directory** (the directory containing this command file).
 
-Determine the plugin directory path — it is the parent of the `commands/` directory where this skill file is located. You can find it by checking where the planner plugin is loaded from, or by looking for `setup-repo.py` and `setup-worktree.py` at the project-planner root.
+The plugin directory contains `commands/`, `agents/`, and `Shared/` as siblings — find it by globbing for `**/commands/research.md` and going one level up.
 
 **For a bare repo (worktree mode):**
 ```bash

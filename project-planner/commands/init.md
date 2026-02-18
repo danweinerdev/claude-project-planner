@@ -96,12 +96,12 @@ If the user provided local filesystem paths for repositories, write `planning-co
 
 ### 6. Copy Shared Files into `planningRoot`
 
-Copy from the project-planner source (this repo) into the target `planningRoot`:
+Copy from the project-planner plugin directory into the target `planningRoot`:
 - `Shared/` directory (templates, frontmatter schema)
 - `generate-dashboard.py`
 - `Makefile`
 
-Read each source file and write it to the target. The source location is the directory containing this skill's parent project-planner installation.
+Read each source file and write it to the target. The plugin directory contains `commands/`, `agents/`, and `Shared/` as siblings — find it by globbing for `**/commands/research.md` and going one level up.
 
 ### 7. Copy Skills and Agents into `projectRoot`
 
@@ -172,6 +172,7 @@ Display:
 - For standalone mode, `planningRoot` and `projectRoot` are the same directory
 
 ## Context
-- Templates: `Shared/templates/claude-md-standalone.md`, `Shared/templates/claude-md-embedded.md`
-- Schema: `Shared/frontmatter-schema.md`
+- Templates: `<plugin-dir>/Shared/templates/claude-md-standalone.md`, `<plugin-dir>/Shared/templates/claude-md-embedded.md`
+- Schema: `<plugin-dir>/Shared/frontmatter-schema.md`
 - Config: `planning-config.json`
+- The plugin directory contains `commands/`, `agents/`, and `Shared/` as siblings — find it by globbing for `**/commands/research.md` and going one level up.
