@@ -5,39 +5,44 @@ A Claude Code plugin for structured project planning with lifecycle skills, revi
 ## Directory Structure
 
 ```
-project-planner/
-├── CLAUDE.md                     # This file
-├── Makefile                      # make dashboard / make open / make clean
-├── generate-dashboard.py         # Dashboard generator (Python 3, stdlib only)
-├── setup-repo.py                 # Configure a normal repo for planner
-├── setup-worktree.py             # Generate worktree-add.sh for bare repos
-├── planning-config.json          # Planning configuration
-├── .gitignore
+project-planner/                  # Marketplace repo root
 ├── .claude-plugin/
-│   └── plugin.json               # Plugin manifest (name: "planner")
-├── setup/                        # Shared library for setup tools
-├── commands/                     # Slash commands (auto-namespaced /planner:*)
-├── agents/                       # Subagent definitions
+│   └── marketplace.json          # Marketplace manifest
+├── project-planner/              # Plugin directory (this plugin)
+│   ├── CLAUDE.md                 # This file
+│   ├── Makefile                  # make dashboard / make open / make clean
+│   ├── generate-dashboard.py     # Dashboard generator (Python 3, stdlib only)
+│   ├── setup-repo.py            # Configure a normal repo for planner
+│   ├── setup-worktree.py        # Generate worktree-add.sh for bare repos
+│   ├── planning-config.json     # Planning configuration
+│   ├── .gitignore
+│   ├── .claude-plugin/
+│   │   └── plugin.json          # Plugin manifest (name: "planner")
+│   ├── setup/                   # Shared library for setup tools
+│   ├── commands/                # Slash commands (auto-namespaced /planner:*)
+│   ├── agents/                  # Subagent definitions
+│   ├── Shared/
+│   │   ├── frontmatter-schema.md # Single source of truth for artifact metadata
+│   │   └── templates/           # Document templates
+│   ├── Research/                # Research artifacts (flat)
+│   ├── Brainstorm/              # Brainstorm artifacts (flat)
+│   ├── Specs/                   # Specs (subdirectory per feature)
+│   │   └── <feature>/README.md
+│   ├── Designs/                 # Designs (subdirectory per component)
+│   │   └── <component>/README.md
+│   ├── Plans/                   # Implementation plans
+│   │   └── <PlanName>/
+│   │       ├── README.md        # Frontmatter with phases[], overview
+│   │       ├── 01-Phase-Name.md # Frontmatter with tasks[], details
+│   │       └── notes/           # After-action notes
+│   │           └── 01-Phase-Name.md # Debrief for Phase 1
+│   ├── Retro/                   # Retrospectives
+│   │   └── YYYY-MM-DD-<slug>.md
+│   └── Dashboard/               # Generated HTML (gitignored)
 ├── .claude/
 │   └── settings.local.json
-├── Shared/
-│   ├── frontmatter-schema.md     # Single source of truth for artifact metadata
-│   └── templates/                # Document templates
-├── Research/                     # Research artifacts (flat)
-├── Brainstorm/                   # Brainstorm artifacts (flat)
-├── Specs/                        # Specs (subdirectory per feature)
-│   └── <feature>/README.md
-├── Designs/                      # Designs (subdirectory per component)
-│   └── <component>/README.md
-├── Plans/                        # Implementation plans
-│   └── <PlanName>/
-│       ├── README.md             # Frontmatter with phases[], overview
-│       ├── 01-Phase-Name.md      # Frontmatter with tasks[], details
-│       └── notes/                # After-action notes
-│           └── 01-Phase-Name.md  # Debrief for Phase 1
-├── Retro/                        # Retrospectives
-│   └── YYYY-MM-DD-<slug>.md
-└── Dashboard/                    # Generated HTML (gitignored)
+├── README.md                    # Marketplace README
+└── LICENSE
 ```
 
 ## Conventions

@@ -1,5 +1,5 @@
 test:
-	@.venv/bin/python -m pytest tests/ -v
+	@python -m pytest tests/ -v
 
 .PHONY: dashboard open clean test
 
