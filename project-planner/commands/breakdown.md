@@ -26,10 +26,11 @@ When a plan phase needs more detail: additional tasks, subtask checklists, imple
    - Read the current phase document
    - Read the plan README for overall context
 
-2. **Analyze Current State**
+2. **Load Context**
+   - Read related specs from `Specs/` for requirements that should be reflected
+   - Read related designs from `Designs/` for architectural constraints, component boundaries, and interfaces
    - Review existing tasks and subtasks
    - Identify gaps: missing tasks, vague subtasks, unclear criteria
-   - Check related specs/designs for requirements that should be reflected
 
 3. **Expand Detail**
    - Add new tasks to the phase frontmatter `tasks[]` array
@@ -66,3 +67,5 @@ Implementation guidance, edge cases, etc.
 ## Context
 - Schema: `Shared/frontmatter-schema.md`
 - Target plan: `Plans/<PlanName>/`
+- Related specs: `Specs/`
+- Related designs: `Designs/`

@@ -28,9 +28,11 @@ When a plan phase has been completed (or substantially completed) and you want t
 
 2. **Gather Information**
    - Review the phase's tasks and subtasks for completion status
+   - Read related designs from `Designs/` to identify deviations from intended architecture
+   - Read related specs from `Specs/` to assess requirements coverage
    - Ask the user about:
      - Key decisions made during implementation
-     - What deviated from the original plan
+     - What deviated from the original plan or design
      - Problems encountered and how they were resolved
      - Insights to carry forward
 
@@ -66,3 +68,5 @@ See `Shared/templates/debrief.md`:
 - Template: `Shared/templates/debrief.md`
 - Schema: `Shared/frontmatter-schema.md`
 - Target plan: `Plans/<PlanName>/`
+- Related specs: `Specs/`
+- Related designs: `Designs/`
