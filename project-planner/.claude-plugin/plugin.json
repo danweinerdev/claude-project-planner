@@ -3,6 +3,6 @@
   "version": "1.0.0",
   "description": "Structured project planning with lifecycle skills, review agents, and an HTML dashboard",
   "author": { "name": "Daniel Weiner" },
-  "repository": "https://github.com/danweinerdev/project-planner",
+  "repository": "https://github.com/danweinerdev/claude-project-planner",
   "license": "MIT"
 }

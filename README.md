@@ -75,16 +75,16 @@ Utility commands (`poke-holes`, `tend`, `diagram`, `status`, `dashboard`) can be
 
 ```bash
 # Add the marketplace
-/plugin marketplace add danweinerdev/project-planner
+/plugin marketplace add danweinerdev/claude-project-planner
 
 # Install the planner plugin
-/plugin install planner
+/plugin install planner@danweinerdev-claude-project-planner
 ```
 
 Or load it directly:
 
 ```bash
-claude --plugin-dir /path/to/project-planner/project-planner
+claude --plugin-dir /path/to/claude-project-planner/project-planner
 ```
 
 Then run `/planner:init` to bootstrap your first project.
