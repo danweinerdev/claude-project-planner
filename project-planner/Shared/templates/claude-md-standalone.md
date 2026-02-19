@@ -86,6 +86,7 @@ Always use templates from `Shared/templates/` when creating new artifacts. Repla
 | `researcher` | Sonnet | Gathers context from artifacts, codebase, and web |
 | `plan-reviewer` | Sonnet | Reviews plans for completeness, feasibility, conventions |
 | `spec-reviewer` | Haiku | Reviews specs for testability, completeness, ambiguity |
+| `code-implementer` | Opus | Implements code from plan tasks in the target codebase |
 | `code-reviewer` | Sonnet | Reviews code changes against plan, specs, and designs |
 
 ## Workflow Lifecycle

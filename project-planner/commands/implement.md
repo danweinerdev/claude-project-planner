@@ -17,7 +17,7 @@ Read `planning-config.json` (at repo root) to find the planning root:
 Run dashboard commands (`make dashboard`) from the planning root directory.
 
 ## When to Use
-When a plan is approved and you're ready to implement a phase. This skill orchestrates the implementation: working through tasks in order, updating statuses, checking off subtasks, and recording progress. It bridges the gap between `/plan` (which defines *what* to build) and `/debrief` (which captures *what happened*).
+When a plan is approved and you're ready to implement a phase. This skill **coordinates** implementation: it delegates actual code work to `code-implementer` agents, runs them in parallel where dependencies allow, triggers `code-reviewer` agents after each task, and manages the review-fix cycle. It bridges the gap between `/plan` (which defines *what* to build) and `/debrief` (which captures *what happened*).
 
 ## Process
 
@@ -44,28 +44,51 @@ When a plan is approved and you're ready to implement a phase. This skill orches
 - Review any previous phase debriefs in `Plans/<PlanName>/notes/` for context from prior phases
 - Build a mental model of what this phase needs to deliver
 
-### 4. Execute Tasks
-Work through tasks in order (respecting `depends_on`). For each task:
+### 4. Build Dependency Graph & Execute in Waves
 
-**a. Start Task**
-- Update the task's status to `in-progress` in the phase frontmatter
-- Read the task section in the phase body for subtasks and notes
+Analyze the phase's task list and `depends_on` fields to identify **waves** — groups of tasks that can run concurrently:
 
-**b. Implement**
-- Write the code, tests, and configuration needed
-- Follow patterns established in the target codebase
-- Follow any constraints from specs/designs
-- Check off subtask checklists (`- [x]`) in the phase doc as each is completed
+```
+Wave 1: Tasks with no dependencies (e.g., 1.1, 1.2, 1.3)
+Wave 2: Tasks depending only on Wave 1 tasks (e.g., 1.4 depends on 1.1)
+Wave 3: Tasks depending on Wave 2 tasks
+...
+```
+
+#### Advisory Overlap Analysis
+
+Before launching each wave, check whether two or more tasks in the same wave might touch the same files (based on their subtask descriptions and the target codebase structure). If overlap is likely, warn the user and offer to serialize those tasks instead of running them in parallel.
+
+#### For Each Wave
+
+**a. Launch implementer agents (parallel)**
+- For each task in the wave, launch a `code-implementer` agent via the Task tool
+- Each agent receives: task ID, title, subtasks, relevant spec/design context, target codebase path, any notes from prior task debriefs
+- Launch all tasks in the wave as concurrent Task tool calls
+- Update each task's status to `in-progress` in the phase frontmatter
+
+**b. Collect results**
+- As each agent completes, collect: files changed, test results, commit hash, issues
+- If an agent reports failure/blockers → mark task `blocked`, record the reason
+- If an agent reports success → proceed to review
+
+**c. Review completed tasks**
+- For each successfully completed task, invoke the `code-reviewer` agent
+- Scope the review to that task's changes (pass the file list and commit from the implementer's report)
+- The reviewer evaluates against the plan/specs/designs
+
+**d. Process review findings**
+- **Critical findings** → resume the `code-implementer` agent to address the issue, then re-review
+- **Non-critical findings** (Major/Minor/Question) → collect and present to user after the wave completes
+- Maximum 2 review-fix cycles per task. If critical issues remain after 2 cycles, mark the task as `needs-attention` and move on.
+
+**e. Finalize wave**
+- Update completed task statuses to `complete`
+- Check off subtask checklists (`- [x]`) in the phase doc
 - Update the `updated` date in the phase frontmatter
-
-**c. Validate**
-- Run the project's test suite after each task
-- If tests fail, fix the issue before moving to the next task
-- If a test failure can't be resolved after 2 attempts, mark the task as `blocked` with a note explaining why, and move to the next unblocked task
-
-**d. Complete Task**
-- When all subtasks are checked off and tests pass, update the task status to `complete`
-- Update the `updated` date
+- Present non-critical findings summary to user
+- Ask user for decisions on any findings requiring human judgment
+- Proceed to next wave
 
 ### 5. Phase Completion
 Once all tasks are complete (or all remaining tasks are blocked):
@@ -73,7 +96,7 @@ Once all tasks are complete (or all remaining tasks are blocked):
 **All tasks complete:**
 - Update phase status to `complete` in both the phase doc and plan README
 - Update `updated` dates
-- Suggest running `/code-review` to verify alignment with the plan, then `/debrief` to capture what happened
+- Suggest running `/debrief` to capture what happened
 
 **Some tasks blocked:**
 - Keep phase status as `in-progress`
@@ -99,7 +122,7 @@ Phase docs contain subtask checklists under each task heading:
 - [ ] Write unit tests
 ```
 
-As you complete each subtask, check it off:
+As agents complete each subtask, the coordinator checks them off:
 ```markdown
 - [x] Implement the data model
 ```
@@ -107,28 +130,31 @@ As you complete each subtask, check it off:
 This gives real-time progress visibility in the dashboard.
 
 ### Handling Dependencies
-Tasks may have `depends_on` in their frontmatter. Process tasks in dependency order:
-1. Tasks with no dependencies first
-2. Tasks whose dependencies are all `complete` next
-3. Skip tasks whose dependencies are `blocked` or `in-progress`
+Tasks may have `depends_on` in their frontmatter. The coordinator builds waves from these:
+1. Wave 1: Tasks with no dependencies
+2. Wave 2: Tasks whose dependencies are all in Wave 1 (and will be complete)
+3. Wave 3: Tasks whose dependencies are all in Waves 1-2
+4. Skip tasks whose dependencies are `blocked` or `deferred`
 
 ### Resuming Interrupted Work
 If a phase is already `in-progress` (from a previous session):
 - Read the current state of all tasks
-- Identify which tasks are `complete`, `in-progress`, or `planned`
-- Resume from the first non-complete task
-- Don't redo completed work
+- Skip `complete` tasks
+- Resume `in-progress` tasks (re-launch their agents)
+- Continue with `planned` tasks in dependency order
 
 ## Escalation Rules
 
 These conditions require stopping and asking the user:
 
-1. **Blocked task**: A task can't be completed after 2 attempts. Present the issue and ask for guidance.
-2. **Spec ambiguity**: The spec or design doesn't cover a case you've encountered. Ask the user to clarify rather than guessing.
+1. **Blocked task**: An agent can't complete a task after 2 attempts. Present the issue and ask for guidance.
+2. **Spec ambiguity**: The spec or design doesn't cover a case encountered during implementation. Ask the user to clarify rather than guessing.
 3. **Scope expansion**: Implementation reveals work not captured in the plan. Flag it — don't silently expand scope.
 4. **Destructive action**: Any action that would delete data, modify production config, or affect shared systems needs explicit approval.
+5. **Unresolvable review findings**: A `code-reviewer` flags critical issues that the implementer can't resolve after 2 review-fix cycles. Escalate to user.
+6. **File conflicts**: If parallel tasks in a wave produce conflicting changes to the same files, present the conflict to the user before proceeding.
 
-Everything else is autonomous. Don't ask for confirmation between tasks.
+Everything else is autonomous. Don't ask for confirmation between waves.
 
 ## Output
 Updates existing plan artifacts in place:

@@ -11,7 +11,7 @@ Project Planner gives you project management, research, architecture, implementa
 - **Architecture tools** — specs and designs with review agents that check for gaps, ambiguity, and feasibility
 - **Implementation workflow** — execute plans phase-by-phase, review code against the plan, simplify after shipping
 - **Visualization** — a static HTML dashboard generated from artifact metadata, no external dependencies
-- **Built-in review** — 4 AI agents (researcher, plan-reviewer, spec-reviewer, code-reviewer) that Claude delegates to automatically
+- **Built-in review** — 5 AI agents (researcher, plan-reviewer, spec-reviewer, code-implementer, code-reviewer) that Claude delegates to automatically
 
 ## Workflow
 
@@ -97,7 +97,7 @@ See the [plugin README](./project-planner/README.md) for the full command refere
 
 | Plugin | Commands | Agents | Description |
 |--------|----------|--------|-------------|
-| [planner](./project-planner/) | 19 | 4 | Full SDLC — research, specs, designs, plans, implementation, code review, dashboard |
+| [planner](./project-planner/) | 19 | 5 | Full SDLC — research, specs, designs, plans, implementation, code review, dashboard |
 
 ## License
 

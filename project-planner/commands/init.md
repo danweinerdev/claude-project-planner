@@ -112,7 +112,7 @@ Copy all skills from the project-planner source:
 - `init.md`, `plan.md`, `research.md`, `retro.md`, `specify.md`, `status.md`
 
 Copy all agents:
-- `code-reviewer.md`, `researcher.md`, `plan-reviewer.md`, `spec-reviewer.md`
+- `code-implementer.md`, `code-reviewer.md`, `researcher.md`, `plan-reviewer.md`, `spec-reviewer.md`
 
 ### 8. Write or Append CLAUDE.md
 
@@ -153,7 +153,7 @@ Display:
 ### Created
 - Directory structure (Plans/, Research/, Brainstorm/, Specs/, Designs/, Retro/)
 - planning-config.json
-- Skills (12) and agents (4)
+- Skills (12) and agents (5)
 - CLAUDE.md
 - generate-dashboard.py + Makefile
 
