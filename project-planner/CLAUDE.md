@@ -10,7 +10,7 @@ project-planner/                  # Marketplace repo root
 │   └── marketplace.json          # Marketplace manifest
 ├── project-planner/              # Plugin directory (this plugin)
 │   ├── CLAUDE.md                 # This file
-│   ├── Makefile                  # make dashboard / make open / make clean
+│   ├── Makefile                  # make dashboard / make open / make clean / make bump-*
 │   ├── generate-dashboard.py     # Dashboard generator (Python 3, stdlib only)
 │   ├── setup-repo.py            # Configure a normal repo for planner
 │   ├── setup-worktree.py        # Generate worktree-add.sh for bare repos
@@ -168,3 +168,15 @@ When adding, removing, or renaming skills (`commands/`), agents (`agents/`), or 
 - **`commands/init.md`** — skill/agent copy lists and counts
 - **`Shared/templates/claude-md-standalone.md`** — skill table, agent table, workflow lifecycle
 - **`Shared/templates/claude-md-embedded.md`** — skill table
+
+## Versioning
+
+The plugin uses `vMAJOR.MINOR.PATCH` semver. The version is declared in both `plugin.json` and `marketplace.json` and must stay in sync. Claude Code caches plugins by version — **users will not see changes unless the version is bumped**.
+
+| Bump | When | Command |
+|------|------|---------|
+| **patch** | Bug fix, wording tweak, small correction | `make bump-patch` |
+| **minor** | New or completed feature, new skill, meaningful behavior change | `make bump-minor` |
+| **major** | Breaking changes to artifact format, config schema, or skill interface | `make bump-major` |
+
+Each `make bump-*` target updates both JSON files, creates a commit (`v1.2.3`), and adds a git tag (`v1.2.3`). Always bump before pushing a release.
