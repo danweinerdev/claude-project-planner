@@ -34,6 +34,7 @@ When you need to break down a feature, project, or initiative into an actionable
    - Determine the plan name (PascalCase, no spaces)
    - Break work into 3-7 phases, each with a clear deliverable
    - Each phase gets 2-6 tasks
+   - **Every task must have a `verification` field** — a specific answer to "how do we know this work is good and complete?" (e.g., "tests pass for X", "endpoint returns Y", "config validated by Z"). Vague criteria like "works correctly" are not acceptable.
    - Identify dependencies between phases
    - Present the structure to the user for feedback before writing files
 
@@ -42,7 +43,7 @@ When you need to break down a feature, project, or initiative into an actionable
    - Create numbered phase docs using `Shared/templates/plan-phase.md`
    - Create `Plans/<PlanName>/notes/` directory for future debriefs
    - Populate frontmatter with all phase/task metadata
-   - Write body content with task details, subtask checklists, and acceptance criteria
+   - Write body content with task details, subtask checklists, verification criteria, and acceptance criteria
 
 4. **Review**
    - Invoke the `plan-reviewer` agent to review the complete plan

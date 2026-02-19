@@ -19,6 +19,7 @@ You implement code from plan tasks in the target codebase. You receive a single 
 You receive from the coordinator:
 - **Task ID and title** — which task you're implementing
 - **Subtasks** — the checklist of work items
+- **Verification criteria** — how we know this task is good and complete
 - **Spec/design context** — relevant excerpts from specs and designs
 - **Target codebase path** — where to write code
 - **Prior debrief notes** — lessons from earlier phases (if any)
@@ -55,6 +56,7 @@ You receive from the coordinator:
   - Test patterns and naming
 
 ### 4. Validate
+- Check the task's **verification criteria** — confirm the implementation satisfies them
 - Run the project's test suite
 - Fix any failures before reporting back
 - If tests fail and you can't resolve after 2 attempts, report the failure to the coordinator
@@ -70,6 +72,7 @@ Report back to the coordinator with:
 - **Status**: `success` or `blocked`
 - **Files changed**: list of files created/modified
 - **Tests**: which tests ran, pass/fail count
+- **Verification**: whether the verification criteria are satisfied (and how)
 - **Commit hash**: the commit SHA
 - **Issues/blockers**: any problems encountered (empty if none)
 
@@ -88,6 +91,7 @@ In these cases, report the issue to the coordinator with a clear description of 
 
 Before reporting success, verify:
 - [ ] All subtasks implemented
+- [ ] Verification criteria satisfied
 - [ ] Tests written and passing
 - [ ] Changes committed with proper message format
 - [ ] No unresolved TODO/FIXME left from this task

@@ -75,12 +75,24 @@ tasks:
   - id: "1.1"
     title: "Task title"
     status: planned
+    verification: "How we know this task is good and complete"
   - id: "1.2"
     title: "Task title"
     status: planned
     depends_on: ["1.1"]
+    verification: "Specific criteria to confirm correctness"
 ---
 ```
+
+#### Task Fields
+
+| Field | Required | Description |
+|-------|----------|-------------|
+| `id` | yes | Task identifier (e.g., "1.1") |
+| `title` | yes | Human-readable task title |
+| `status` | yes | Task status (see status values above) |
+| `depends_on` | no | List of task IDs this task depends on |
+| `verification` | yes | How we know the work is good and complete — specific, observable criteria |
 
 Body contains task detail sections keyed by task ID as headings:
 

@@ -44,7 +44,40 @@ When a plan is approved and you're ready to implement a phase. This skill **coor
 - Review any previous phase debriefs in `Plans/<PlanName>/notes/` for context from prior phases
 - Build a mental model of what this phase needs to deliver
 
-### 4. Build Dependency Graph & Execute in Waves
+### 4. Verify Task Readiness
+
+Before executing any tasks, audit every task in the phase for a `verification` field in its frontmatter entry. Every task must answer the question: **"How do we know this work is good and complete?"**
+
+Scan the phase's `tasks[]` array and separate tasks into two lists:
+- **Ready**: tasks that have a non-empty `verification` field with specific, observable criteria
+- **Missing verification**: tasks where `verification` is absent, empty, or vague (e.g., "works correctly", "done", "it works")
+
+**If all tasks are ready** — proceed to step 5.
+
+**If any tasks are missing verification** — present the list to the user:
+
+```
+## Verification Criteria Missing
+
+The following tasks do not have verification criteria — there's no defined
+way to know when the work is good and complete:
+
+- **1.2: Add user authentication** — no `verification` field
+- **1.4: Set up logging** — no `verification` field
+
+Each task needs a specific answer to "how do we know this is done?"
+Examples: "login returns a JWT and refresh flow works", "logs appear
+in CloudWatch within 5s of a request"
+```
+
+Then ask the user to choose:
+1. **Add criteria now** — pause and add `verification` to each flagged task before continuing
+2. **Proceed anyway** — acknowledge the gap and implement without verification gates for those tasks
+3. **Abort** — stop implementation to fix the plan first
+
+If the user chooses option 1, update each task's `verification` field in the phase frontmatter, then proceed. If the user chooses option 2, proceed but include a warning in the wave summary for each task that lacked verification. If the user chooses option 3, stop.
+
+### 5. Build Dependency Graph & Execute in Waves
 
 Analyze the phase's task list and `depends_on` fields to identify **waves** — groups of tasks that can run concurrently:
 
@@ -90,7 +123,7 @@ Before launching each wave, check whether two or more tasks in the same wave mig
 - Ask user for decisions on any findings requiring human judgment
 - Proceed to next wave
 
-### 5. Phase Completion
+### 6. Phase Completion
 Once all tasks are complete (or all remaining tasks are blocked):
 
 **All tasks complete:**
@@ -106,7 +139,7 @@ Once all tasks are complete (or all remaining tasks are blocked):
   - Defer blocked tasks and mark phase as `complete`
   - Mark phase as `blocked`
 
-### 6. Regenerate Dashboard
+### 7. Regenerate Dashboard
 - Run `make dashboard` from the planning root to update the HTML dashboard
 
 ## Task Execution Details
