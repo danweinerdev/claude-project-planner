@@ -43,7 +43,7 @@ For most setups the default is correct — skip the question if the user already
 
 The setup tools live in the **project-planner plugin directory** (the directory containing this command file).
 
-The plugin directory contains `commands/`, `agents/`, and `Shared/` as siblings — find it by globbing for `**/commands/research.md` and going one level up.
+The plugin directory contains `commands/`, `agents/`, and `Shared/` as siblings — find it by globbing for `**/commands/research.md` in both the current directory and `~/.claude/plugins/cache/`, then go one level up.
 
 **For a bare repo (worktree mode):**
 ```bash

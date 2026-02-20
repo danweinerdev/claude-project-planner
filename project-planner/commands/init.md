@@ -98,7 +98,7 @@ Copy from the project-planner plugin directory into the target `planningRoot`:
 - `generate-dashboard.py`
 - `Makefile`
 
-Read each source file and write it to the target. The plugin directory contains `commands/`, `agents/`, and `Shared/` as siblings — find it by globbing for `**/commands/research.md` and going one level up.
+Read each source file and write it to the target. The plugin directory contains `commands/`, `agents/`, and `Shared/` as siblings — find it by globbing for `**/commands/research.md` in both the current directory and `~/.claude/plugins/cache/`, then go one level up.
 
 ### 7. Write or Append CLAUDE.md
 
@@ -158,4 +158,4 @@ Display:
 - Templates: `<plugin-dir>/Shared/templates/claude-md-standalone.md`, `<plugin-dir>/Shared/templates/claude-md-embedded.md`
 - Schema: `<plugin-dir>/Shared/frontmatter-schema.md`
 - Config: `planning-config.json`
-- The plugin directory contains `commands/`, `agents/`, and `Shared/` as siblings — find it by globbing for `**/commands/research.md` and going one level up.
+- The plugin directory contains `commands/`, `agents/`, and `Shared/` as siblings — find it by globbing for `**/commands/research.md` in both the current directory and `~/.claude/plugins/cache/`, then go one level up.
