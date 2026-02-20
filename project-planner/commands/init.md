@@ -30,13 +30,10 @@ Ask the user:
 
 ### 2. Compute Paths
 
-Determine two key paths:
+Determine the key path:
 - **`planningRoot`**: Where artifact directories and `planning-config.json` live
   - Standalone: the repo root (path = `"."` in config)
   - Embedded: the subdirectory (path = subdirectory name in config, e.g., `"Planning"`)
-- **`projectRoot`**: Where `.claude/` lives (required for skill/agent discovery)
-  - Standalone: same as `planningRoot`
-  - Embedded: the parent project root (contains `.claude/`)
 
 ### 3. Create Directory Structure
 
@@ -103,25 +100,14 @@ Copy from the project-planner plugin directory into the target `planningRoot`:
 
 Read each source file and write it to the target. The plugin directory contains `commands/`, `agents/`, and `Shared/` as siblings — find it by globbing for `**/commands/research.md` and going one level up.
 
-### 7. Copy Skills and Agents into `projectRoot`
-
-Skills go to `<projectRoot>/.claude/skills/` and agents to `<projectRoot>/.claude/agents/`. These MUST be under `.claude/` for Claude Code skill discovery.
-
-Copy all skills from the project-planner source:
-- `brainstorm.md`, `breakdown.md`, `code-review.md`, `dashboard.md`, `debrief.md`, `design.md`
-- `init.md`, `plan.md`, `research.md`, `retro.md`, `specify.md`, `status.md`
-
-Copy all agents:
-- `code-implementer.md`, `code-reviewer.md`, `researcher.md`, `plan-reviewer.md`, `spec-reviewer.md`
-
-### 8. Write or Append CLAUDE.md
+### 7. Write or Append CLAUDE.md
 
 At `<projectRoot>/CLAUDE.md`:
 
 - **Standalone**: Write a full CLAUDE.md using `Shared/templates/claude-md-standalone.md`. Replace `{{TITLE}}` with the project title, `{{DESCRIPTION}}` with the description, and `{{PLANNING_ROOT}}` with the planning root name.
 - **Embedded**: If CLAUDE.md already exists, **append** the content from `Shared/templates/claude-md-embedded.md`. If it doesn't exist, create it with a basic header plus the embedded template. Replace `{{PLANNING_ROOT}}` with the subdirectory name.
 
-### 9. Set Up `.gitignore`
+### 8. Set Up `.gitignore`
 
 At `<planningRoot>/.gitignore` (standalone) or append to `<projectRoot>/.gitignore` (embedded):
 
@@ -140,7 +126,7 @@ __pycache__/
 
 For embedded mode, prefix Dashboard path: `<planningRoot>/Dashboard/`.
 
-### 10. Print Summary
+### 9. Print Summary
 
 Display:
 ```
@@ -153,7 +139,6 @@ Display:
 ### Created
 - Directory structure (Plans/, Research/, Brainstorm/, Specs/, Designs/, Retro/)
 - planning-config.json
-- Skills (12) and agents (5)
 - CLAUDE.md
 - generate-dashboard.py + Makefile
 
@@ -166,10 +151,8 @@ Display:
 
 ## Key Rules
 - `generate-dashboard.py` and `Makefile` always live inside `planningRoot`
-- Skills and agents always live in `<projectRoot>/.claude/` (Claude Code requirement)
 - `planning-config.json` lives in `planningRoot`
-- For embedded mode, `planningRoot` is a subdirectory of `projectRoot`
-- For standalone mode, `planningRoot` and `projectRoot` are the same directory
+- Commands and agents are provided by the marketplace plugin — do not copy them into `.claude/`
 
 ## Context
 - Templates: `<plugin-dir>/Shared/templates/claude-md-standalone.md`, `<plugin-dir>/Shared/templates/claude-md-embedded.md`

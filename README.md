@@ -81,12 +81,6 @@ Utility commands (`poke-holes`, `tend`, `diagram`, `status`, `dashboard`) can be
 /plugin install planner@danweinerdev-claude-project-planner
 ```
 
-Or load it directly:
-
-```bash
-claude --plugin-dir /path/to/claude-project-planner/project-planner
-```
-
 Then run `/planner:init` to bootstrap your first project.
 
 ## Documentation

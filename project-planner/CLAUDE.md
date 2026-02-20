@@ -165,7 +165,7 @@ Generated via `make dashboard` (or `make open` to also open in browser). Python 
 When adding, removing, or renaming skills (`commands/`), agents (`agents/`), or modifying user-facing behavior in the setup library (`setup/`), update these files to stay in sync:
 - **`README.md`** — command/agent counts, tables, Mermaid diagrams, directory listing
 - **`CLAUDE.md`** — skill table, agent table, workflow lifecycle
-- **`commands/init.md`** — skill/agent copy lists and counts
+- **`commands/init.md`** — section numbering, shared-file copy lists
 - **`Shared/templates/claude-md-standalone.md`** — skill table, agent table, workflow lifecycle
 - **`Shared/templates/claude-md-embedded.md`** — skill table
 

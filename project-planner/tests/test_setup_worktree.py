@@ -91,7 +91,7 @@ class TestGenerateScript:
     def test_launcher_uses_correct_paths(self):
         script = generate_script(Path("/planning"), Path("/planner"))
         assert '--add-dir="/planning"' in script
-        assert '--plugin-dir="/planner"' in script
+        assert "--plugin-dir" not in script
 
     def test_contains_usage_function(self):
         script = generate_script(Path("/p"), Path("/d"))
@@ -103,7 +103,8 @@ class TestGenerateScript:
         assert "Step 2" in script  # Remote tracking
         assert "Step 3" in script  # planning-config.json
         assert "Step 4" in script  # Stale symlinks
-        assert "Step 5" in script  # claude.sh
+        assert "Step 5" in script  # Stale copies
+        assert "Step 6" in script  # claude.sh
 
     def test_handles_branch_creation(self):
         script = generate_script(Path("/p"), Path("/d"))
@@ -256,7 +257,7 @@ class TestGeneratedScriptExecution:
 
         launcher = (bare_repo / "main" / "claude.sh").read_text()
         assert "--add-dir=" in launcher
-        assert "--plugin-dir=" in launcher
+        assert "--plugin-dir" not in launcher
 
     def test_usage_on_no_args(self, bare_repo):
         main([str(bare_repo)])

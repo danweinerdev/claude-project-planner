@@ -11,9 +11,6 @@
 ├── generate-dashboard.py         # Dashboard generator (Python 3, stdlib only)
 ├── planning-config.json          # Planning configuration
 ├── .gitignore
-├── .claude/
-│   ├── skills/                   # Slash-command skills
-│   └── agents/                   # Subagent definitions
 ├── Shared/
 │   ├── frontmatter-schema.md     # Single source of truth for artifact metadata
 │   └── templates/                # Document templates

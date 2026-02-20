@@ -6,10 +6,10 @@ from pathlib import Path
 
 from .common import (
     PLANNER_DIR,
+    clean_stale_copies,
     clean_stale_symlinks,
     resolve_repo_path,
     setup_planning_config,
-    sync_skills_and_agents,
     write_launcher,
 )
 
@@ -47,24 +47,21 @@ def main(argv: list[str] | None = None) -> None:
     # 2. Clean stale symlinks
     cleaned = clean_stale_symlinks(repo_path, PLANNER_DIR)
     if cleaned:
-        print(f"Cleaned {cleaned} stale planner symlinks (now using --add-dir)")
+        print(f"Cleaned {cleaned} stale planner symlinks")
 
-    # 3. Sync skills and agents
-    created, overwritten = sync_skills_and_agents(repo_path, PLANNER_DIR)
-    if created or overwritten:
-        print(f"Skills & agents: {created} created, {overwritten} updated")
-    else:
-        print("Skills & agents: up to date")
+    # 3. Clean stale skill/agent copies
+    removed = clean_stale_copies(repo_path, PLANNER_DIR)
+    if removed:
+        print(f"Cleaned {removed} stale planner file copies (now provided by marketplace plugin)")
 
     # 4. Launcher script
-    write_launcher(repo_path, planning_root, PLANNER_DIR)
+    write_launcher(repo_path, planning_root)
 
     # Summary
     print()
     print(f"=== Repo configured: {repo_path.name} ===")
     print(f"  Path:     {repo_path}")
     print(f"  Planning: {planning_root}")
-    print(f"  Plugin:   {PLANNER_DIR}")
     print()
     launcher = "claude.cmd" if platform.system() == "Windows" else "./claude.sh"
     print(f"  cd {repo_path} && {launcher}")

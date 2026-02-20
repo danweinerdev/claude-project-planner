@@ -90,16 +90,15 @@ def clean_stale_symlinks(target_path: Path, planner_dir: Path) -> int:
     return cleaned
 
 
-def sync_skills_and_agents(target_path: Path, planner_dir: Path) -> tuple[int, int]:
-    """Copy skills and agents from planner to target repo's .claude/ directory.
+def clean_stale_copies(target_path: Path, planner_dir: Path) -> int:
+    """Remove planner skill/agent file copies from .claude/skills/ and .claude/agents/.
 
-    Copies commands/*.md → .claude/skills/ and agents/*.md → .claude/agents/.
-    Overwrites existing files to ensure they stay current.
+    Identifies planner files by matching filenames against commands/*.md and
+    agents/*.md in the planner dir. Removes empty directories after cleanup.
 
-    Returns (created, overwritten) counts.
+    Returns count of removed files.
     """
-    created = 0
-    overwritten = 0
+    removed = 0
 
     mappings = [
         (planner_dir / "commands", target_path / ".claude" / "skills"),
@@ -107,22 +106,23 @@ def sync_skills_and_agents(target_path: Path, planner_dir: Path) -> tuple[int, i
     ]
 
     for source_dir, target_dir in mappings:
-        if not source_dir.is_dir():
+        if not target_dir.is_dir():
             continue
-        target_dir.mkdir(parents=True, exist_ok=True)
-        for source_file in sorted(source_dir.glob("*.md")):
-            dest_file = target_dir / source_file.name
-            existed = dest_file.exists()
-            dest_file.write_text(source_file.read_text())
-            if existed:
-                overwritten += 1
-            else:
-                created += 1
+        planner_names = {f.name for f in source_dir.glob("*.md")} if source_dir.is_dir() else set()
+        for candidate in sorted(target_dir.glob("*.md")):
+            if candidate.name in planner_names and not candidate.is_symlink():
+                candidate.unlink()
+                removed += 1
+        # Remove empty directory
+        try:
+            target_dir.rmdir()
+        except OSError:
+            pass  # not empty, that's fine
 
-    return created, overwritten
+    return removed
 
 
-def write_launcher(target_path: Path, planning_root: Path, planner_dir: Path) -> None:
+def write_launcher(target_path: Path, planning_root: Path) -> None:
     """Write a cross-platform Claude launcher script. Overwrites any existing launcher."""
     is_windows = platform.system() == "Windows"
     launcher = target_path / ("claude.cmd" if is_windows else "claude.sh")
@@ -131,17 +131,16 @@ def write_launcher(target_path: Path, planning_root: Path, planner_dir: Path) ->
     if is_windows:
         lines = [
             "@echo off",
-            f'claude --add-dir="{planning_root}" --plugin-dir="{planner_dir}" %*',
+            f'claude --add-dir="{planning_root}" %*',
             "",
         ]
         launcher.write_text("\r\n".join(lines))
     else:
         lines = [
             "#!/usr/bin/env bash",
-            "# Launch Claude Code with planning context and planner plugin",
+            "# Launch Claude Code with planning context",
             "exec claude \\",
             f'    --add-dir="{planning_root}" \\',
-            f'    --plugin-dir="{planner_dir}" \\',
             '    "$@"',
             "",
         ]

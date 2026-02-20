@@ -76,9 +76,22 @@ class TestSetupRepoMain:
             link.symlink_to(fake_target)
 
             main([str(repo)])
-            # Symlink should be replaced by a regular file copy
+            # Symlink should be removed (no longer replaced by a copy)
             assert not link.is_symlink()
-            assert link.exists()  # now a regular file from sync
+            assert not link.exists()
+
+    def test_cleans_stale_copies(self, repo, capsys):
+        from setup.common import PLANNER_DIR
+
+        # Create stale file copies matching planner filenames
+        skills = repo / ".claude" / "skills"
+        skills.mkdir(parents=True)
+        (skills / "research.md").write_text("old copy")
+
+        main([str(repo)])
+        output = capsys.readouterr().out
+        assert "stale planner file copies" in output
+        assert not (skills / "research.md").exists()
 
     def test_nonexistent_repo_exits(self):
         with pytest.raises(SystemExit):

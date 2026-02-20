@@ -172,34 +172,31 @@ if [[ $CLEANED -gt 0 ]]; then
 fi
 
 # --------------------------------------------------------------------------
-# Step 5: Sync skills and agents from planner
+# Step 5: Clean stale planner skill/agent copies
 # --------------------------------------------------------------------------
-CREATED=0
-UPDATED=0
-
+STALE=0
 for mapping in "commands:.claude/skills" "agents:.claude/agents"; do
     SRC_DIR="$PLANNER_DIR/${{mapping%%:*}}"
     DST_DIR="$WT_PATH/${{mapping##*:}}"
 
+    [[ -d "$DST_DIR" ]] || continue
     [[ -d "$SRC_DIR" ]] || continue
-    mkdir -p "$DST_DIR"
 
     for src_file in "$SRC_DIR"/*.md; do
         [[ -e "$src_file" ]] || continue
         dst_file="$DST_DIR/$(basename "$src_file")"
-        if [[ -f "$dst_file" ]]; then
-            UPDATED=$((UPDATED + 1))
-        else
-            CREATED=$((CREATED + 1))
+        if [[ -f "$dst_file" && ! -L "$dst_file" ]]; then
+            rm "$dst_file"
+            STALE=$((STALE + 1))
         fi
-        cp "$src_file" "$dst_file"
     done
+
+    # Remove empty directory
+    rmdir "$DST_DIR" 2>/dev/null || true
 done
 
-if [[ $((CREATED + UPDATED)) -gt 0 ]]; then
-    echo "Skills & agents: $CREATED created, $UPDATED updated"
-else
-    echo "Skills & agents: up to date"
+if [[ $STALE -gt 0 ]]; then
+    echo "Cleaned $STALE stale planner file copies (now provided by marketplace plugin)"
 fi
 
 # --------------------------------------------------------------------------
@@ -208,10 +205,9 @@ fi
 CLAUDE_SH="$WT_PATH/claude.sh"
 cat > "$CLAUDE_SH" << 'LAUNCHER'
 #!/usr/bin/env bash
-# Launch Claude Code with planning context and planner plugin
+# Launch Claude Code with planning context
 exec claude \\
     --add-dir="{planning_root}" \\
-    --plugin-dir="{planner_dir}" \\
     "$@"
 LAUNCHER
 chmod +x "$CLAUDE_SH"
@@ -277,6 +273,5 @@ def main(argv: list[str] | None = None) -> None:
     verb = "Overwritten" if existed else "Generated"
     print(f"{verb}: {script_path}")
     print(f"  Planning root: {planning_root}")
-    print(f"  Plugin dir:    {PLANNER_DIR}")
     print()
     print(f"Usage: cd {repo_path} && ./worktree-add.sh <branch>")

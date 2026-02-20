@@ -11,6 +11,7 @@ import pytest
 
 from setup.common import (
     PLANNER_DIR,
+    clean_stale_copies,
     clean_stale_symlinks,
     load_json,
     resolve_repo_path,
@@ -201,20 +202,94 @@ class TestCleanStaleSymlinks:
         assert link.exists()
 
 
+class TestCleanStaleCopies:
+    def test_no_claude_dir(self, tmp_path):
+        planner = tmp_path / "planner"
+        planner.mkdir()
+        (planner / "commands").mkdir()
+        assert clean_stale_copies(tmp_path, planner) == 0
+
+    def test_removes_planner_copies(self, tmp_path):
+        # Set up planner with commands and agents
+        planner = tmp_path / "planner"
+        (planner / "commands").mkdir(parents=True)
+        (planner / "agents").mkdir(parents=True)
+        (planner / "commands" / "research.md").write_text("skill")
+        (planner / "commands" / "plan.md").write_text("skill")
+        (planner / "agents" / "researcher.md").write_text("agent")
+
+        # Set up target with matching copies
+        repo = tmp_path / "repo"
+        skills = repo / ".claude" / "skills"
+        agents = repo / ".claude" / "agents"
+        skills.mkdir(parents=True)
+        agents.mkdir(parents=True)
+        (skills / "research.md").write_text("old copy")
+        (skills / "plan.md").write_text("old copy")
+        (agents / "researcher.md").write_text("old copy")
+
+        removed = clean_stale_copies(repo, planner)
+        assert removed == 3
+        assert not (skills / "research.md").exists()
+        assert not (skills / "plan.md").exists()
+        assert not (agents / "researcher.md").exists()
+
+    def test_keeps_non_planner_files(self, tmp_path):
+        planner = tmp_path / "planner"
+        (planner / "commands").mkdir(parents=True)
+        (planner / "commands" / "research.md").write_text("skill")
+
+        repo = tmp_path / "repo"
+        skills = repo / ".claude" / "skills"
+        skills.mkdir(parents=True)
+        (skills / "my-custom-skill.md").write_text("custom")
+
+        removed = clean_stale_copies(repo, planner)
+        assert removed == 0
+        assert (skills / "my-custom-skill.md").exists()
+
+    def test_removes_empty_dirs(self, tmp_path):
+        planner = tmp_path / "planner"
+        (planner / "commands").mkdir(parents=True)
+        (planner / "commands" / "research.md").write_text("skill")
+
+        repo = tmp_path / "repo"
+        skills = repo / ".claude" / "skills"
+        skills.mkdir(parents=True)
+        (skills / "research.md").write_text("old copy")
+
+        clean_stale_copies(repo, planner)
+        assert not skills.exists()
+
+    def test_keeps_nonempty_dirs(self, tmp_path):
+        planner = tmp_path / "planner"
+        (planner / "commands").mkdir(parents=True)
+        (planner / "commands" / "research.md").write_text("skill")
+
+        repo = tmp_path / "repo"
+        skills = repo / ".claude" / "skills"
+        skills.mkdir(parents=True)
+        (skills / "research.md").write_text("old copy")
+        (skills / "custom.md").write_text("keep me")
+
+        clean_stale_copies(repo, planner)
+        assert skills.is_dir()
+        assert (skills / "custom.md").exists()
+
+
 class TestWriteLauncher:
     @pytest.mark.skipif(platform.system() == "Windows", reason="tests Unix launcher")
     def test_unix_launcher(self, tmp_path):
         planning_root = Path("/planning")
-        planner_dir = Path("/planner")
 
-        write_launcher(tmp_path, planning_root, planner_dir)
+        write_launcher(tmp_path, planning_root)
 
         launcher = tmp_path / "claude.sh"
         assert launcher.exists()
         content = launcher.read_text()
         assert "#!/usr/bin/env bash" in content
         assert '--add-dir="/planning"' in content
-        assert '--plugin-dir="/planner"' in content
+        assert "--plugin-dir" not in content
         assert '"$@"' in content
         # Check executable
         assert launcher.stat().st_mode & stat.S_IXUSR
@@ -224,33 +299,33 @@ class TestWriteLauncher:
         mock_platform.system.return_value = "Windows"
 
         planning_root = Path("C:\\planning")
-        planner_dir = Path("C:\\planner")
 
-        write_launcher(tmp_path, planning_root, planner_dir)
+        write_launcher(tmp_path, planning_root)
 
         launcher = tmp_path / "claude.cmd"
         assert launcher.exists()
         content = launcher.read_text()
         assert "@echo off" in content
         assert "claude" in content
+        assert "--plugin-dir" not in content
         assert "%*" in content
 
     def test_overwrites_existing(self, tmp_path):
         launcher = tmp_path / "claude.sh"
         launcher.write_text("old content")
 
-        write_launcher(tmp_path, Path("/new"), Path("/planner"))
+        write_launcher(tmp_path, Path("/new"))
 
         assert "old content" not in launcher.read_text()
         assert "--add-dir" in launcher.read_text()
 
     @pytest.mark.skipif(platform.system() == "Windows", reason="tests Unix launcher")
     def test_reports_written_on_fresh(self, tmp_path, capsys):
-        write_launcher(tmp_path, Path("/p"), Path("/d"))
+        write_launcher(tmp_path, Path("/p"))
         assert "written" in capsys.readouterr().out
 
     @pytest.mark.skipif(platform.system() == "Windows", reason="tests Unix launcher")
     def test_reports_overwritten_on_existing(self, tmp_path, capsys):
         (tmp_path / "claude.sh").write_text("old")
-        write_launcher(tmp_path, Path("/p"), Path("/d"))
+        write_launcher(tmp_path, Path("/p"))
         assert "overwritten" in capsys.readouterr().out
