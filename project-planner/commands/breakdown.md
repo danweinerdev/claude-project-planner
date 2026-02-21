@@ -35,6 +35,7 @@ When a plan phase needs more detail: additional tasks, subtask checklists, imple
 3. **Expand Detail**
    - Add new tasks to the phase frontmatter `tasks[]` array
    - **Every task must have a `verification` field** — a specific answer to "how do we know this work is good and complete?" (e.g., "unit tests pass for parser module", "API returns 200 with valid payload", "migration runs idempotently"). Audit existing tasks and add `verification` to any that lack it.
+   - **Structural verification:** Read `Shared/language-verification.md` and detect the project language. Include the appropriate structural checks (sanitizers, static analysis, type checking) in task verification fields — either per-task or as a dedicated final verification task. These run during implementation, not as deferred acceptance criteria.
    - Add subtask checklists (`- [ ]`) under each task section in the body
    - Add implementation notes where helpful
    - Refine acceptance criteria

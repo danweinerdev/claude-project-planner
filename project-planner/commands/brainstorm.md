@@ -1,6 +1,6 @@
 ---
 name: brainstorm
-description: "Explore possibilities for a problem or opportunity with structured evaluation. Triggers: /brainstorm, brainstorm, explore options, what are our options"
+description: "Explore possibilities for a problem or opportunity with structured evaluation. Do NOT enter plan mode — this skill produces a brainstorm artifact directly. Triggers: /brainstorm, brainstorm, explore options, what are our options"
 ---
 
 # /brainstorm — Explore Possibilities

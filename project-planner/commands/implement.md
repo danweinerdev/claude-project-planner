@@ -48,6 +48,8 @@ When a plan is approved and you're ready to implement a phase. This skill **coor
 
 Before executing any tasks, audit every task in the phase for a `verification` field in its frontmatter entry. Every task must answer the question: **"How do we know this work is good and complete?"**
 
+Also read `Shared/language-verification.md` and detect the target project language. Verify that the phase includes the language-appropriate structural checks (sanitizers, static analysis, type checking) — either in individual task verification fields or as a dedicated verification task. If missing, flag this alongside any tasks missing verification criteria.
+
 Scan the phase's `tasks[]` array and separate tasks into two lists:
 - **Ready**: tasks that have a non-empty `verification` field with specific, observable criteria
 - **Missing verification**: tasks where `verification` is absent, empty, or vague (e.g., "works correctly", "done", "it works")

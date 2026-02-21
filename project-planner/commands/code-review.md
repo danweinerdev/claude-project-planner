@@ -73,8 +73,9 @@ Pass the planning context and diff information to the `code-reviewer` agent for 
 1. **Plan Accuracy** — Does the code implement what the plan describes?
 2. **Drift Detection** — What's in the code but not in the plan (and vice versa)?
 3. **Quality & Improvement Opportunities** — Missing error handling, edge cases, test coverage gaps
-4. **Assumption Verification** — Hardcoded values, implicit dependencies, unvalidated assumptions
-5. **Planning Blind Spots** — Things the code had to handle that the plan didn't anticipate
+4. **Structural Verification** — Read `Shared/language-verification.md` and check whether the language-appropriate structural checks (sanitizers, static analysis, type checking) were included in task verification and actually run. Flag if the plan specified them but they weren't executed, or if the project language warrants them but they were never planned.
+5. **Assumption Verification** — Hardcoded values, implicit dependencies, unvalidated assumptions
+6. **Planning Blind Spots** — Things the code had to handle that the plan didn't anticipate
 
 ### 6. Present Findings
 Show the review results to the user, organized by lens and severity:

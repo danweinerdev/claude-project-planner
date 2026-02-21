@@ -1,6 +1,6 @@
 ---
 name: design
-description: "Create a technical architecture and design document. Triggers: /design, design this, architecture for, technical design"
+description: "Create a technical architecture and design document. Do NOT enter plan mode — this skill produces a design artifact directly. Triggers: /design, design this, architecture for, technical design"
 ---
 
 # /design — Technical Architecture Document
@@ -32,6 +32,7 @@ When you need to define the technical architecture for a component or system bef
 2. **Draft Design**
    - Create `Designs/<ComponentName>/README.md` using `Shared/templates/design.md`
    - Document: overview, architecture (components, data flow, interfaces), design decisions (with alternatives considered), error handling, testing strategy, migration plan
+   - **Testing strategy must include structural verification:** Read `Shared/language-verification.md` and include the language-appropriate structural checks (sanitizers, static analysis, type checking) in the Testing Strategy section. These define what "structurally correct" means for this component beyond passing tests.
    - Set status to `draft`
 
 3. **Review**

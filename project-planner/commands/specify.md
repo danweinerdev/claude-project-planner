@@ -1,6 +1,6 @@
 ---
 name: specify
-description: "Write a requirements specification for a feature. Triggers: /specify, write spec, specify requirements, requirements for"
+description: "Write a requirements specification for a feature. Do NOT enter plan mode — this skill produces a spec artifact directly. Triggers: /specify, write spec, specify requirements, requirements for"
 ---
 
 # /specify — Write Requirements Specification
