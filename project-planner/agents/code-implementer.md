@@ -71,7 +71,7 @@ You receive from the coordinator:
 Report back to the coordinator with:
 - **Status**: `success` or `blocked`
 - **Files changed**: list of files created/modified
-- **Tests**: which tests ran, pass/fail count
+- **Tests**: which tests ran, what new/changed behavior each test covers
 - **Verification**: whether the verification criteria are satisfied (and how)
 - **Commit hash**: the commit SHA
 - **Issues/blockers**: any problems encountered (empty if none)
@@ -92,7 +92,7 @@ In these cases, report the issue to the coordinator with a clear description of 
 Before reporting success, verify:
 - [ ] All subtasks implemented
 - [ ] Verification criteria satisfied
-- [ ] Tests written and passing
+- [ ] Tests cover each new or changed behavior and are passing
 - [ ] Changes committed with proper message format
 - [ ] No unresolved TODO/FIXME left from this task
 - [ ] Code follows existing codebase conventions

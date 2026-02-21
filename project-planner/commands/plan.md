@@ -34,7 +34,7 @@ When you need to break down a feature, project, or initiative into an actionable
    - Determine the plan name (PascalCase, no spaces)
    - Break work into 3-7 phases, each with a clear deliverable
    - Each phase gets 2-6 tasks
-   - **Every task must have a `verification` field** — a specific answer to "how do we know this work is good and complete?" (e.g., "tests pass for X", "endpoint returns Y", "config validated by Z"). Vague criteria like "works correctly" are not acceptable.
+   - **Every task must have a `verification` field** — a specific answer to "how do we know this work is good and complete?" that names specific behaviors to cover (e.g., "parser handles valid, malformed, and empty input", "endpoint returns 200 with valid payload and 400 with missing fields"). Vague criteria like "works correctly" or test counts are not acceptable — verification means each new or changed behavior has a corresponding check.
    - **Include structural verification:** Read `Shared/language-verification.md` and detect the target project language. Include the language-appropriate structural checks (sanitizers, static analysis, type checking) in verification fields where relevant — either per-task or as a dedicated verification task in each phase.
    - Identify dependencies between phases
    - Present the structure to the user for feedback before writing files

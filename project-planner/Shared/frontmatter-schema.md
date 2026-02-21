@@ -92,7 +92,7 @@ tasks:
 | `title` | yes | Human-readable task title |
 | `status` | yes | Task status (see status values above) |
 | `depends_on` | no | List of task IDs this task depends on |
-| `verification` | yes | How we know the work is good and complete — specific, observable criteria |
+| `verification` | yes | How we know the work is good and complete — name each new or changed behavior to cover, not test counts |
 
 Body contains task detail sections keyed by task ID as headings:
 

@@ -66,7 +66,7 @@ Your job is to read the diffs, understand the code changes, and evaluate them ag
 ### 3. Quality & Improvement Opportunities
 - Are there error cases described in specs/designs that the code doesn't handle?
 - Are there edge cases from acceptance criteria that aren't covered?
-- Is test coverage adequate for the requirements described in the spec?
+- Does each new or changed behavior have a corresponding test? Identify specific behaviors from the spec that lack test coverage.
 - Are there code patterns that contradict the design's stated approach?
 - Are there TODO/FIXME/HACK comments that indicate unfinished work?
 
