@@ -26,11 +26,20 @@ When a plan phase needs more detail: additional tasks, subtask checklists, imple
    - Read the current phase document
    - Read the plan README for overall context
 
-2. **Load Context**
-   - Read related specs from `Specs/` for requirements that should be reflected
+2. **Load Context** (delegated to `researcher` agent)
+   Invoke the `researcher` agent with these instructions:
+   - Read related specs from `Specs/` for requirements that should be reflected in this phase
    - Read related designs from `Designs/` for architectural constraints, component boundaries, and interfaces
-   - Review existing tasks and subtasks
+   - Review existing tasks and subtasks in the current phase
    - Identify gaps: missing tasks, vague subtasks, unclear criteria
+
+   The agent returns a structured summary containing:
+   - **Relevant requirements** — spec items that this phase should cover
+   - **Architectural constraints** — design decisions, component boundaries, and interfaces that constrain implementation
+   - **Current task coverage** — what the existing tasks and subtasks already address
+   - **Identified gaps** — missing tasks, vague subtasks, unclear or absent verification criteria
+
+   Use this summary as the basis for expansion decisions in Step 3.
 
 3. **Expand Detail**
    - Add new tasks to the phase frontmatter `tasks[]` array
@@ -71,3 +80,4 @@ Implementation guidance, edge cases, etc.
 - Target plan: `Plans/<PlanName>/`
 - Related specs: `Specs/`
 - Related designs: `Designs/`
+- Agent: `researcher`
