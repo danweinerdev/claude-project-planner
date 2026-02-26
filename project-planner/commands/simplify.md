@@ -27,7 +27,9 @@ This is distinct from `/implement` (which builds features) and from a regular co
    - If a `planning-config.local.json` exists, read it to find local repo paths
 
 2. **Analyze Complexity**
-   Read the target code and identify simplification opportunities:
+   Invoke the `code-reviewer` agent to read the target code and identify simplification opportunities. Pass it the target file paths or module and the simplification criteria below. The agent returns findings grouped by file, each with: what the issue is, why it matters, what the simplification would look like, and the risk level.
+
+   **Simplification criteria to pass to the agent:**
 
    **Structural**
    - Functions that do too many things (candidates for splitting)
@@ -51,18 +53,19 @@ This is distinct from `/implement` (which builds features) and from a regular co
    - Layers that just pass through
 
 3. **Present Findings**
-   Show the user what you found, grouped by file. For each finding:
+   Present the `code-reviewer` agent's findings to the user, grouped by file. For each finding:
    - What the issue is
    - Why it matters (readability, maintainability, or correctness risk)
    - What the simplification would look like
    - Risk level (safe refactor vs. behavior-affecting change)
 
 4. **Apply Changes**
-   With user approval:
-   - Make changes one file at a time
-   - After each file, run the project's test suite to verify behavior is preserved
-   - If tests fail, revert the change and report the failure
+   With user approval, invoke `code-implementer` agent(s) to apply the approved changes:
+   - For each file (or group of independent files), launch a `code-implementer` agent with the approved simplifications and the target file path
+   - The agent makes the change, then runs the project's test suite to verify behavior is preserved
+   - If tests fail, the agent reverts the change and reports the failure
    - If no test suite exists, flag this as a risk and ask the user to verify manually
+   - Changes to independent files can be parallelized across multiple `code-implementer` agents; changes that affect shared interfaces must be serialized
 
 5. **Record**
    If this simplification was part of a plan phase:
@@ -86,3 +89,9 @@ Modifies code files in the target repository. No planning artifacts are created 
 - Not a bug fix (fix bugs directly)
 - Not an optimization (this is about clarity, not performance)
 - Not a rewrite (preserve existing structure, just clean it up)
+
+## Context
+- Orchestration: `Shared/orchestration.md`
+- Schema: `Shared/frontmatter-schema.md`
+- Local repo paths: `planning-config.local.json`
+- Agents: `code-reviewer`, `code-implementer`

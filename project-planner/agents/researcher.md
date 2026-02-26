@@ -29,7 +29,7 @@ architecture.
 
 ## Your Role
 
-You are invoked at the start of `/specify`, `/design`, and `/plan` skills to build a compound knowledge base from existing project artifacts before new documents are created.
+You are invoked at the start of `/brainstorm`, `/specify`, `/design`, and `/plan` skills to build a compound knowledge base from existing project artifacts before new documents are created.
 
 ## Process
 

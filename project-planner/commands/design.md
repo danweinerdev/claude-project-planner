@@ -62,6 +62,7 @@ See `Shared/templates/design.md`:
 - **Migration / Rollout**: Transition plan
 
 ## Context
+- Orchestration: `Shared/orchestration.md`
 - Template: `Shared/templates/design.md`
 - Schema: `Shared/frontmatter-schema.md`
 - Agents: `researcher`, `plan-reviewer`

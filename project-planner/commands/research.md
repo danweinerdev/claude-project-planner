@@ -54,6 +54,7 @@ See `Shared/templates/research.md`:
 - **Open Questions**: What remains unknown
 
 ## Context
+- Orchestration: `Shared/orchestration.md`
 - Template: `Shared/templates/research.md`
 - Schema: `Shared/frontmatter-schema.md`
 - Agent: `researcher`

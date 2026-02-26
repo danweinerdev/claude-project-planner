@@ -80,6 +80,7 @@ See `Shared/frontmatter-schema.md` for the phase frontmatter schema. Body contai
 - **Acceptance Criteria**: Phase-level completion criteria
 
 ## Context
+- Orchestration: `Shared/orchestration.md`
 - Templates: `Shared/templates/plan-readme.md`, `Shared/templates/plan-phase.md`
 - Schema: `Shared/frontmatter-schema.md`
 - Existing plans: `Plans/`

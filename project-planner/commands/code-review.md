@@ -118,6 +118,7 @@ No new artifact is created. This skill produces an inline review presented to th
 - Not a substitute for tests — assumes the test suite validates correctness independently
 
 ## Context
+- Orchestration: `Shared/orchestration.md`
 - Schema: `Shared/frontmatter-schema.md`
 - Target plan: `Plans/<PlanName>/`
 - Related specs: `Specs/`

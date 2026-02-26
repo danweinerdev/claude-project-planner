@@ -199,6 +199,7 @@ Updates existing plan artifacts in place:
 Code changes go to the target repository (not the planning root).
 
 ## Context
+- Orchestration: `Shared/orchestration.md`
 - Schema: `Shared/frontmatter-schema.md`
 - Target plan: `Plans/<PlanName>/`
 - Related specs: `Specs/`

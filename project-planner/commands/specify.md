@@ -58,6 +58,7 @@ See `Shared/templates/spec.md`:
 - **Constraints / Dependencies / Open Questions**
 
 ## Context
+- Orchestration: `Shared/orchestration.md`
 - Template: `Shared/templates/spec.md`
 - Schema: `Shared/frontmatter-schema.md`
 - Agents: `researcher`, `spec-reviewer`

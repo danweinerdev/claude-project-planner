@@ -25,20 +25,29 @@ When you need to generate and evaluate multiple approaches to a problem before c
    - Ask what problem or opportunity to explore
    - Clarify constraints and evaluation criteria
 
-2. **Generate Ideas**
+2. **Gather Context**
+   - Invoke the `researcher` agent to gather context on the problem space:
+     - Check `Research/` and `Brainstorm/` for prior work on related topics
+     - Check `Specs/` for related specifications
+     - Check `Designs/` for related architecture docs
+     - Review the codebase for relevant existing code
+   - The agent returns a structured summary of relevant context
+
+3. **Generate Ideas**
+   - Build on the context gathered by the researcher
    - Brainstorm multiple approaches (aim for 3-5)
    - For each idea, document: description, pros, cons, effort level
    - Consider both conventional and creative approaches
 
-3. **Evaluate**
+4. **Evaluate**
    - Create `Brainstorm/<topic-slug>.md` using `Shared/templates/brainstorm.md`
    - Build a comparison matrix against the criteria
    - Make a recommendation with rationale
 
-4. **Link**
+5. **Link**
    - Add cross-references to related research or specs in `related` frontmatter
 
-5. **Regenerate Dashboard**
+6. **Regenerate Dashboard**
    - Run `make dashboard` from the planning root to update the HTML dashboard
 
 ## Output
@@ -55,5 +64,7 @@ See `Shared/templates/brainstorm.md`:
 - **Next Steps**: What to do with the decision
 
 ## Context
+- Orchestration: `Shared/orchestration.md`
 - Template: `Shared/templates/brainstorm.md`
 - Schema: `Shared/frontmatter-schema.md`
+- Agent: `researcher`

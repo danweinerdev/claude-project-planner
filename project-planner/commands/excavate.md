@@ -91,6 +91,7 @@ Research/<codebase-or-subsystem-slug>.md
 - **Stop when diminishing returns**: You don't need to understand every line. Stop when you can confidently describe what each major component does and how they interact
 
 ## Context
+- Orchestration: `Shared/orchestration.md`
 - Template: `Shared/templates/research.md`
 - Schema: `Shared/frontmatter-schema.md`
 - Agent: `researcher`

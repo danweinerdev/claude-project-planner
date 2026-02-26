@@ -114,6 +114,7 @@ After making changes:
 - Run `make dashboard` from the planning root to update the HTML dashboard
 
 ## Context
+- Orchestration: `Shared/orchestration.md`
 - Schema: `Shared/frontmatter-schema.md`
 - Conventions: `CLAUDE.md`
 - Agent: `researcher`

@@ -76,6 +76,7 @@ Implementation guidance, edge cases, etc.
 ```
 
 ## Context
+- Orchestration: `Shared/orchestration.md`
 - Schema: `Shared/frontmatter-schema.md`
 - Target plan: `Plans/<PlanName>/`
 - Related specs: `Specs/`

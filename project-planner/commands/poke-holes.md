@@ -21,10 +21,20 @@ When you need a critical review of an artifact before committing to it. Good for
 
 1. **Identify Target**
    - Ask which artifact to analyze (plan, spec, design, or brainstorm)
-   - Read the full artifact and any related documents referenced in its `related` frontmatter
+   - Confirm the artifact path before proceeding
 
-2. **Analyze Through Lenses**
-   Apply each of these critical lenses to the artifact:
+2. **Gather Context**
+   Invoke the `researcher` agent with these instructions:
+   - Read the full target artifact
+   - Read all documents referenced in its `related` frontmatter
+   - Search for any specs, designs, or plans that reference this artifact (by filename or title)
+   - Return a structured summary containing:
+     - The artifact's content, structure, and key claims
+     - Related context that informs analysis (from `related` docs and reverse references)
+     - Cross-references, dependencies, and any conflicts between documents
+
+3. **Analyze Through Lenses**
+   Apply each of these critical lenses to the researcher's summary:
 
    **Assumptions**
    - What unstated assumptions does this rely on?
@@ -54,17 +64,17 @@ When you need a critical review of an artifact before committing to it. Good for
    - What monitoring/observability is missing?
    - What happens when someone unfamiliar needs to maintain this?
 
-3. **Rate Findings**
+4. **Rate Findings**
    Categorize each finding:
    - **Critical**: Could cause project failure or major rework
    - **Major**: Significant risk that should be addressed before proceeding
    - **Minor**: Worth noting but won't block progress
    - **Question**: Ambiguity that needs clarification, not necessarily a problem
 
-4. **Present Results**
+5. **Present Results**
    Show findings grouped by severity, with specific references to the artifact sections they apply to. For each finding, suggest a concrete mitigation or question to resolve it.
 
-5. **Offer to Update**
+6. **Offer to Update**
    Ask the user if they want to:
    - Update the artifact to address critical/major findings
    - Add findings as open questions in the artifact
@@ -73,6 +83,10 @@ When you need a critical review of an artifact before committing to it. Good for
 
 ## Output
 No new artifact is created. This skill produces an inline analysis presented to the user. If the user chooses to update the artifact, modify it in place. If a research document is needed, use the `/research` workflow.
+
+## Context
+- Orchestration: `Shared/orchestration.md`
+- Agent: `researcher`
 
 ## What This Is NOT
 - Not a structural review (that's what `plan-reviewer` and `spec-reviewer` agents do)
