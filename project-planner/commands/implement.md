@@ -114,6 +114,7 @@ Before launching each wave, check whether two or more tasks in the same wave mig
 - **Critical findings** → resume the `code-implementer` agent to address the issue, then re-review
 - **Non-critical findings** (Major/Minor/Question) → collect and present to user after the wave completes
 - Maximum 2 review-fix cycles per task. If critical issues remain after 2 cycles, mark the task as `needs-attention` and move on.
+- Never use "pre-existing" to justify deferring or hiding a finding. "Pre-existing" describes origin, not impact. Present findings by what they do to the user, not when they were introduced. The user decides what is worth fixing.
 
 **e. Finalize wave**
 - Update completed task statuses to `complete`

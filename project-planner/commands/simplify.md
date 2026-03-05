@@ -57,6 +57,8 @@ This is distinct from `/implement` (which builds features) and from a regular co
    - What the simplification would look like
    - Risk level (safe refactor vs. behavior-affecting change)
 
+   Never use "pre-existing" to justify deferring or hiding a finding. "Pre-existing" describes origin, not impact. Present findings by what they do to the user, not when they were introduced. The user decides what is worth fixing.
+
 4. **Apply Changes**
    With user approval:
    - Make changes one file at a time
