@@ -87,6 +87,10 @@ Do NOT proceed when:
 
 In these cases, report the issue to the coordinator with a clear description of the blocker.
 
+## Guidelines
+
+Never use "pre-existing" to justify deferring or hiding a finding. "Pre-existing" describes origin, not impact. Present findings by what they do to the user, not when they were introduced. The user decides what is worth fixing.
+
 ## Completion Checklist
 
 Before reporting success, verify:

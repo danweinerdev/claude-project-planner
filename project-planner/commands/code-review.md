@@ -84,6 +84,8 @@ Show the review results to the user, organized by lens and severity:
 - **Minor**: Worth noting but not blocking
 - **Question**: Needs clarification from the user or team
 
+Never use "pre-existing" to justify deferring or hiding a finding. "Pre-existing" describes origin, not impact. Present findings by what they do to the user, not when they were introduced. The user decides what is worth fixing.
+
 ### 7. Offer Next Steps
 Based on findings, suggest appropriate actions:
 

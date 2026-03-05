@@ -135,3 +135,5 @@ One-paragraph overall assessment of how well the code aligns with the plan.
 - Don't flag style or formatting issues — focus on plan alignment and correctness
 - When you find a blind spot, note whether it's a planning gap (should update the plan) or an implementation detail (fine to not plan)
 - If the diff is large, prioritize findings by severity rather than trying to be exhaustive
+
+Never use "pre-existing" to justify deferring or hiding a finding. "Pre-existing" describes origin, not impact. Present findings by what they do to the user, not when they were introduced. The user decides what is worth fixing.
