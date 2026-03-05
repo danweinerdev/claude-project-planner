@@ -12,8 +12,7 @@ project-planner/                  # Marketplace repo root
 │   ├── CLAUDE.md                 # This file
 │   ├── Makefile                  # make dashboard / make open / make clean / make bump-*
 │   ├── generate-dashboard.py     # Dashboard generator (Python 3, stdlib only)
-│   ├── setup-repo.py            # Configure a normal repo for planner
-│   ├── setup-worktree.py        # Generate worktree-add.sh for bare repos
+│   ├── setup-repo.py            # Configure a repo (normal or worktree) for planner
 │   ├── planning-config.json     # Planning configuration
 │   ├── .gitignore
 │   ├── .claude-plugin/
@@ -78,7 +77,6 @@ Always use templates from `Shared/templates/` when creating new artifacts. Repla
 
 | Skill | Purpose |
 |-------|---------|
-| `/planner:init` | Bootstrap a new project-planner instance |
 | `/planner:research` | Investigate a topic → `Research/<topic>.md` |
 | `/planner:brainstorm` | Explore possibilities → `Brainstorm/<topic>.md` |
 | `/planner:specify` | Write requirements → `Specs/<feature>/README.md` |
@@ -94,7 +92,7 @@ Always use templates from `Shared/templates/` when creating new artifacts. Repla
 | `/planner:tend` | Artifact hygiene — verify statuses, tags, conventions |
 | `/planner:diagram` | Generate Mermaid diagrams from artifacts |
 | `/planner:excavate` | Progressive codebase discovery → `Research/<slug>.md` |
-| `/planner:setup` | Configure a repo for project-planner (auto-detects bare vs normal) |
+| `/planner:setup` | Set up a repo — generates planning-config.json, bootstraps directories, creates launcher |
 | `/planner:dashboard` | Regenerate HTML dashboard |
 | `/planner:status` | Quick status summary (read-only) |
 
@@ -112,7 +110,7 @@ Always use templates from `Shared/templates/` when creating new artifacts. Repla
 
 The typical flow through skills:
 ```
-/planner:init → /planner:research → /planner:brainstorm → /planner:specify → /planner:design → /planner:plan → /planner:breakdown → /planner:implement → /planner:code-review → /planner:simplify → /planner:debrief → /planner:retro
+/planner:setup → /planner:research → /planner:brainstorm → /planner:specify → /planner:design → /planner:plan → /planner:breakdown → /planner:implement → /planner:code-review → /planner:simplify → /planner:debrief → /planner:retro
 ```
 Use `/planner:dashboard` or `/planner:status` at any point to check progress.
 Use `/planner:poke-holes` before approving any artifact. Use `/planner:tend` periodically for hygiene.
@@ -165,7 +163,6 @@ Generated via `make dashboard` (or `make open` to also open in browser). Python 
 When adding, removing, or renaming skills (`commands/`), agents (`agents/`), or modifying user-facing behavior in the setup library (`setup/`), update these files to stay in sync:
 - **`README.md`** — command/agent counts, tables, Mermaid diagrams, directory listing
 - **`CLAUDE.md`** — skill table, agent table, workflow lifecycle
-- **`commands/init.md`** — skill/agent copy lists and counts
 - **`Shared/templates/claude-md-standalone.md`** — skill table, agent table, workflow lifecycle
 - **`Shared/templates/claude-md-embedded.md`** — skill table
 

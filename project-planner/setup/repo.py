@@ -1,15 +1,19 @@
-"""Configure a normal git repository for project-planner integration."""
+"""Configure a git repository for project-planner integration."""
 
 import argparse
 import platform
+import sys
 from pathlib import Path
 
 from .common import (
     PLANNER_DIR,
     clean_stale_symlinks,
+    create_planning_dirs,
+    detect_repo_type,
+    find_sibling_config,
     resolve_repo_path,
+    setup_gitignore,
     setup_planning_config,
-    sync_skills_and_agents,
     write_launcher,
 )
 
@@ -35,33 +39,74 @@ def main(argv: list[str] | None = None) -> None:
         default=None,
         help="path to planning artifacts (defaults to project-planner directory)",
     )
+    parser.add_argument(
+        "--no-dashboard",
+        action="store_true",
+        default=False,
+        help="disable dashboard generation in planning-config.json",
+    )
 
     args = parser.parse_args(argv)
 
     repo_path = resolve_repo_path(args.repo)
-    planning_root = (args.planning_root or PLANNER_DIR).resolve()
+
+    # Detect repo type
+    try:
+        repo_type = detect_repo_type(repo_path)
+    except ValueError:
+        print(f"Error: {repo_path} is not a git repository.", file=sys.stderr)
+        sys.exit(1)
+
+    if repo_type == "bare":
+        print(f"Error: {repo_path} is a bare repository.", file=sys.stderr)
+        print("  Run setup on individual worktrees instead.", file=sys.stderr)
+        print("  Example: python3 setup-repo.py /path/to/worktree", file=sys.stderr)
+        sys.exit(1)
+
+    # Resolve config: explicit CLI flags > sibling discovery > defaults
+    sibling = None
+    if repo_type == "worktree" and args.planning_root is None:
+        sibling = find_sibling_config(repo_path)
+
+    if args.planning_root is not None:
+        planning_root = args.planning_root.resolve()
+    elif sibling:
+        planning_root = Path(sibling["planningRoot"]).resolve()
+        print(f"Inheriting planningRoot from sibling: {sibling['source']}")
+    else:
+        planning_root = PLANNER_DIR.resolve()
+
+    if args.no_dashboard:
+        dashboard = False
+    elif sibling:
+        dashboard = sibling["dashboard"]
+    else:
+        dashboard = True
 
     # 1. Planning config
-    setup_planning_config(repo_path, planning_root)
+    setup_planning_config(repo_path, planning_root, dashboard=dashboard)
 
-    # 2. Clean stale symlinks
+    # 2. Bootstrap planning directories
+    created_dirs = create_planning_dirs(planning_root)
+    if created_dirs:
+        print(f"Created directories: {', '.join(created_dirs)}")
+
+    # 3. Set up .gitignore
+    if setup_gitignore(planning_root, dashboard=dashboard):
+        print(".gitignore: updated")
+
+    # 4. Clean stale symlinks (legacy migration)
     cleaned = clean_stale_symlinks(repo_path, PLANNER_DIR)
     if cleaned:
-        print(f"Cleaned {cleaned} stale planner symlinks (now using --add-dir)")
+        print(f"Cleaned {cleaned} stale planner symlinks")
 
-    # 3. Sync skills and agents
-    created, overwritten = sync_skills_and_agents(repo_path, PLANNER_DIR)
-    if created or overwritten:
-        print(f"Skills & agents: {created} created, {overwritten} updated")
-    else:
-        print("Skills & agents: up to date")
-
-    # 4. Launcher script
+    # 5. Launcher script
     write_launcher(repo_path, planning_root, PLANNER_DIR)
 
     # Summary
+    label = "Worktree configured" if repo_type == "worktree" else "Repo configured"
     print()
-    print(f"=== Repo configured: {repo_path.name} ===")
+    print(f"=== {label}: {repo_path.name} ===")
     print(f"  Path:     {repo_path}")
     print(f"  Planning: {planning_root}")
     print(f"  Plugin:   {PLANNER_DIR}")

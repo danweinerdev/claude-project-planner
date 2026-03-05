@@ -8,6 +8,7 @@ import json
 import os
 import platform
 import stat
+import subprocess
 import sys
 from pathlib import Path
 
@@ -51,15 +52,91 @@ def resolve_repo_path(repo_arg: str, planner_dir: Path = PLANNER_DIR) -> Path:
     sys.exit(1)
 
 
-def setup_planning_config(target_path: Path, planning_root: Path) -> None:
+def detect_repo_type(repo_path: Path) -> str:
+    """Detect whether a path is a normal repo, worktree, or bare repo.
+
+    Returns "normal", "worktree", or "bare".
+    Raises ValueError if the path is not a git repository.
+    """
+    # .git is a file → worktree
+    git_path = repo_path / ".git"
+    if git_path.is_file():
+        return "worktree"
+
+    # .bare/ directory → bare (convention used by worktree setups)
+    if (repo_path / ".bare").is_dir():
+        return "bare"
+
+    # Check via git if it's a bare repo
+    result = subprocess.run(
+        ["git", "-C", str(repo_path), "rev-parse", "--is-bare-repository"],
+        capture_output=True, text=True,
+    )
+    if result.returncode == 0 and result.stdout.strip() == "true":
+        return "bare"
+
+    # .git is a directory → normal repo
+    if git_path.is_dir():
+        return "normal"
+
+    raise ValueError(f"Not a git repository: {repo_path}")
+
+
+def find_sibling_config(repo_path: Path) -> dict | None:
+    """Search sibling worktrees for an existing planning-config.json.
+
+    Returns {"planningRoot": str, "dashboard": bool, "source": str} or None.
+    """
+    result = subprocess.run(
+        ["git", "-C", str(repo_path), "worktree", "list", "--porcelain"],
+        capture_output=True, text=True,
+    )
+    if result.returncode != 0:
+        return None
+
+    own_path = repo_path.resolve()
+    siblings = []
+    for line in result.stdout.splitlines():
+        if line.startswith("worktree "):
+            wt_path = Path(line.split(" ", 1)[1])
+            if wt_path.resolve() != own_path:
+                siblings.append(wt_path)
+
+    for wt in siblings:
+        config_file = wt / "planning-config.json"
+        if config_file.is_file():
+            try:
+                data = json.loads(config_file.read_text())
+                return {
+                    "planningRoot": data.get("planningRoot", ""),
+                    "dashboard": data.get("dashboard", True),
+                    "source": str(wt),
+                }
+            except (json.JSONDecodeError, IOError):
+                continue
+
+    return None
+
+
+def setup_planning_config(
+    target_path: Path,
+    planning_root: Path,
+    *,
+    dashboard: bool = True,
+) -> None:
     """Write or overwrite planning-config.json in the target directory."""
     config_file = target_path / "planning-config.json"
     expected = {"mode": "standalone", "planningRoot": str(planning_root)}
+    if not dashboard:
+        expected["dashboard"] = False
 
     if config_file.exists():
         try:
             existing = json.loads(config_file.read_text())
-            if existing.get("planningRoot") == str(planning_root):
+            if (
+                existing.get("planningRoot") == str(planning_root)
+                and existing.get("dashboard", True) == dashboard
+            ):
                 print("planning-config.json: OK")
                 return
             print(f"Overwriting planning-config.json (was: {existing.get('planningRoot', '')})")
@@ -90,61 +167,102 @@ def clean_stale_symlinks(target_path: Path, planner_dir: Path) -> int:
     return cleaned
 
 
-def sync_skills_and_agents(target_path: Path, planner_dir: Path) -> tuple[int, int]:
-    """Copy skills and agents from planner to target repo's .claude/ directory.
+PLANNING_DIRS = ["Plans", "Research", "Brainstorm", "Specs", "Designs", "Retro", "Shared"]
 
-    Copies commands/*.md → .claude/skills/ and agents/*.md → .claude/agents/.
-    Overwrites existing files to ensure they stay current.
+GITIGNORE_ENTRIES_DASHBOARD = [
+    "# Generated dashboard",
+    "Dashboard/",
+    "",
+]
 
-    Returns (created, overwritten) counts.
+GITIGNORE_ENTRIES_BASE = [
+    "# Local config (paths, not committed)",
+    "planning-config.local.json",
+    "",
+    "# Python",
+    "__pycache__/",
+    "*.py[cod]",
+]
+
+
+def create_planning_dirs(planning_root: Path) -> list[str]:
+    """Create artifact directories under planning_root if they don't exist.
+
+    Returns list of directory names that were created.
     """
-    created = 0
-    overwritten = 0
+    created = []
+    for name in PLANNING_DIRS:
+        dir_path = planning_root / name
+        if not dir_path.is_dir():
+            dir_path.mkdir(parents=True, exist_ok=True)
+            created.append(name)
+    return created
 
-    mappings = [
-        (planner_dir / "commands", target_path / ".claude" / "skills"),
-        (planner_dir / "agents", target_path / ".claude" / "agents"),
-    ]
 
-    for source_dir, target_dir in mappings:
-        if not source_dir.is_dir():
-            continue
-        target_dir.mkdir(parents=True, exist_ok=True)
-        for source_file in sorted(source_dir.glob("*.md")):
-            dest_file = target_dir / source_file.name
-            existed = dest_file.exists()
-            dest_file.write_text(source_file.read_text())
-            if existed:
-                overwritten += 1
-            else:
-                created += 1
+def setup_gitignore(planning_root: Path, *, dashboard: bool = True) -> bool:
+    """Ensure planning-related entries are in .gitignore.
 
-    return created, overwritten
+    Appends missing entries to an existing .gitignore or creates a new one.
+    Returns True if the file was modified.
+    """
+    entries = (GITIGNORE_ENTRIES_DASHBOARD if dashboard else []) + GITIGNORE_ENTRIES_BASE
+    gitignore = planning_root / ".gitignore"
+    existing = gitignore.read_text() if gitignore.is_file() else ""
+    existing_lines = existing.splitlines()
+
+    missing = []
+    for entry in entries:
+        if entry and entry not in existing_lines:
+            missing.append(entry)
+
+    if not missing:
+        return False
+
+    separator = "\n" if existing and not existing.endswith("\n") else ""
+    prefix = "\n" if existing.strip() else ""
+    gitignore.write_text(existing + separator + prefix + "\n".join(entries) + "\n")
+    return True
+
+
+def is_external_path(child: Path, parent: Path) -> bool:
+    """Check if child is outside parent (i.e. not equal to or under parent)."""
+    try:
+        child.resolve().relative_to(parent.resolve())
+        return False
+    except ValueError:
+        return True
 
 
 def write_launcher(target_path: Path, planning_root: Path, planner_dir: Path) -> None:
-    """Write a cross-platform Claude launcher script. Overwrites any existing launcher."""
+    """Write a cross-platform Claude launcher script. Overwrites any existing launcher.
+
+    Only includes --add-dir for the planning root if it is external to the
+    target repo (i.e. planning artifacts live outside the repository).
+    """
     is_windows = platform.system() == "Windows"
     launcher = target_path / ("claude.cmd" if is_windows else "claude.sh")
     existed = launcher.exists()
+    needs_add_dir = is_external_path(planning_root, target_path)
 
     if is_windows:
-        lines = [
-            "@echo off",
-            f'claude --add-dir="{planning_root}" --plugin-dir="{planner_dir}" %*',
-            "",
-        ]
+        parts = ["claude"]
+        if needs_add_dir:
+            parts.append(f'--add-dir="{planning_root}"')
+        parts.append(f'--plugin-dir="{planner_dir}"')
+        parts.append("%*")
+        lines = ["@echo off", " ".join(parts), ""]
         launcher.write_text("\r\n".join(lines))
     else:
         lines = [
             "#!/usr/bin/env bash",
-            "# Launch Claude Code with planning context and planner plugin",
+            "# Launch Claude Code with planner plugin",
             "exec claude \\",
-            f'    --add-dir="{planning_root}" \\',
-            f'    --plugin-dir="{planner_dir}" \\',
-            '    "$@"',
-            "",
         ]
+        if needs_add_dir:
+            lines.append(f'    --add-dir="{planning_root}" \\')
+        lines.append(f'    --plugin-dir="{planner_dir}" \\')
+        lines.append('    "$@"')
+        lines.append("")
         launcher.write_text("\n".join(lines))
         mode = launcher.stat().st_mode
         launcher.chmod(mode | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)

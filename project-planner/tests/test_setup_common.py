@@ -4,16 +4,24 @@ import json
 import os
 import platform
 import stat
+import subprocess
 from pathlib import Path
 from unittest.mock import patch
 
 import pytest
 
 from setup.common import (
+    GITIGNORE_ENTRIES_BASE,
+    GITIGNORE_ENTRIES_DASHBOARD,
     PLANNER_DIR,
+    PLANNING_DIRS,
     clean_stale_symlinks,
+    create_planning_dirs,
+    detect_repo_type,
+    find_sibling_config,
     load_json,
     resolve_repo_path,
+    setup_gitignore,
     setup_planning_config,
     write_launcher,
 )
@@ -157,6 +165,96 @@ class TestSetupPlanningConfig:
         config = json.loads((tmp_path / "planning-config.json").read_text())
         assert config["planningRoot"] == str(planning_root)
 
+    def test_dashboard_enabled_by_default(self, tmp_path):
+        setup_planning_config(tmp_path, Path("/root"))
+        config = json.loads((tmp_path / "planning-config.json").read_text())
+        assert "dashboard" not in config
+
+    def test_dashboard_disabled(self, tmp_path):
+        setup_planning_config(tmp_path, Path("/root"), dashboard=False)
+        config = json.loads((tmp_path / "planning-config.json").read_text())
+        assert config["dashboard"] is False
+
+    def test_dashboard_change_triggers_overwrite(self, tmp_path, capsys):
+        planning_root = Path("/root")
+        setup_planning_config(tmp_path, planning_root, dashboard=True)
+        capsys.readouterr()  # clear
+
+        setup_planning_config(tmp_path, planning_root, dashboard=False)
+        config = json.loads((tmp_path / "planning-config.json").read_text())
+        assert config["dashboard"] is False
+        assert "Overwriting" in capsys.readouterr().out
+
+
+class TestCreatePlanningDirs:
+    def test_creates_all_dirs(self, tmp_path):
+        created = create_planning_dirs(tmp_path)
+        assert set(created) == set(PLANNING_DIRS)
+        for name in PLANNING_DIRS:
+            assert (tmp_path / name).is_dir()
+
+    def test_skips_existing_dirs(self, tmp_path):
+        (tmp_path / "Plans").mkdir()
+        (tmp_path / "Research").mkdir()
+        created = create_planning_dirs(tmp_path)
+        assert "Plans" not in created
+        assert "Research" not in created
+        assert len(created) == len(PLANNING_DIRS) - 2
+
+    def test_idempotent(self, tmp_path):
+        create_planning_dirs(tmp_path)
+        created = create_planning_dirs(tmp_path)
+        assert created == []
+
+    def test_returns_created_names(self, tmp_path):
+        created = create_planning_dirs(tmp_path)
+        for name in created:
+            assert name in PLANNING_DIRS
+
+
+class TestSetupGitignore:
+    def test_creates_new_gitignore(self, tmp_path):
+        modified = setup_gitignore(tmp_path)
+        assert modified is True
+        content = (tmp_path / ".gitignore").read_text()
+        assert "Dashboard/" in content
+        assert "planning-config.local.json" in content
+        assert "__pycache__/" in content
+
+    def test_appends_to_existing(self, tmp_path):
+        gitignore = tmp_path / ".gitignore"
+        gitignore.write_text("node_modules/\n")
+        modified = setup_gitignore(tmp_path)
+        assert modified is True
+        content = gitignore.read_text()
+        assert "node_modules/" in content
+        assert "Dashboard/" in content
+
+    def test_no_op_when_complete(self, tmp_path):
+        setup_gitignore(tmp_path)
+        modified = setup_gitignore(tmp_path)
+        assert modified is False
+
+    def test_preserves_existing_content(self, tmp_path):
+        gitignore = tmp_path / ".gitignore"
+        gitignore.write_text("*.log\n.env\n")
+        setup_gitignore(tmp_path)
+        content = gitignore.read_text()
+        assert "*.log" in content
+        assert ".env" in content
+
+    def test_no_dashboard_skips_dashboard_entry(self, tmp_path):
+        setup_gitignore(tmp_path, dashboard=False)
+        content = (tmp_path / ".gitignore").read_text()
+        assert "Dashboard/" not in content
+        assert "planning-config.local.json" in content
+        assert "__pycache__/" in content
+
+    def test_dashboard_includes_dashboard_entry(self, tmp_path):
+        setup_gitignore(tmp_path, dashboard=True)
+        content = (tmp_path / ".gitignore").read_text()
+        assert "Dashboard/" in content
+
 
 class TestCleanStaleSymlinks:
     def test_no_claude_dir(self, tmp_path):
@@ -254,3 +352,71 @@ class TestWriteLauncher:
         (tmp_path / "claude.sh").write_text("old")
         write_launcher(tmp_path, Path("/p"), Path("/d"))
         assert "overwritten" in capsys.readouterr().out
+
+
+class TestDetectRepoType:
+    def test_normal_repo(self, tmp_path):
+        repo = tmp_path / "normal"
+        repo.mkdir()
+        subprocess.run(["git", "init", str(repo)], capture_output=True, check=True)
+        assert detect_repo_type(repo) == "normal"
+
+    def test_worktree(self, worktree_pair):
+        _, wt = worktree_pair
+        assert detect_repo_type(wt) == "worktree"
+
+    def test_bare_with_dot_bare(self, tmp_path):
+        repo = tmp_path / "bare-project"
+        repo.mkdir()
+        bare_dir = repo / ".bare"
+        subprocess.run(["git", "init", "--bare", str(bare_dir)], capture_output=True, check=True)
+        assert detect_repo_type(repo) == "bare"
+
+    def test_standard_bare(self, tmp_path):
+        repo = tmp_path / "std-bare"
+        subprocess.run(["git", "init", "--bare", str(repo)], capture_output=True, check=True)
+        assert detect_repo_type(repo) == "bare"
+
+    def test_not_a_repo(self, tmp_path):
+        plain = tmp_path / "plain"
+        plain.mkdir()
+        with pytest.raises(ValueError, match="Not a git repository"):
+            detect_repo_type(plain)
+
+
+class TestFindSiblingConfig:
+    def test_finds_sibling_config(self, worktree_pair):
+        main_wt, second_wt = worktree_pair
+        # Write config in the main worktree
+        config = {"mode": "standalone", "planningRoot": "/my/planning"}
+        (main_wt / "planning-config.json").write_text(json.dumps(config))
+
+        result = find_sibling_config(second_wt)
+        assert result is not None
+        assert result["planningRoot"] == "/my/planning"
+        assert result["dashboard"] is True
+        assert result["source"] == str(main_wt)
+
+    def test_returns_none_when_no_config(self, worktree_pair):
+        _, second_wt = worktree_pair
+        result = find_sibling_config(second_wt)
+        assert result is None
+
+    def test_skips_own_config(self, worktree_pair):
+        main_wt, second_wt = worktree_pair
+        # Only write config in the second worktree (self), not siblings
+        config = {"mode": "standalone", "planningRoot": "/my/planning"}
+        (second_wt / "planning-config.json").write_text(json.dumps(config))
+
+        result = find_sibling_config(second_wt)
+        # Should not find its own config — only main_wt is a sibling
+        assert result is None
+
+    def test_includes_dashboard_setting(self, worktree_pair):
+        main_wt, second_wt = worktree_pair
+        config = {"mode": "standalone", "planningRoot": "/p", "dashboard": False}
+        (main_wt / "planning-config.json").write_text(json.dumps(config))
+
+        result = find_sibling_config(second_wt)
+        assert result is not None
+        assert result["dashboard"] is False

@@ -1,4 +1,6 @@
-"""Shared fixtures for dashboard tests."""
+"""Shared fixtures for project-planner tests."""
+
+import subprocess
 
 import pytest
 from pathlib import Path
@@ -230,3 +232,27 @@ What went well, what didn't.
     }))
 
     return root
+
+
+@pytest.fixture
+def worktree_pair(tmp_path):
+    """Create a git repo with two worktrees and return (main_wt, second_wt).
+
+    Sets up a normal repo, then adds a second worktree on a new branch.
+    Both paths are usable worktree directories with .git files/dirs.
+    """
+    main_wt = tmp_path / "main"
+    main_wt.mkdir()
+    subprocess.run(["git", "init", str(main_wt)], capture_output=True, check=True)
+    subprocess.run(
+        ["git", "commit", "--allow-empty", "-m", "init"],
+        cwd=str(main_wt), capture_output=True, check=True,
+    )
+
+    second_wt = tmp_path / "second"
+    subprocess.run(
+        ["git", "worktree", "add", "-b", "second", str(second_wt)],
+        cwd=str(main_wt), capture_output=True, check=True,
+    )
+
+    return main_wt, second_wt

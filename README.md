@@ -87,7 +87,7 @@ Or load it directly:
 claude --plugin-dir /path/to/claude-project-planner/project-planner
 ```
 
-Then run `/planner:init` to bootstrap your first project.
+Then run `/planner:setup` to bootstrap your first project.
 
 ## Documentation
 

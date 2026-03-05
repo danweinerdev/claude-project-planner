@@ -1,25 +1,40 @@
 ---
 name: setup
-description: "Set up or re-setup a repository for project-planner. Overwrites existing setup files. Auto-detects bare vs normal repos. Triggers: /setup, setup repo, configure repo, setup worktree, re-setup"
+description: "Set up a repository for project-planner — generates planning-config.json and bootstraps planning directories. Triggers: /setup, setup repo, configure repo, setup worktree, initialize planner, bootstrap planner"
 ---
 
 # /setup — Configure Repository for Project Planner
 
 ## When to Use
-When you want to configure a repository (the current working directory or a specified path) to work with the project-planner plugin. This sets up `planning-config.json`, a `claude.sh` launcher script, and cleans stale symlinks.
+When setting up a new or existing repository to work with the project-planner plugin. This generates `planning-config.json`, bootstraps planning artifact directories, and creates launcher scripts.
 
-**Idempotent and safe to re-run.** Always overwrites existing setup files (`claude.sh`, `planning-config.json`, `worktree-add.sh`) and syncs skills and agents to their latest versions. This is the correct way to repair or update a previously configured repo — for example after moving the planner directory, changing the planning root, adding new skills/agents, or updating the project-planner plugin.
+**Idempotent and safe to re-run.** Overwrites `planning-config.json` and launcher scripts. Creates missing directories without touching existing ones.
 
-Automatically detects whether the target is a **bare repo** (worktree workflow) or a **normal repo** and runs the appropriate setup.
+## What It Does
+
+1. Detects the repository type (normal repo, worktree, or bare repo)
+2. For worktrees, searches sibling worktrees for an existing `planning-config.json` and inherits settings
+3. Generates `planning-config.json` — the config that tells the plugin where planning artifacts live
+4. Bootstraps planning directories (Plans/, Research/, Brainstorm/, Specs/, Designs/, Retro/, Shared/) if they don't exist
+5. Creates a launcher script (`claude.sh` / `claude.cmd`) for launching Claude with the plugin
+6. Sets up `.gitignore` for generated files
+7. Cleans any stale legacy symlinks
+
+## What It Does NOT Do
+
+- Copy skills, agents, or plugin files — the plugin discovers its own files via `--plugin-dir`
+- Generate CLAUDE.md — the plugin provides its own context
+- Copy templates, frontmatter schemas, or dashboard generators
+- Handle bare repos directly — run setup on individual worktrees instead
 
 ## Detection Logic
 
-Check the target repository to determine its type:
+The setup tool auto-detects the target repository type:
 
-1. **Bare repo with `.bare/`** → worktree mode (generates `worktree-add.sh`)
-2. **Standard bare repo** (`git rev-parse --is-bare-repository` returns `true`) → worktree mode
-3. **Normal repo** (has `.git/` directory) → normal repo mode
-4. **Not a git repo** → error, inform the user
+1. **Worktree** (`.git` is a file) → normal setup, inherits settings from sibling worktrees if available
+2. **Bare repo** (`.bare/` exists or `git rev-parse --is-bare-repository` returns `true`) → error with guidance to run on worktrees instead
+3. **Normal repo** (`.git/` is a directory) → normal setup
+4. **Not a git repo** → error
 
 ## Process
 
@@ -29,39 +44,35 @@ Check the target repository to determine its type:
 - Otherwise, use the **current working directory**
 - The target can also be a key from `planning-config.local.json` (resolved to a local path)
 
-### 2. Ask for Planning Root (if needed)
+### 2. Ask Configuration Questions (if needed)
 
-If this is a standalone setup where planning artifacts live in a **separate** repository (not in the project-planner plugin directory itself), ask:
+Ask the user about options that aren't already clear from context or arguments:
 
+**Planning root** — skip if `--planning-root` was provided, inherited from sibling, or context makes it obvious:
 > Where do your planning artifacts live?
 > - In the project-planner plugin directory (default)
-> - In a separate planning repository (provide path)
+> - In a separate directory (provide path)
 
-For most setups the default is correct — skip the question if the user already specified `--planning-root` or if context makes the answer obvious.
+**Dashboard** — skip if `--no-dashboard` was provided or inherited from sibling:
+> Do you want the HTML dashboard?
+> - Yes (default) — generates a static HTML dashboard from artifacts via `make dashboard`
+> - No — disables dashboard generation (sets `"dashboard": false` in config)
+
+For most setups the defaults are correct — skip questions when the answer is obvious.
 
 ### 3. Run the Setup Tool
 
-The setup tools live in the **project-planner plugin directory** (the directory containing this command file).
+The setup tool lives in the **project-planner plugin directory** (the directory containing this command file).
 
-The plugin directory contains `commands/`, `agents/`, and `Shared/` as siblings — find it by globbing for `**/commands/research.md` and going one level up.
+The plugin directory contains `commands/`, `agents/`, and `Shared/` as siblings — find it by globbing for `**/commands/setup.md` and going one level up.
 
-**For a bare repo (worktree mode):**
 ```bash
-python3 <planner-dir>/setup-worktree.py <target-repo> [--planning-root <path>]
+python3 <planner-dir>/setup-repo.py <target-repo> [--planning-root <path>] [--no-dashboard]
 ```
 
-This generates (or overwrites) a `worktree-add.sh` script in the bare repo root. After generation, inform the user:
-```
-Worktree script generated. Usage:
-  cd <repo> && ./worktree-add.sh <branch>
-```
+This writes (or overwrites) `planning-config.json` and `claude.sh`/`claude.cmd` in the repo, and bootstraps planning directories.
 
-**For a normal repo:**
-```bash
-python3 <planner-dir>/setup-repo.py <target-repo> [--planning-root <path>]
-```
-
-This writes (or overwrites) `planning-config.json` and `claude.sh`/`claude.cmd` in the repo.
+For worktrees, it automatically discovers sibling planning configs unless `--planning-root` is explicitly provided.
 
 ### 4. Report Results
 
@@ -71,37 +82,25 @@ Display what was created or updated:
 ## Setup Complete
 
 **Repo:** <path>
-**Type:** normal repo / bare repo (worktree)
+**Type:** normal repo / worktree
 **Planning root:** <path>
 
-### Created/Overwritten
-- planning-config.json (normal) or worktree-add.sh (bare)
-- claude.sh launcher (normal only — worktrees get theirs via worktree-add.sh)
-- Cleaned N stale symlinks (if any)
+### Created/Updated
+- planning-config.json
+- Planning directories (if any were missing)
+- claude.sh
+- .gitignore entries
 
 ### Next Steps
-- Normal: `cd <repo> && ./claude.sh`
-- Bare: `cd <repo> && ./worktree-add.sh <branch>`
+- `cd <repo> && ./claude.sh`
 ```
-
-## What Gets Overwritten
-
-Every run unconditionally overwrites these files with fresh versions:
-
-| Repo type | Files overwritten |
-|-----------|-------------------|
-| Normal | `claude.sh` (or `claude.cmd`), `planning-config.json`, `.claude/skills/*.md`, `.claude/agents/*.md` |
-| Bare (worktree) | `worktree-add.sh` |
-
-Skills and agents are copied from the planner's `commands/` and `agents/` directories into the target repo's `.claude/skills/` and `.claude/agents/` directories. New files are created; existing files are overwritten with the latest version. This ensures repos always have the current set of skills and agents.
-
-The generated `worktree-add.sh` itself also overwrites `claude.sh`, `planning-config.json`, and skills/agents inside each worktree when run. Existing worktrees are not affected until `worktree-add.sh` is re-run on them.
 
 ## Arguments
 
 The user may provide these inline with the command:
 - **repo path** — target repository (defaults to current directory)
 - **planning root** — where planning artifacts live (defaults to project-planner dir)
+- **--no-dashboard** — disable dashboard generation
 
 Examples:
 ```
@@ -109,9 +108,10 @@ Examples:
 /setup /path/to/my-project               # specific repo
 /setup my-repo                           # config key lookup
 /setup /path/to/repo --planning-root /path/to/planning
+/setup /path/to/repo --no-dashboard      # skip dashboard
 ```
 
 ## Context
-- Tools: `setup-repo.py`, `setup-worktree.py`
+- Tool: `setup-repo.py`
 - Shared library: `setup/` package
 - Config: `planning-config.json`, `planning-config.local.json`
