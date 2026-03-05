@@ -2,6 +2,7 @@
 
 import json
 import platform
+import subprocess
 from pathlib import Path
 
 import pytest
@@ -11,9 +12,10 @@ from setup.repo import main
 
 @pytest.fixture
 def repo(tmp_path):
-    """Create a minimal directory to act as a repo target."""
+    """Create a minimal git repository to act as a repo target."""
     repo_dir = tmp_path / "my-project"
     repo_dir.mkdir()
+    subprocess.run(["git", "init", str(repo_dir)], capture_output=True, check=True)
     return repo_dir
 
 
@@ -102,3 +104,92 @@ class TestSetupRepoMain:
         output = capsys.readouterr().out
         assert "Repo configured" in output
         assert str(repo) in output
+
+
+class TestSetupRepoWorktree:
+    def test_worktree_succeeds(self, worktree_pair):
+        _main_wt, second_wt = worktree_pair
+        main([str(second_wt)])
+
+        assert (second_wt / "planning-config.json").exists()
+
+    def test_worktree_label(self, worktree_pair, capsys):
+        _main_wt, second_wt = worktree_pair
+        main([str(second_wt)])
+        output = capsys.readouterr().out
+        assert "Worktree configured" in output
+
+    def test_inherits_sibling_planning_root(self, worktree_pair, tmp_path, capsys):
+        main_wt, second_wt = worktree_pair
+        planning_root = tmp_path / "custom-planning"
+        planning_root.mkdir()
+
+        # Set up config in main worktree
+        config = {"mode": "standalone", "planningRoot": str(planning_root)}
+        (main_wt / "planning-config.json").write_text(json.dumps(config))
+
+        main([str(second_wt)])
+
+        second_config = json.loads((second_wt / "planning-config.json").read_text())
+        assert second_config["planningRoot"] == str(planning_root)
+        assert "Inheriting" in capsys.readouterr().out
+
+    def test_explicit_flag_overrides_sibling(self, worktree_pair, tmp_path):
+        main_wt, second_wt = worktree_pair
+        sibling_root = tmp_path / "sibling-planning"
+        sibling_root.mkdir()
+        explicit_root = tmp_path / "explicit-planning"
+        explicit_root.mkdir()
+
+        # Set up config in main worktree with one path
+        config = {"mode": "standalone", "planningRoot": str(sibling_root)}
+        (main_wt / "planning-config.json").write_text(json.dumps(config))
+
+        # Explicit flag should override
+        main([str(second_wt), "--planning-root", str(explicit_root)])
+
+        second_config = json.loads((second_wt / "planning-config.json").read_text())
+        assert second_config["planningRoot"] == str(explicit_root.resolve())
+
+    def test_worktree_creates_launcher(self, worktree_pair):
+        _main_wt, second_wt = worktree_pair
+        main([str(second_wt)])
+
+        if platform.system() == "Windows":
+            assert (second_wt / "claude.cmd").exists()
+        else:
+            assert (second_wt / "claude.sh").exists()
+
+
+class TestSetupRepoBareRejection:
+    def test_bare_with_dot_bare(self, tmp_path):
+        repo = tmp_path / "bare-project"
+        repo.mkdir()
+        bare_dir = repo / ".bare"
+        subprocess.run(["git", "init", "--bare", str(bare_dir)], capture_output=True, check=True)
+
+        with pytest.raises(SystemExit):
+            main([str(repo)])
+
+    def test_standard_bare(self, tmp_path):
+        repo = tmp_path / "std-bare"
+        subprocess.run(["git", "init", "--bare", str(repo)], capture_output=True, check=True)
+
+        with pytest.raises(SystemExit):
+            main([str(repo)])
+
+    def test_bare_error_message(self, tmp_path, capsys):
+        repo = tmp_path / "bare-project"
+        repo.mkdir()
+        (repo / ".bare").mkdir()
+        subprocess.run(
+            ["git", "init", "--bare", str(repo / ".bare")],
+            capture_output=True, check=True,
+        )
+
+        with pytest.raises(SystemExit):
+            main([str(repo)])
+
+        err = capsys.readouterr().err
+        assert "bare repository" in err
+        assert "worktree" in err.lower()

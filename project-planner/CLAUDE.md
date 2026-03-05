@@ -12,8 +12,7 @@ project-planner/                  # Marketplace repo root
 │   ├── CLAUDE.md                 # This file
 │   ├── Makefile                  # make dashboard / make open / make clean / make bump-*
 │   ├── generate-dashboard.py     # Dashboard generator (Python 3, stdlib only)
-│   ├── setup-repo.py            # Configure a normal repo for planner
-│   ├── setup-worktree.py        # Generate worktree-add.sh for bare repos
+│   ├── setup-repo.py            # Configure a repo or worktree for planner
 │   ├── planning-config.json     # Planning configuration
 │   ├── .gitignore
 │   ├── .claude-plugin/
@@ -78,7 +77,7 @@ Always use templates from `Shared/templates/` when creating new artifacts. Repla
 
 | Skill | Purpose |
 |-------|---------|
-| `/planner:init` | Bootstrap a new project-planner instance |
+| `/planner:setup` | Configure a repo for project-planner (auto-detects normal vs worktree) |
 | `/planner:research` | Investigate a topic → `Research/<topic>.md` |
 | `/planner:brainstorm` | Explore possibilities → `Brainstorm/<topic>.md` |
 | `/planner:specify` | Write requirements → `Specs/<feature>/README.md` |
@@ -165,7 +164,6 @@ Generated via `make dashboard` (or `make open` to also open in browser). Python 
 When adding, removing, or renaming skills (`commands/`), agents (`agents/`), or modifying user-facing behavior in the setup library (`setup/`), update these files to stay in sync:
 - **`README.md`** — command/agent counts, tables, Mermaid diagrams, directory listing
 - **`CLAUDE.md`** — skill table, agent table, workflow lifecycle
-- **`commands/init.md`** — section numbering, shared-file copy lists
 - **`Shared/templates/claude-md-standalone.md`** — skill table, agent table, workflow lifecycle
 - **`Shared/templates/claude-md-embedded.md`** — skill table
 

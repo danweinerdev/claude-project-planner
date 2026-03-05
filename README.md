@@ -81,7 +81,7 @@ Utility commands (`poke-holes`, `tend`, `diagram`, `status`, `dashboard`) can be
 /plugin install planner@danweinerdev-claude-project-planner
 ```
 
-Then run `/planner:init` to bootstrap your first project.
+Then run `/planner:setup` to configure your repository.
 
 ## Documentation
 

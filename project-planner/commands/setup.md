@@ -1,6 +1,6 @@
 ---
 name: setup
-description: "Set up or re-setup a repository for project-planner. Overwrites existing setup files. Auto-detects bare vs normal repos. Triggers: /setup, setup repo, configure repo, setup worktree, re-setup"
+description: "Set up or re-setup a repository for project-planner. Overwrites existing setup files. Auto-detects normal repos vs worktrees, rejects bare repos. Triggers: /setup, setup repo, configure repo, setup worktree, re-setup"
 ---
 
 # /setup — Configure Repository for Project Planner
@@ -8,18 +8,24 @@ description: "Set up or re-setup a repository for project-planner. Overwrites ex
 ## When to Use
 When you want to configure a repository (the current working directory or a specified path) to work with the project-planner plugin. This sets up `planning-config.json`, a `claude.sh` launcher script, and cleans stale symlinks.
 
-**Idempotent and safe to re-run.** Always overwrites existing setup files (`claude.sh`, `planning-config.json`, `worktree-add.sh`) and cleans up stale file copies from previous setups. This is the correct way to repair or update a previously configured repo — for example after moving the planner directory or changing the planning root. Commands and agents are provided automatically by the marketplace plugin.
+**Idempotent and safe to re-run.** Always overwrites existing setup files (`claude.sh`, `planning-config.json`) and cleans up stale file copies from previous setups. This is the correct way to repair or update a previously configured repo — for example after moving the planner directory or changing the planning root. Commands and agents are provided automatically by the marketplace plugin.
 
-Automatically detects whether the target is a **bare repo** (worktree workflow) or a **normal repo** and runs the appropriate setup.
+Automatically detects whether the target is a **normal repo** or **worktree** and runs the appropriate setup. Bare repos are rejected with a helpful error message.
 
 ## Detection Logic
 
 Check the target repository to determine its type:
 
-1. **Bare repo with `.bare/`** → worktree mode (generates `worktree-add.sh`)
-2. **Standard bare repo** (`git rev-parse --is-bare-repository` returns `true`) → worktree mode
-3. **Normal repo** (has `.git/` directory) → normal repo mode
-4. **Not a git repo** → error, inform the user
+1. **`.git` is a file** → worktree (inherits settings from sibling worktrees)
+2. **`.bare/` exists or `git rev-parse --is-bare-repository` is true** → bare repo → error, tell user to run setup on individual worktrees
+3. **`.git/` is a directory** → normal repo
+4. **None of the above** → error, inform the user
+
+### Worktree Sibling Inheritance
+
+When run on a worktree, setup searches sibling worktrees (via `git worktree list`) for an existing `planning-config.json` and reuses its `planningRoot`. This means you only need to specify `--planning-root` once — subsequent worktrees inherit the setting automatically.
+
+Priority: explicit `--planning-root` flag > sibling discovery > default (planner directory).
 
 ## Process
 
@@ -37,31 +43,19 @@ If this is a standalone setup where planning artifacts live in a **separate** re
 > - In the project-planner plugin directory (default)
 > - In a separate planning repository (provide path)
 
-For most setups the default is correct — skip the question if the user already specified `--planning-root` or if context makes the answer obvious.
+For most setups the default is correct — skip the question if the user already specified `--planning-root` or if context makes the answer obvious. For worktrees, also skip if a sibling already has a config.
 
 ### 3. Run the Setup Tool
 
-The setup tools live in the **project-planner plugin directory** (the directory containing this command file).
+The setup tool lives in the **project-planner plugin directory** (the directory containing this command file).
 
 The plugin directory contains `commands/`, `agents/`, and `Shared/` as siblings — find it by globbing for `**/commands/research.md` in both the current directory and `~/.claude/plugins/cache/`, then go one level up.
 
-**For a bare repo (worktree mode):**
-```bash
-python3 <planner-dir>/setup-worktree.py <target-repo> [--planning-root <path>]
-```
-
-This generates (or overwrites) a `worktree-add.sh` script in the bare repo root. After generation, inform the user:
-```
-Worktree script generated. Usage:
-  cd <repo> && ./worktree-add.sh <branch>
-```
-
-**For a normal repo:**
 ```bash
 python3 <planner-dir>/setup-repo.py <target-repo> [--planning-root <path>]
 ```
 
-This writes (or overwrites) `planning-config.json` and `claude.sh`/`claude.cmd` in the repo.
+This writes (or overwrites) `planning-config.json` and `claude.sh`/`claude.cmd` in the repo or worktree.
 
 ### 4. Report Results
 
@@ -71,29 +65,26 @@ Display what was created or updated:
 ## Setup Complete
 
 **Repo:** <path>
-**Type:** normal repo / bare repo (worktree)
+**Type:** normal repo / worktree
 **Planning root:** <path>
 
 ### Created/Overwritten
-- planning-config.json (normal) or worktree-add.sh (bare)
-- claude.sh launcher (normal only — worktrees get theirs via worktree-add.sh)
+- planning-config.json
+- claude.sh launcher
 - Cleaned N stale symlinks (if any)
+- Cleaned N stale file copies (if any)
 
 ### Next Steps
-- Normal: `cd <repo> && ./claude.sh`
-- Bare: `cd <repo> && ./worktree-add.sh <branch>`
+- `cd <repo> && ./claude.sh`
 ```
 
 ## What Gets Overwritten
 
 Every run unconditionally overwrites these files with fresh versions:
 
-| Repo type | Files overwritten |
-|-----------|-------------------|
-| Normal | `claude.sh` (or `claude.cmd`), `planning-config.json` |
-| Bare (worktree) | `worktree-add.sh` |
-
-The generated `worktree-add.sh` itself also overwrites `claude.sh` and `planning-config.json` inside each worktree when run. Existing worktrees are not affected until `worktree-add.sh` is re-run on them.
+| Files overwritten |
+|-------------------|
+| `claude.sh` (or `claude.cmd`), `planning-config.json` |
 
 Setup also cleans up stale `.claude/skills/*.md` and `.claude/agents/*.md` files that were copied by previous versions of the setup tools. Commands and agents are now provided automatically by the marketplace plugin — no local copies needed.
 
@@ -112,6 +103,6 @@ Examples:
 ```
 
 ## Context
-- Tools: `setup-repo.py`, `setup-worktree.py`
+- Tool: `setup-repo.py`
 - Shared library: `setup/` package
 - Config: `planning-config.json`, `planning-config.local.json`

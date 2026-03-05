@@ -57,18 +57,19 @@ claude --plugin-dir /path/to/project-planner
 
 ### Use with git worktrees
 
-If you use bare-repo worktrees, create a launcher script in each worktree:
+Run `/planner:setup` on each worktree. The first worktree needs `--planning-root`; subsequent worktrees inherit the setting automatically from siblings:
 
 ```bash
-# claude.sh
-#!/usr/bin/env bash
-exec claude \
-    --add-dir="/path/to/planning-repo" \
-    --plugin-dir="/path/to/project-planner" \
-    "$@"
+# First worktree — specify planning root
+cd /path/to/main-worktree
+claude   # then: /planner:setup --planning-root /path/to/planning-repo
+
+# Additional worktrees — inherits planning root from the first
+cd /path/to/feature-worktree
+claude   # then: /planner:setup
 ```
 
-Then run `./claude.sh` from any worktree to get planning commands and context.
+Each worktree gets its own `planning-config.json` and `claude.sh` launcher. Run `./claude.sh` from any worktree to get planning commands and context.
 
 ## Slash Commands
 

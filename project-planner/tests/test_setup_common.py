@@ -4,6 +4,7 @@ import json
 import os
 import platform
 import stat
+import subprocess
 from pathlib import Path
 from unittest.mock import patch
 
@@ -13,6 +14,8 @@ from setup.common import (
     PLANNER_DIR,
     clean_stale_copies,
     clean_stale_symlinks,
+    detect_repo_type,
+    find_sibling_config,
     load_json,
     resolve_repo_path,
     setup_planning_config,
@@ -329,3 +332,74 @@ class TestWriteLauncher:
         (tmp_path / "claude.sh").write_text("old")
         write_launcher(tmp_path, Path("/p"))
         assert "overwritten" in capsys.readouterr().out
+
+
+class TestDetectRepoType:
+    def test_normal_repo(self, tmp_path):
+        repo = tmp_path / "normal"
+        repo.mkdir()
+        subprocess.run(["git", "init", str(repo)], capture_output=True, check=True)
+        assert detect_repo_type(repo) == "normal"
+
+    def test_worktree(self, worktree_pair):
+        _main_wt, second_wt = worktree_pair
+        assert detect_repo_type(second_wt) == "worktree"
+
+    def test_bare_with_dot_bare(self, tmp_path):
+        repo = tmp_path / "bare-project"
+        repo.mkdir()
+        (repo / ".bare").mkdir()
+        assert detect_repo_type(repo) == "bare"
+
+    def test_standard_bare(self, tmp_path):
+        repo = tmp_path / "std-bare"
+        subprocess.run(["git", "init", "--bare", str(repo)], capture_output=True, check=True)
+        assert detect_repo_type(repo) == "bare"
+
+    def test_not_a_repo(self, tmp_path):
+        plain = tmp_path / "plain"
+        plain.mkdir()
+        with pytest.raises(ValueError, match="Not a git repository"):
+            detect_repo_type(plain)
+
+
+class TestFindSiblingConfig:
+    def test_finds_sibling_config(self, worktree_pair, tmp_path):
+        main_wt, second_wt = worktree_pair
+        planning_root = tmp_path / "planning"
+        planning_root.mkdir()
+
+        # Set up config in main worktree
+        config = {"mode": "standalone", "planningRoot": str(planning_root)}
+        (main_wt / "planning-config.json").write_text(json.dumps(config))
+
+        result = find_sibling_config(second_wt)
+        assert result is not None
+        assert result["planningRoot"] == str(planning_root)
+        assert result["source"] == str(main_wt)
+
+    def test_returns_none_when_no_config(self, worktree_pair):
+        _main_wt, second_wt = worktree_pair
+        result = find_sibling_config(second_wt)
+        assert result is None
+
+    def test_skips_own_config(self, worktree_pair, tmp_path):
+        main_wt, second_wt = worktree_pair
+        planning_root = tmp_path / "planning"
+        planning_root.mkdir()
+
+        # Only set config in second (own) worktree, not in main
+        config = {"mode": "standalone", "planningRoot": str(planning_root)}
+        (second_wt / "planning-config.json").write_text(json.dumps(config))
+
+        # From second's perspective, main has no config → returns None
+        result = find_sibling_config(second_wt)
+        assert result is None
+
+    def test_returns_none_for_normal_repo(self, tmp_path):
+        repo = tmp_path / "normal"
+        repo.mkdir()
+        subprocess.run(["git", "init", str(repo)], capture_output=True, check=True)
+        # Normal repo with no worktrees — should return None
+        result = find_sibling_config(repo)
+        assert result is None

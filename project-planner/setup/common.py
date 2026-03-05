@@ -8,6 +8,7 @@ import json
 import os
 import platform
 import stat
+import subprocess
 import sys
 from pathlib import Path
 
@@ -49,6 +50,72 @@ def resolve_repo_path(repo_arg: str, planner_dir: Path = PLANNER_DIR) -> Path:
 
     print(f"Error: '{repo_arg}' is not a directory and was not found in planning-config.local.json", file=sys.stderr)
     sys.exit(1)
+
+
+def detect_repo_type(repo_path: Path) -> str:
+    """Detect whether a path is a normal repo, worktree, or bare repo.
+
+    Returns "normal", "worktree", or "bare".
+    Raises ValueError if the path is not a git repository.
+    """
+    git_path = repo_path / ".git"
+
+    # .git is a file → this is a worktree
+    if git_path.is_file():
+        return "worktree"
+
+    # .bare/ directory → bare repo (common convention)
+    if (repo_path / ".bare").is_dir():
+        return "bare"
+
+    # Ask git if this is a bare repository
+    result = subprocess.run(
+        ["git", "-C", str(repo_path), "rev-parse", "--is-bare-repository"],
+        capture_output=True, text=True,
+    )
+    if result.returncode == 0 and result.stdout.strip() == "true":
+        return "bare"
+
+    # .git is a directory → normal repo
+    if git_path.is_dir():
+        return "normal"
+
+    raise ValueError(f"Not a git repository: {repo_path}")
+
+
+def find_sibling_config(repo_path: Path) -> dict | None:
+    """Search sibling worktrees for an existing planning-config.json.
+
+    Returns {"planningRoot": str, "source": str} or None.
+    """
+    result = subprocess.run(
+        ["git", "-C", str(repo_path), "worktree", "list", "--porcelain"],
+        capture_output=True, text=True,
+    )
+    if result.returncode != 0:
+        return None
+
+    own_path = repo_path.resolve()
+    siblings = []
+    for line in result.stdout.splitlines():
+        if line.startswith("worktree "):
+            wt_path = Path(line.split(" ", 1)[1])
+            if wt_path.resolve() != own_path:
+                siblings.append(wt_path)
+
+    for wt in siblings:
+        config_file = wt / "planning-config.json"
+        if config_file.is_file():
+            try:
+                data = json.loads(config_file.read_text())
+                return {
+                    "planningRoot": data.get("planningRoot", ""),
+                    "source": str(wt),
+                }
+            except (json.JSONDecodeError, IOError):
+                continue
+
+    return None
 
 
 def setup_planning_config(target_path: Path, planning_root: Path) -> None:

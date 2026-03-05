@@ -1,13 +1,16 @@
-"""Configure a normal git repository for project-planner integration."""
+"""Configure a git repository (normal or worktree) for project-planner integration."""
 
 import argparse
 import platform
+import sys
 from pathlib import Path
 
 from .common import (
     PLANNER_DIR,
     clean_stale_copies,
     clean_stale_symlinks,
+    detect_repo_type,
+    find_sibling_config,
     resolve_repo_path,
     setup_planning_config,
     write_launcher,
@@ -39,7 +42,34 @@ def main(argv: list[str] | None = None) -> None:
     args = parser.parse_args(argv)
 
     repo_path = resolve_repo_path(args.repo)
-    planning_root = (args.planning_root or PLANNER_DIR).resolve()
+
+    # Detect repo type
+    try:
+        repo_type = detect_repo_type(repo_path)
+    except ValueError:
+        print(f"Error: {repo_path} is not a git repository", file=sys.stderr)
+        sys.exit(1)
+
+    if repo_type == "bare":
+        print(f"Error: {repo_path} is a bare repository.", file=sys.stderr)
+        print("  Run setup on individual worktrees instead:", file=sys.stderr)
+        print(f"  e.g., python3 {PLANNER_DIR}/setup-repo.py {repo_path}/<worktree>", file=sys.stderr)
+        sys.exit(1)
+
+    # Resolve planning root: explicit flag > sibling config > default
+    if args.planning_root:
+        planning_root = args.planning_root.resolve()
+    elif repo_type == "worktree":
+        sibling = find_sibling_config(repo_path)
+        if sibling and sibling["planningRoot"]:
+            planning_root = Path(sibling["planningRoot"])
+            if not planning_root.is_absolute():
+                planning_root = planning_root.resolve()
+            print(f"Inheriting planningRoot from sibling worktree: {sibling['source']}")
+        else:
+            planning_root = PLANNER_DIR.resolve()
+    else:
+        planning_root = PLANNER_DIR.resolve()
 
     # 1. Planning config
     setup_planning_config(repo_path, planning_root)
@@ -58,8 +88,9 @@ def main(argv: list[str] | None = None) -> None:
     write_launcher(repo_path, planning_root)
 
     # Summary
+    label = "Worktree configured" if repo_type == "worktree" else "Repo configured"
     print()
-    print(f"=== Repo configured: {repo_path.name} ===")
+    print(f"=== {label}: {repo_path.name} ===")
     print(f"  Path:     {repo_path}")
     print(f"  Planning: {planning_root}")
     print()
