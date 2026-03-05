@@ -77,7 +77,7 @@ Always use templates from `Shared/templates/` when creating new artifacts. Repla
 
 | Skill | Purpose |
 |-------|---------|
-| `/planner:setup` | Configure a repo for project-planner (auto-detects normal vs worktree) |
+| `/planner:init` | Bootstrap a new project-planner instance |
 | `/planner:research` | Investigate a topic → `Research/<topic>.md` |
 | `/planner:brainstorm` | Explore possibilities → `Brainstorm/<topic>.md` |
 | `/planner:specify` | Write requirements → `Specs/<feature>/README.md` |
