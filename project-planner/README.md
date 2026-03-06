@@ -4,7 +4,7 @@ A [Claude Code](https://docs.anthropic.com/en/docs/claude-code) plugin for struc
 
 ## How It Works
 
-Project Planner is a Claude Code **plugin**. When loaded, it registers 19 slash commands (namespaced under `/planner:*`) and 5 review agents that Claude can delegate to. All artifacts are Markdown files with YAML frontmatter — the dashboard generator reads frontmatter exclusively, so there's no brittle table parsing.
+Project Planner is a Claude Code **plugin**. When loaded, it registers 18 slash commands (namespaced under `/planner:*`) and 4 review agents that Claude can delegate to. All artifacts are Markdown files with YAML frontmatter — the dashboard generator reads frontmatter exclusively, so there's no brittle table parsing.
 
 ```mermaid
 graph LR
@@ -39,8 +39,8 @@ graph LR
 claude --plugin-dir /path/to/project-planner
 
 # Then inside Claude:
-> /planner:init
-# Choose "embedded", pick a subdirectory (e.g., "Planning")
+> /planner:setup
+# Generates planning-config.json, bootstraps directories
 ```
 
 ### Use as a standalone planning repo
@@ -51,25 +51,24 @@ mkdir my-planning && cd my-planning && git init
 claude --plugin-dir /path/to/project-planner
 
 # Then inside Claude:
-> /planner:init
-# Choose "standalone"
+> /planner:setup
+# Generates planning-config.json, bootstraps directories
 ```
 
 ### Use with git worktrees
 
-Run `/planner:setup` on each worktree. The first worktree needs `--planning-root`; subsequent worktrees inherit the setting automatically from siblings:
+Run `/planner:setup` in each worktree. The setup tool auto-detects worktrees and inherits `planningRoot` and `dashboard` settings from siblings:
 
 ```bash
-# First worktree — specify planning root
-cd /path/to/main-worktree
-claude   # then: /planner:setup --planning-root /path/to/planning-repo
+# In the first worktree — provide the planning root explicitly
+claude --plugin-dir /path/to/project-planner
+> /planner:setup /path/to/worktree --planning-root /path/to/planning-repo
 
-# Additional worktrees — inherits planning root from the first
-cd /path/to/feature-worktree
-claude   # then: /planner:setup
+# In subsequent worktrees — settings are inherited automatically
+> /planner:setup /path/to/another-worktree
 ```
 
-Each worktree gets its own `planning-config.json` and `claude.sh` launcher. Run `./claude.sh` from any worktree to get planning commands and context.
+Each worktree gets its own `planning-config.json` and `claude.sh` launcher.
 
 ## Slash Commands
 
@@ -79,7 +78,7 @@ All commands are namespaced as `/planner:*` automatically by the plugin system.
 
 | Command | Purpose | Output |
 |---------|---------|--------|
-| `/planner:init` | Bootstrap a new planner instance | `planning-config.json`, directory structure |
+| `/planner:setup` | Set up a repo for planner | `planning-config.json`, `claude.sh`, directories |
 | `/planner:research` | Investigate a topic | `Research/<topic>.md` |
 | `/planner:brainstorm` | Explore possibilities | `Brainstorm/<topic>.md` |
 | `/planner:specify` | Write requirements | `Specs/<feature>/README.md` |
@@ -101,7 +100,6 @@ All commands are namespaced as `/planner:*` automatically by the plugin system.
 | `/planner:diagram` | Generate Mermaid diagrams | `Diagrams/<subject>.md` or inline |
 | `/planner:excavate` | Progressive codebase discovery | `Research/<codebase>.md` |
 | `/planner:dashboard` | Regenerate HTML dashboard | `Dashboard/` |
-| `/planner:setup` | Configure a repo for planner | `planning-config.json`, `claude.sh`, skills/agents |
 | `/planner:status` | Quick status summary | Text output (read-only) |
 
 ## Workflow Lifecycle
@@ -110,8 +108,7 @@ Commands follow a natural planning progression. You don't have to use every step
 
 ```mermaid
 graph TD
-    init["/planner:init"] --> research["/planner:research"]
-    research --> brainstorm["/planner:brainstorm"]
+    research["/planner:research"] --> brainstorm["/planner:brainstorm"]
     brainstorm --> specify["/planner:specify"]
     specify --> design["/planner:design"]
     design --> plan["/planner:plan"]
@@ -141,7 +138,7 @@ graph TD
     classDef review fill:#3a5a6a,stroke:#333,color:#fff
     classDef utility fill:#555,stroke:#333,color:#fff
 
-    class init,research,brainstorm discovery
+    class research,brainstorm discovery
     class specify,design definition
     class plan,breakdown execution
     class implement,codereview,simplify implementation
@@ -151,12 +148,13 @@ graph TD
 
 | Phase | Commands | What happens |
 |-------|----------|-------------|
+| **Setup** | `setup` | Configure a repo for planner |
 | **Discovery** | `research`, `brainstorm`, `excavate` | Gather context, explore options, map codebases |
 | **Definition** | `specify`, `design` | Lock down requirements and architecture |
 | **Execution** | `plan`, `breakdown` | Structure work into phases, tasks, subtasks |
 | **Implementation** | `implement`, `code-review`, `simplify` | Build it, verify it, then clean it up |
 | **Review** | `debrief`, `retro` | Capture what happened and what you learned |
-| **Utilities** | `poke-holes`, `tend`, `diagram`, `setup`, `status`, `dashboard` | Challenge, maintain, visualize, configure, monitor |
+| **Utilities** | `poke-holes`, `tend`, `diagram`, `status`, `dashboard` | Challenge, maintain, visualize, configure, monitor |
 
 ## Plan Hierarchy
 
@@ -193,7 +191,7 @@ graph TD
 
 ## Agents
 
-The plugin includes 5 review agents that Claude can delegate to:
+The plugin includes 4 review agents that Claude can delegate to:
 
 | Agent | Model | Purpose |
 |-------|-------|---------|
@@ -322,7 +320,6 @@ project-planner/                   # The plugin itself (not your project)
 │   ├── diagram.md
 │   ├── excavate.md
 │   ├── implement.md
-│   ├── init.md
 │   ├── plan.md
 │   ├── poke-holes.md
 │   ├── research.md

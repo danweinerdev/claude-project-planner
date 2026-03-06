@@ -91,7 +91,7 @@ See the [plugin README](./project-planner/README.md) for the full command refere
 
 | Plugin | Commands | Agents | Description |
 |--------|----------|--------|-------------|
-| [planner](./project-planner/) | 19 | 5 | Full SDLC — research, specs, designs, plans, implementation, code review, dashboard |
+| [planner](./project-planner/) | 18 | 5 | Full SDLC — research, specs, designs, plans, implementation, code review, dashboard |
 
 ## License
 

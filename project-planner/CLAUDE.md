@@ -12,7 +12,7 @@ project-planner/                  # Marketplace repo root
 │   ├── CLAUDE.md                 # This file
 │   ├── Makefile                  # make dashboard / make open / make clean / make bump-*
 │   ├── generate-dashboard.py     # Dashboard generator (Python 3, stdlib only)
-│   ├── setup-repo.py            # Configure a repo or worktree for planner
+│   ├── setup-repo.py            # Configure a repo (normal or worktree) for planner
 │   ├── planning-config.json     # Planning configuration
 │   ├── .gitignore
 │   ├── .claude-plugin/
@@ -77,7 +77,6 @@ Always use templates from `Shared/templates/` when creating new artifacts. Repla
 
 | Skill | Purpose |
 |-------|---------|
-| `/planner:init` | Bootstrap a new project-planner instance |
 | `/planner:research` | Investigate a topic → `Research/<topic>.md` |
 | `/planner:brainstorm` | Explore possibilities → `Brainstorm/<topic>.md` |
 | `/planner:specify` | Write requirements → `Specs/<feature>/README.md` |
@@ -93,7 +92,7 @@ Always use templates from `Shared/templates/` when creating new artifacts. Repla
 | `/planner:tend` | Artifact hygiene — verify statuses, tags, conventions |
 | `/planner:diagram` | Generate Mermaid diagrams from artifacts |
 | `/planner:excavate` | Progressive codebase discovery → `Research/<slug>.md` |
-| `/planner:setup` | Configure a repo for project-planner (auto-detects bare vs normal) |
+| `/planner:setup` | Set up a repo — generates planning-config.json, bootstraps directories, creates launcher |
 | `/planner:dashboard` | Regenerate HTML dashboard |
 | `/planner:status` | Quick status summary (read-only) |
 
@@ -111,7 +110,7 @@ Always use templates from `Shared/templates/` when creating new artifacts. Repla
 
 The typical flow through skills:
 ```
-/planner:init → /planner:research → /planner:brainstorm → /planner:specify → /planner:design → /planner:plan → /planner:breakdown → /planner:implement → /planner:code-review → /planner:simplify → /planner:debrief → /planner:retro
+/planner:setup → /planner:research → /planner:brainstorm → /planner:specify → /planner:design → /planner:plan → /planner:breakdown → /planner:implement → /planner:code-review → /planner:simplify → /planner:debrief → /planner:retro
 ```
 Use `/planner:dashboard` or `/planner:status` at any point to check progress.
 Use `/planner:poke-holes` before approving any artifact. Use `/planner:tend` periodically for hygiene.
