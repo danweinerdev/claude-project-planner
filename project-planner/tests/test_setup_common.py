@@ -349,6 +349,8 @@ class TestDetectRepoType:
         repo = tmp_path / "bare-project"
         repo.mkdir()
         (repo / ".bare").mkdir()
+        # Real bare repos also have a .git file pointing to .bare/
+        (repo / ".git").write_text("gitdir: ./.bare")
         assert detect_repo_type(repo) == "bare"
 
     def test_standard_bare(self, tmp_path):

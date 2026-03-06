@@ -60,13 +60,15 @@ def detect_repo_type(repo_path: Path) -> str:
     """
     git_path = repo_path / ".git"
 
+    # .bare/ directory → bare repo (common convention)
+    # Must check before .git file: bare repos have both .bare/ and a .git
+    # file pointing to it.
+    if (repo_path / ".bare").is_dir():
+        return "bare"
+
     # .git is a file → this is a worktree
     if git_path.is_file():
         return "worktree"
-
-    # .bare/ directory → bare repo (common convention)
-    if (repo_path / ".bare").is_dir():
-        return "bare"
 
     # Ask git if this is a bare repository
     result = subprocess.run(
