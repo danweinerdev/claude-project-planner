@@ -14,7 +14,7 @@ Read `planning-config.json` (at repo root) to find the planning root:
 
 **Templates and schema** (`Shared/`) are read from the **plugin directory**, not from the planning root. The plugin directory contains `commands/`, `agents/`, and `Shared/` as siblings — find it by globbing for `**/commands/research.md` in both the current directory and `~/.claude/plugins/cache/`. If multiple matches are found (e.g., multiple cached plugin versions), sort by version number and use the highest. Then go one level up.
 
-Run dashboard commands (`make dashboard`) from the planning root directory.
+If `dashboard` is `true` in `planning-config.json`, run dashboard commands (`make dashboard`) from the planning root directory.
 
 ## When to Use
 When a plan is approved and you're ready to implement a phase. This skill **coordinates** implementation: it delegates actual code work to `code-implementer` agents, runs them in parallel where dependencies allow, triggers `code-reviewer` agents after each task, and manages the review-fix cycle. It bridges the gap between `/plan` (which defines *what* to build) and `/debrief` (which captures *what happened*).
@@ -143,7 +143,7 @@ Once all tasks are complete (or all remaining tasks are blocked):
   - Defer blocked tasks and mark phase as `complete`
   - Mark phase as `blocked`
 
-### 7. Regenerate Dashboard
+### 7. Regenerate Dashboard (only if `dashboard` is `true` in `planning-config.json`)
 - Run `make dashboard` from the planning root to update the HTML dashboard
 
 ## Task Execution Details

@@ -17,7 +17,7 @@ Read `planning-config.json` (at repo root) to find the planning root:
 Run dashboard commands (`make dashboard`) from the planning root directory.
 
 ## When to Use
-After making changes to plans, specs, designs, or other artifacts and you want the HTML dashboard to reflect current state.
+After making changes to plans, specs, designs, or other artifacts and you want the HTML dashboard to reflect current state. Dashboard generation requires `"dashboard": true` in `planning-config.json` — if it is not set, inform the user and stop.
 
 ## Process
 

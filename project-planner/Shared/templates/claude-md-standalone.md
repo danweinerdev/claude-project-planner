@@ -113,6 +113,7 @@ The planning root's `planning-config.json` drives all path resolution:
 - `planningRoot`: `"."` for standalone, subdirectory name for embedded
 - `repositories`: map of external repo keys to GitHub URLs (standalone mode)
 - `planMapping`: map of plan names to target repos
+- `dashboard`: `true` to enable dashboard generation (off by default)
 - `planRepository`: key for the planning repo itself
 
 ### planning-config.local.json (gitignored)
@@ -123,7 +124,7 @@ Local filesystem paths for external repositories:
 
 ## Dashboard
 
-Generated via `make dashboard` (or `make open` to also open in browser). Python 3, stdlib only. Reads YAML frontmatter from all artifact types, generates static HTML in `Dashboard/`.
+Opt-in: requires `"dashboard": true` in `planning-config.json`. Generated via `make dashboard` (or `make open` to also open in browser). Python 3, stdlib only. Reads YAML frontmatter from all artifact types, generates static HTML in `Dashboard/`.
 
 ### Dashboard Pages
 - `index.html` — stats bar, nav links, in-progress phases, plan cards, recent activity

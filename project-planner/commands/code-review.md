@@ -14,7 +14,7 @@ Read `planning-config.json` (at repo root) to find the planning root:
 
 **Templates and schema** (`Shared/`) are read from the **plugin directory**, not from the planning root. The plugin directory contains `commands/`, `agents/`, and `Shared/` as siblings — find it by globbing for `**/commands/research.md` in both the current directory and `~/.claude/plugins/cache/`. If multiple matches are found (e.g., multiple cached plugin versions), sort by version number and use the highest. Then go one level up.
 
-Run dashboard commands (`make dashboard`) from the planning root directory.
+If `dashboard` is `true` in `planning-config.json`, run dashboard commands (`make dashboard`) from the planning root directory.
 
 ## When to Use
 During or after implementation of a plan phase, when you want to verify that the actual code matches what was planned. This skill bridges the gap between planning artifacts and real code — it reads git diffs and compares them against the plan, specs, and designs to surface drift, missing work, unplanned additions, unchecked assumptions, and things the planning stages didn't anticipate.

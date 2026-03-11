@@ -37,8 +37,19 @@ class TestMainIntegration:
         assert "Test Plan" in index_html
         assert "Test Project" in index_html
 
-    def test_disabled_dashboard(self, tmp_path):
-        """Dashboard generation should be skipped when disabled."""
+    def test_dashboard_not_enabled(self, tmp_path):
+        """Dashboard generation should be skipped when not explicitly enabled."""
+        plans = tmp_path / "Plans"
+        plans.mkdir()
+
+        (tmp_path / "planning-config.json").write_text(
+            json.dumps({}))
+
+        main(planning_root=tmp_path)
+        assert not (tmp_path / "Dashboard").exists()
+
+    def test_dashboard_false(self, tmp_path):
+        """Dashboard generation should be skipped when dashboard is false."""
         plans = tmp_path / "Plans"
         plans.mkdir()
 
@@ -50,7 +61,8 @@ class TestMainIntegration:
 
     def test_empty_plans(self, tmp_path):
         """Should handle empty Plans directory gracefully."""
-        (tmp_path / "planning-config.json").write_text(json.dumps({}))
+        (tmp_path / "planning-config.json").write_text(
+            json.dumps({"dashboard": True}))
 
         main(planning_root=tmp_path)
 
@@ -60,7 +72,8 @@ class TestMainIntegration:
 
     def test_no_plans_dir(self, tmp_path):
         """Should create Plans/ and generate dashboard with no plans."""
-        (tmp_path / "planning-config.json").write_text(json.dumps({}))
+        (tmp_path / "planning-config.json").write_text(
+            json.dumps({"dashboard": True}))
 
         main(planning_root=tmp_path)
 

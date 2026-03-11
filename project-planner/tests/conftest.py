@@ -240,6 +240,7 @@ What went well, what didn't.
     (root / "planning-config.json").write_text(json.dumps({
         "title": "Test Project",
         "description": "A test project for testing",
+        "dashboard": True,
         "repositories": {
             "main-repo": {"github": "user/main-repo"}
         },

@@ -53,10 +53,10 @@ Ask the user about options that aren't already clear from context or arguments:
 > - In the project-planner plugin directory (default)
 > - In a separate directory (provide path)
 
-**Dashboard** — skip if `--no-dashboard` was provided or inherited from sibling:
+**Dashboard** — skip if `--dashboard` was provided or inherited from sibling:
 > Do you want the HTML dashboard?
-> - Yes (default) — generates a static HTML dashboard from artifacts via `make dashboard`
-> - No — disables dashboard generation (sets `"dashboard": false` in config)
+> - No (default) — dashboard generation is not enabled
+> - Yes — enables dashboard generation (sets `"dashboard": true` in config), generates a static HTML dashboard from artifacts via `make dashboard`
 
 For most setups the defaults are correct — skip questions when the answer is obvious.
 
@@ -67,7 +67,7 @@ The setup tool lives in the **project-planner plugin directory** (the directory 
 The plugin directory contains `commands/`, `agents/`, and `Shared/` as siblings — find it by globbing for `**/commands/setup.md` in both the current directory and `~/.claude/plugins/cache/`. If multiple matches are found (e.g., multiple cached plugin versions), sort by version number and use the highest. Then go one level up.
 
 ```bash
-python3 <planner-dir>/setup-repo.py <target-repo> [--planning-root <path>] [--no-dashboard]
+python3 <planner-dir>/setup-repo.py <target-repo> [--planning-root <path>] [--dashboard]
 ```
 
 This writes (or overwrites) `planning-config.json` and `claude.sh`/`claude.cmd` in the repo, and bootstraps planning directories.
@@ -100,7 +100,7 @@ Display what was created or updated:
 The user may provide these inline with the command:
 - **repo path** — target repository (defaults to current directory)
 - **planning root** — where planning artifacts live (defaults to project-planner dir)
-- **--no-dashboard** — disable dashboard generation
+- **--dashboard** — enable dashboard generation
 
 Examples:
 ```
@@ -108,7 +108,7 @@ Examples:
 /setup /path/to/my-project               # specific repo
 /setup my-repo                           # config key lookup
 /setup /path/to/repo --planning-root /path/to/planning
-/setup /path/to/repo --no-dashboard      # skip dashboard
+/setup /path/to/repo --dashboard          # enable dashboard
 ```
 
 ## Context

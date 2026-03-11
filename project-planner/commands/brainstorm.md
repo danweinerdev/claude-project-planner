@@ -14,7 +14,7 @@ Read `planning-config.json` (at repo root) to find the planning root:
 
 **Templates and schema** (`Shared/`) are read from the **plugin directory**, not from the planning root. The plugin directory contains `commands/`, `agents/`, and `Shared/` as siblings — find it by globbing for `**/commands/research.md` in both the current directory and `~/.claude/plugins/cache/`. If multiple matches are found (e.g., multiple cached plugin versions), sort by version number and use the highest. Then go one level up.
 
-Run dashboard commands (`make dashboard`) from the planning root directory.
+If `dashboard` is `true` in `planning-config.json`, run dashboard commands (`make dashboard`) from the planning root directory.
 
 ## When to Use
 When you need to generate and evaluate multiple approaches to a problem before committing to one. Good for architecture decisions, feature approaches, or tool selection.
@@ -47,7 +47,7 @@ When you need to generate and evaluate multiple approaches to a problem before c
 5. **Link**
    - Add cross-references to related research or specs in `related` frontmatter
 
-6. **Regenerate Dashboard**
+6. **Regenerate Dashboard** (only if `dashboard` is `true` in `planning-config.json`)
    - Run `make dashboard` from the planning root to update the HTML dashboard
 
 ## Output

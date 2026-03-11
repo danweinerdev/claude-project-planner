@@ -14,7 +14,7 @@ Read `planning-config.json` (at repo root) to find the planning root:
 
 **Templates and schema** (`Shared/`) are read from the **plugin directory**, not from the planning root. The plugin directory contains `commands/`, `agents/`, and `Shared/` as siblings — find it by globbing for `**/commands/research.md` in both the current directory and `~/.claude/plugins/cache/`. If multiple matches are found (e.g., multiple cached plugin versions), sort by version number and use the highest. Then go one level up.
 
-Run dashboard commands (`make dashboard`) from the planning root directory.
+If `dashboard` is `true` in `planning-config.json`, run dashboard commands (`make dashboard`) from the planning root directory.
 
 ## When to Use
 After completing a significant piece of work (a plan, a sprint, a milestone) to capture what went well, what could be improved, and action items for the future.
@@ -41,7 +41,7 @@ After completing a significant piece of work (a plan, a sprint, a milestone) to 
 4. **Link**
    - Add references to related plans or debriefs in `related` frontmatter
 
-5. **Regenerate Dashboard**
+5. **Regenerate Dashboard** (only if `dashboard` is `true` in `planning-config.json`)
    - Run `make dashboard` from the planning root to update the HTML dashboard
 
 ## Output

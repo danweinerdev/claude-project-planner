@@ -44,4 +44,4 @@ Planning artifacts under `{{PLANNING_ROOT}}/` — managed by project-planner.
 
 ### Planning Configuration
 See `{{PLANNING_ROOT}}/planning-config.json`.
-Run `make -C {{PLANNING_ROOT}} dashboard` to generate the dashboard.
+Dashboard generation is opt-in: set `"dashboard": true` in `planning-config.json`, then run `make -C {{PLANNING_ROOT}} dashboard`.
