@@ -18,7 +18,11 @@ Planning artifacts under `{{PLANNING_ROOT}}/` — managed by project-planner.
 ├── Designs/                      # Technical designs
 │   └── <component>/README.md
 ├── Plans/                        # Implementation plans
-│   └── <PlanName>/
+│   ├── New/                      # Draft plans, not yet approved
+│   ├── Ready/                    # Approved, ready to implement
+│   ├── Active/                   # Currently being implemented
+│   └── Complete/                 # Done, frozen — AI skips unless asked
+│   └── <status>/<PlanName>/
 │       ├── README.md
 │       ├── 01-Phase-Name.md
 │       └── notes/
@@ -34,7 +38,7 @@ Planning artifacts under `{{PLANNING_ROOT}}/` — managed by project-planner.
 | `/brainstorm` | Explore possibilities → `{{PLANNING_ROOT}}/Brainstorm/<topic>.md` |
 | `/specify` | Write requirements → `{{PLANNING_ROOT}}/Specs/<feature>/README.md` |
 | `/design` | Technical architecture → `{{PLANNING_ROOT}}/Designs/<component>/README.md` |
-| `/plan` | Create implementation plan → `{{PLANNING_ROOT}}/Plans/<Name>/` |
+| `/plan` | Create implementation plan → `{{PLANNING_ROOT}}/Plans/New/<Name>/` |
 | `/breakdown` | Add detail to plan phases |
 | `/code-review` | Review code against the plan — drift, gaps, blind spots |
 | `/debrief` | After-action notes for completed phases |

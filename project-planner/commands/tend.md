@@ -60,12 +60,14 @@ Never skip confirmation for changes to existing content.
 ## Mode Details
 
 ### Status Mode
-Invoke the `researcher` agent to scan all artifacts and compare status fields against reality. The agent returns a list of findings — what is stale, what is inconsistent, and what should be updated. Checks to perform:
+Invoke the `researcher` agent to scan all four status folders (`Plans/New/`, `Plans/Ready/`, `Plans/Active/`, `Plans/Complete/`) and compare status fields against reality. The agent returns a list of findings — what is stale, what is inconsistent, and what should be updated. Checks to perform:
 - Plans with all phases complete but plan status is still `active` → suggest `complete`
 - Phases where all tasks are complete but phase status is `in-progress` → suggest `complete`
 - Specs/designs marked `approved` but their plan is `complete` → suggest `implemented`
 - Research/brainstorm still `active` but older than 30 days with no recent changes → flag as potentially stale
 - Phase status `in-progress` but no task has started → flag inconsistency
+- Plan folder does not match frontmatter status (e.g., plan in `New/` but status is `active`, or plan in `Active/` but all phases complete) → suggest moving to the correct folder
+- Plans in `Active/` with all phases complete → suggest moving to `Complete/`
 
 ### Tags Mode
 Invoke the `researcher` agent to scan all artifact frontmatter for tags and analyze for variants, orphans, missing tags, and clusters. The agent returns the analysis. Checks to perform:
@@ -76,7 +78,7 @@ Invoke the `researcher` agent to scan all artifact frontmatter for tags and anal
 
 ### Filenames Mode
 Invoke the `researcher` agent to check naming conventions across all artifacts. The agent returns any violations found. Conventions to check (defined in CLAUDE.md):
-- Plans: `Plans/<PlanName>/README.md`, phases `01-Phase-Name.md`
+- Plans: `Plans/{New,Ready,Active,Complete}/<PlanName>/README.md`, phases `01-Phase-Name.md`
 - Specs: `Specs/<FeatureName>/README.md`
 - Designs: `Designs/<ComponentName>/README.md`
 - Research: `Research/<topic-slug>.md` (kebab-case)

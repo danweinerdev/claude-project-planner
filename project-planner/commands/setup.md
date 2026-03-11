@@ -15,7 +15,7 @@ When setting up a new or existing repository to work with the project-planner pl
 1. Detects the repository type (normal repo, worktree, or bare repo)
 2. For worktrees, searches sibling worktrees for an existing `planning-config.json` and inherits settings
 3. Generates `planning-config.json` — the config that tells the plugin where planning artifacts live
-4. Bootstraps planning directories (Plans/, Research/, Brainstorm/, Specs/, Designs/, Retro/, shared/) if they don't exist
+4. Bootstraps planning directories (Plans/New/, Plans/Ready/, Plans/Active/, Plans/Complete/, Research/, Brainstorm/, Specs/, Designs/, Retro/, shared/) if they don't exist
 5. Creates a launcher script (`claude.sh` / `claude.cmd`) for launching Claude with the plugin
 6. Sets up `.gitignore` for generated files
 7. Cleans any stale legacy symlinks

@@ -20,7 +20,8 @@ When you want a quick overview of project status without regenerating the dashbo
 ## Process
 
 1. **Scan Plans**
-   - Read all `Plans/*/README.md` files
+   - Read `Plans/New/*/README.md`, `Plans/Ready/*/README.md`, and `Plans/Active/*/README.md` for full detail
+   - For `Plans/Complete/`, report only count and plan titles (skip phase/task detail to limit scan scope)
    - Extract plan title, status, and phases from frontmatter
    - For each in-progress phase, read the phase doc to get task status
 
@@ -50,5 +51,5 @@ When you want a quick overview of project status without regenerating the dashbo
 Text summary displayed directly — no files created or modified. This is a read-only skill.
 
 ## Context
-- Plans directory: `Plans/`
+- Plans directory: `Plans/New/`, `Plans/Ready/`, `Plans/Active/` (full detail); `Plans/Complete/` (count only)
 - Schema: `shared/frontmatter-schema.md`

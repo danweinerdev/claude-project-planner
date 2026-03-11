@@ -29,7 +29,7 @@ Use this:
 
 ### 1. Identify Target
 - Ask which plan and phase to review (or infer from context — look for plans with status `active` and phases with status `in-progress`)
-- If not specified, scan `Plans/*/README.md` for the active plan and find the in-progress phase
+- If not specified, scan `Plans/Active/*/README.md` for the active plan and find the in-progress phase
 - Read the plan README to understand overall context, architecture, and key decisions
 - Read the target phase document for task list, subtasks, acceptance criteria, and deliverable
 
@@ -61,11 +61,11 @@ Collect the full picture of code changes for this phase:
 
 ### 4. Load Planning Context
 Read all relevant planning artifacts:
-- **Plan README**: `Plans/<PlanName>/README.md` — architecture, key decisions, phase list
-- **Phase doc**: `Plans/<PlanName>/<NN>-<Phase-Name>.md` — tasks, subtasks, deliverable, acceptance criteria
+- **Plan README**: `Plans/Active/<PlanName>/README.md` — architecture, key decisions, phase list
+- **Phase doc**: `Plans/Active/<PlanName>/<NN>-<Phase-Name>.md` — tasks, subtasks, deliverable, acceptance criteria
 - **Related specs**: from the plan's `related` frontmatter — requirements, user stories, acceptance criteria
 - **Related designs**: from the plan's `related` frontmatter — architecture, components, interfaces, error handling
-- **Prior debriefs**: `Plans/<PlanName>/notes/` — lessons from earlier phases, known issues carried forward
+- **Prior debriefs**: `Plans/Active/<PlanName>/notes/` — lessons from earlier phases, known issues carried forward
 
 ### 5. Invoke Code Reviewer Agent
 Pass the planning context and diff information to the `code-reviewer` agent for analysis. The agent evaluates the code through five lenses:
@@ -122,9 +122,9 @@ No new artifact is created. This skill produces an inline review presented to th
 ## Context
 - Orchestration: `shared/orchestration.md`
 - Schema: `shared/frontmatter-schema.md`
-- Target plan: `Plans/<PlanName>/`
+- Target plan: `Plans/Active/<PlanName>/`
 - Related specs: `Specs/`
 - Related designs: `Designs/`
-- Prior debriefs: `Plans/<PlanName>/notes/`
+- Prior debriefs: `Plans/Active/<PlanName>/notes/`
 - Local repo paths: `planning-config.local.json`
 - Agent: `code-reviewer`

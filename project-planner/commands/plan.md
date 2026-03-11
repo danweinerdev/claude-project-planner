@@ -40,9 +40,9 @@ When you need to break down a feature, project, or initiative into an actionable
    - Present the structure to the user for feedback before writing files
 
 3. **Create Plan Files**
-   - Create `Plans/<PlanName>/README.md` using `shared/templates/plan-readme.md`
+   - Create `Plans/New/<PlanName>/README.md` using `shared/templates/plan-readme.md`
    - Create numbered phase docs using `shared/templates/plan-phase.md`
-   - Create `Plans/<PlanName>/notes/` directory for future debriefs
+   - Create `Plans/New/<PlanName>/notes/` directory for future debriefs
    - Populate frontmatter with all phase/task metadata
    - Write body content with task details, subtask checklists, verification criteria, and acceptance criteria
    - **Use Mermaid diagrams** in the Architecture section and anywhere visual structure helps — prefer `graph TD` for phase dependencies, `flowchart LR` for data flow, etc. over ASCII art
@@ -51,19 +51,21 @@ When you need to break down a feature, project, or initiative into an actionable
    - Invoke the `plan-reviewer` agent to review the complete plan
    - Address any issues raised by the reviewer
    - Update plan status to `approved` once review passes
+   - Move the plan folder from `Plans/New/` to `Plans/Ready/` (`git mv Plans/New/<PlanName> Plans/Ready/<PlanName>`)
 
 5. **Regenerate Dashboard** (only if `dashboard` is `true` in `planning-config.json`)
    - Run `make dashboard` from the planning root to update the HTML dashboard
 
 ## Output
 ```
-Plans/<PlanName>/
+Plans/New/<PlanName>/
 ├── README.md              # Plan overview with phases in frontmatter
 ├── 01-Phase-Name.md       # Phase 1 with tasks in frontmatter
 ├── 02-Phase-Name.md       # Phase 2
 ├── ...
 └── notes/                 # Empty, ready for debriefs
 ```
+On approval, the plan moves to `Plans/Ready/<PlanName>/`.
 
 ## Document Structure
 
@@ -84,6 +86,6 @@ See `shared/frontmatter-schema.md` for the phase frontmatter schema. Body contai
 - Orchestration: `shared/orchestration.md`
 - Templates: `shared/templates/plan-readme.md`, `shared/templates/plan-phase.md`
 - Schema: `shared/frontmatter-schema.md`
-- Existing plans: `Plans/`
+- Existing plans: `Plans/New/`, `Plans/Ready/`, `Plans/Active/`, `Plans/Complete/`
 - Related specs: `Specs/`
 - Related designs: `Designs/`

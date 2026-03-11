@@ -83,12 +83,12 @@ All commands are namespaced as `/planner:*` automatically by the plugin system.
 | `/planner:brainstorm` | Explore possibilities | `Brainstorm/<topic>.md` |
 | `/planner:specify` | Write requirements | `Specs/<feature>/README.md` |
 | `/planner:design` | Technical architecture | `Designs/<component>/README.md` |
-| `/planner:plan` | Create implementation plan | `Plans/<Name>/README.md` + phase docs |
+| `/planner:plan` | Create implementation plan | `Plans/New/<Name>/README.md` + phase docs |
 | `/planner:breakdown` | Add detail to plan phases | Updates phase `.md` with tasks/subtasks |
 | `/planner:implement` | Execute a plan phase | Code + updated task/phase statuses |
 | `/planner:code-review` | Review code against plan | Inline findings (drift, gaps, blind spots) |
 | `/planner:simplify` | Post-implementation cleanup | Simplified code, tests verified |
-| `/planner:debrief` | After-action notes | `Plans/<Name>/notes/<phase>.md` |
+| `/planner:debrief` | After-action notes | `Plans/Active/<Name>/notes/<phase>.md` |
 | `/planner:retro` | Capture learnings | `Retro/YYYY-MM-DD-<slug>.md` |
 
 ### Utility Commands
@@ -184,8 +184,8 @@ graph TD
 
 | Level | Stored in | Status values |
 |-------|-----------|---------------|
-| **Plan** | `Plans/<Name>/README.md` frontmatter | `draft` `approved` `active` `complete` `archived` |
-| **Phase** | `Plans/<Name>/01-Phase.md` frontmatter | `planned` `in-progress` `complete` `blocked` `deferred` |
+| **Plan** | `Plans/{New,Ready,Active,Complete}/<Name>/README.md` frontmatter | `draft` `approved` `active` `complete` `archived` |
+| **Phase** | `Plans/<status>/<Name>/01-Phase.md` frontmatter | `planned` `in-progress` `complete` `blocked` `deferred` |
 | **Task** | Phase frontmatter `tasks:` array | `planned` `in-progress` `complete` `blocked` `deferred` |
 | **Subtask** | Phase body as `- [ ]` checklists | Checkbox state |
 

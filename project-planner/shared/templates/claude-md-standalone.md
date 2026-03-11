@@ -21,7 +21,11 @@
 ├── Designs/                      # Designs (subdirectory per component)
 │   └── <component>/README.md
 ├── Plans/                        # Implementation plans
-│   └── <PlanName>/
+│   ├── New/                      # Draft plans, not yet approved
+│   ├── Ready/                    # Approved, ready to implement
+│   ├── Active/                   # Currently being implemented
+│   └── Complete/                 # Done, frozen — AI skips unless asked
+│   └── <status>/<PlanName>/
 │       ├── README.md             # Frontmatter with phases[], overview
 │       ├── 01-Phase-Name.md      # Frontmatter with tasks[], details
 │       └── notes/                # After-action notes
@@ -51,8 +55,25 @@ Plan (README.md)       <- like a Jira Project
 | phase | `planned`, `in-progress`, `complete`, `blocked`, `deferred` |
 | task | `planned`, `in-progress`, `complete`, `blocked`, `deferred` |
 
+### Plan Lifecycle Folders
+Plans move between status folders as they progress:
+
+| Folder | Status | When |
+|--------|--------|------|
+| `New/` | `draft` | Plan created, not yet reviewed |
+| `Ready/` | `approved` | Plan reviewed and approved, waiting to start |
+| `Active/` | `active` | Implementation in progress |
+| `Complete/` | `complete` | All phases done, plan frozen |
+
+Commands that change plan status also move the plan directory:
+- `/plan` creates in `New/`, moves to `Ready/` on approval
+- `/implement` moves from `Ready/` to `Active/` when starting
+- `/debrief` or `/tend` moves from `Active/` to `Complete/` when all phases are done
+
+AI commands limit their scan scope to relevant folders to reduce context processing.
+
 ### File Naming
-- Plans: `Plans/<PlanName>/README.md`, `01-Phase-Name.md`
+- Plans: `Plans/{New,Ready,Active,Complete}/<PlanName>/README.md`, `01-Phase-Name.md`
 - Phases numbered with zero-padded prefixes: `01-`, `02-`, etc.
 - Retros: `YYYY-MM-DD-<slug>.md`
 - Specs/Designs: `<Name>/README.md`
@@ -68,7 +89,7 @@ Always use templates from `shared/templates/` when creating new artifacts. Repla
 | `/brainstorm` | Explore possibilities → `Brainstorm/<topic>.md` |
 | `/specify` | Write requirements → `Specs/<feature>/README.md` |
 | `/design` | Technical architecture → `Designs/<component>/README.md` |
-| `/plan` | Create implementation plan → `Plans/<Name>/` |
+| `/plan` | Create implementation plan → `Plans/New/<Name>/` |
 | `/breakdown` | Add detail to plan phases |
 | `/code-review` | Review code against the plan — drift, gaps, blind spots |
 | `/debrief` | After-action notes for completed phases |

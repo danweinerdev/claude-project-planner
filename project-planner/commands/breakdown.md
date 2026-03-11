@@ -22,6 +22,7 @@ When a plan phase needs more detail: additional tasks, subtask checklists, imple
 ## Process
 
 1. **Identify Target**
+   - Scan `Plans/New/`, `Plans/Ready/`, and `Plans/Active/` for available plans (skip `Plans/Complete/`)
    - Ask which plan and phase to expand (or infer from context)
    - Read the current phase document
    - Read the plan README for overall context
@@ -78,7 +79,7 @@ Implementation guidance, edge cases, etc.
 ## Context
 - Orchestration: `shared/orchestration.md`
 - Schema: `shared/frontmatter-schema.md`
-- Target plan: `Plans/<PlanName>/`
+- Target plan: `Plans/{New,Ready,Active}/<PlanName>/`
 - Related specs: `Specs/`
 - Related designs: `Designs/`
 - Agent: `researcher`

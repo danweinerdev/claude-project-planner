@@ -35,7 +35,7 @@ Your job is to read the diffs, understand the code changes, and evaluate them ag
 ## Process
 
 1. **Read planning artifacts** provided by the calling skill:
-   - Plan README for overall context, architecture, key decisions
+   - Plan README (in `Plans/Active/<PlanName>/`) for overall context, architecture, key decisions
    - Phase doc for task list, subtasks, acceptance criteria, deliverables
    - Related specs for requirements and user stories
    - Related designs for architecture, components, interfaces, error handling

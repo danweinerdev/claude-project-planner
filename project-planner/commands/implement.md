@@ -22,6 +22,7 @@ When a plan is approved and you're ready to implement a phase. This skill **coor
 ## Process
 
 ### 1. Select Phase
+- Scan `Plans/Ready/` and `Plans/Active/` for available plans (skip `Plans/New/` and `Plans/Complete/`)
 - Ask which plan and phase to implement (or infer from context)
 - Read the plan README to understand overall context and phase dependencies
 - Read the target phase document to get the task list
@@ -29,6 +30,7 @@ When a plan is approved and you're ready to implement a phase. This skill **coor
   - Plan status must be `approved` or `active`
   - Phase status must be `planned` or `in-progress` (not `complete`, `blocked`, or `deferred`)
   - Any phases in `depends_on` must be `complete`
+- If plan is in `Plans/Ready/`, move it to `Plans/Active/` (`git mv Plans/Ready/<PlanName> Plans/Active/<PlanName>`) and update plan status to `active`
 - If plan status is `approved`, update it to `active`
 - If phase status is `planned`, update it to `in-progress`
 
@@ -41,7 +43,7 @@ When a plan is approved and you're ready to implement a phase. This skill **coor
 ### 3. Load Context
 - Read related specs from `Specs/` (referenced in plan README `related` field)
 - Read related designs from `Designs/`
-- Review any previous phase debriefs in `Plans/<PlanName>/notes/` for context from prior phases
+- Review any previous phase debriefs in `Plans/Active/<PlanName>/notes/` for context from prior phases
 - Build a mental model of what this phase needs to deliver
 
 ### 4. Verify Task Readiness
@@ -133,6 +135,7 @@ Once all tasks are complete (or all remaining tasks are blocked):
 **All tasks complete:**
 - Update phase status to `complete` in both the phase doc and plan README
 - Update `updated` dates
+- If all phases in the plan are now complete, move the plan from `Plans/Active/` to `Plans/Complete/` (`git mv Plans/Active/<PlanName> Plans/Complete/<PlanName>`)
 - Suggest running `/debrief` to capture what happened
 
 **Some tasks blocked:**
@@ -203,8 +206,8 @@ Code changes go to the target repository (not the planning root).
 ## Context
 - Orchestration: `shared/orchestration.md`
 - Schema: `shared/frontmatter-schema.md`
-- Target plan: `Plans/<PlanName>/`
+- Target plan: `Plans/Ready/<PlanName>/` or `Plans/Active/<PlanName>/`
 - Related specs: `Specs/`
 - Related designs: `Designs/`
-- Prior debriefs: `Plans/<PlanName>/notes/`
+- Prior debriefs: `Plans/Active/<PlanName>/notes/`
 - Local repo paths: `planning-config.local.json`

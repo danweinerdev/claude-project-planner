@@ -30,7 +30,7 @@ After completing a significant piece of work (a plan, a sprint, a milestone) to 
      - What went well
      - What could be improved
      - Any key metrics or outcomes
-   - Optionally review recent debriefs from `Plans/*/notes/` for context
+   - Optionally review recent debriefs from `Plans/Active/*/notes/` and `Plans/Complete/*/notes/` for context
 
 3. **Write Retrospective**
    - Create `Retro/YYYY-MM-DD-<slug>.md` using `shared/templates/retro.md`
