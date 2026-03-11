@@ -97,3 +97,60 @@ class TestMainIntegration:
         phase_html = (planning_root / "Dashboard" / "testplan" / "build.html").read_text()
         assert "Write core" in phase_html
         assert "Write tests" in phase_html
+
+    def test_status_folder_discovery(self, tmp_path):
+        """Plans in status subfolders should be discovered."""
+        active = tmp_path / "Plans" / "Active" / "MyPlan"
+        active.mkdir(parents=True)
+        (active / "README.md").write_text("""\
+---
+title: My Plan
+status: active
+phases: []
+---
+Overview.
+""")
+        (tmp_path / "planning-config.json").write_text(
+            json.dumps({"dashboard": True}))
+
+        main(planning_root=tmp_path)
+        assert (tmp_path / "Dashboard" / "myplan" / "index.html").exists()
+
+    def test_multiple_status_folders(self, tmp_path):
+        """Plans across multiple status folders should all be found."""
+        for folder, name, title in [("New", "PlanA", "Plan A"),
+                                     ("Active", "PlanB", "Plan B"),
+                                     ("Complete", "PlanC", "Plan C")]:
+            d = tmp_path / "Plans" / folder / name
+            d.mkdir(parents=True)
+            (d / "README.md").write_text(f"""\
+---
+title: {title}
+status: draft
+phases: []
+---
+""")
+        (tmp_path / "planning-config.json").write_text(
+            json.dumps({"dashboard": True}))
+
+        main(planning_root=tmp_path)
+        assert (tmp_path / "Dashboard" / "plana" / "index.html").exists()
+        assert (tmp_path / "Dashboard" / "planb" / "index.html").exists()
+        assert (tmp_path / "Dashboard" / "planc" / "index.html").exists()
+
+    def test_legacy_flat_layout(self, tmp_path):
+        """Plans in flat layout (no status folders) should still work."""
+        plan = tmp_path / "Plans" / "LegacyPlan"
+        plan.mkdir(parents=True)
+        (plan / "README.md").write_text("""\
+---
+title: Legacy Plan
+status: active
+phases: []
+---
+""")
+        (tmp_path / "planning-config.json").write_text(
+            json.dumps({"dashboard": True}))
+
+        main(planning_root=tmp_path)
+        assert (tmp_path / "Dashboard" / "legacyplan" / "index.html").exists()

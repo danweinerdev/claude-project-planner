@@ -129,7 +129,7 @@ class TestExtractOverview:
 
 class TestParsePlan:
     def test_valid_plan(self, plan_dir):
-        plan_path = plan_dir / "Plans" / "TestPlan"
+        plan_path = plan_dir / "Plans" / "Active" / "TestPlan"
         plan = parse_plan(plan_path)
         assert plan is not None
         assert plan.title == "Test Plan"
@@ -138,7 +138,7 @@ class TestParsePlan:
         assert len(plan.phases) == 2
 
     def test_phase_details(self, plan_dir):
-        plan_path = plan_dir / "Plans" / "TestPlan"
+        plan_path = plan_dir / "Plans" / "Active" / "TestPlan"
         plan = parse_plan(plan_path)
         phase1 = plan.phases[0]
         assert phase1.id == 1
@@ -147,7 +147,7 @@ class TestParsePlan:
         assert len(phase1.tasks) == 2
 
     def test_task_subtasks(self, plan_dir):
-        plan_path = plan_dir / "Plans" / "TestPlan"
+        plan_path = plan_dir / "Plans" / "Active" / "TestPlan"
         plan = parse_plan(plan_path)
         # Phase 1, Task 1.1 should have 2/2 subtasks
         task = plan.phases[0].tasks[0]
@@ -155,7 +155,7 @@ class TestParsePlan:
         assert task.subtasks.total == 2
 
     def test_phase_dependencies(self, plan_dir):
-        plan_path = plan_dir / "Plans" / "TestPlan"
+        plan_path = plan_dir / "Plans" / "Active" / "TestPlan"
         plan = parse_plan(plan_path)
         phase2 = plan.phases[1]
         assert phase2.depends_on == [1]
@@ -178,7 +178,7 @@ Content.
         assert parse_plan(plan_path) is None
 
     def test_overview_extracted(self, plan_dir):
-        plan_path = plan_dir / "Plans" / "TestPlan"
+        plan_path = plan_dir / "Plans" / "Active" / "TestPlan"
         plan = parse_plan(plan_path)
         assert "Overview" in plan.overview
 

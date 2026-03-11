@@ -186,7 +186,7 @@ What went well, what didn't.
 @pytest.fixture
 def planning_root(plan_dir):
     """Create a full planning root with plans, artifacts, and config."""
-    root = plan_dir  # Already has Plans/TestPlan/
+    root = plan_dir  # Already has Plans/Active/TestPlan/
 
     # Research (flat layout)
     research = root / "Research"
