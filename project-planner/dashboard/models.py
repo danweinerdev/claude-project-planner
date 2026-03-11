@@ -44,6 +44,7 @@ class PlanData:
     overview: str = ""
     target_repo: str = ""
     target_repo_url: str = ""
+    status_folder: str = ""
 
 @dataclass
 class Artifact:

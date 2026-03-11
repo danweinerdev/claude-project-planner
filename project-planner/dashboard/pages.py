@@ -253,7 +253,8 @@ def generate_plan_page(plan: PlanData, config: dict) -> str:
     links = []
     planning_repo_url = get_planning_repo_url(config)
     if planning_repo_url:
-        readme_path = f"Plans/{plan.name}/README.md"
+        plan_prefix = f"Plans/{plan.status_folder}/{plan.name}" if plan.status_folder else f"Plans/{plan.name}"
+        readme_path = f"{plan_prefix}/README.md"
         links.append(f'<a href="{planning_repo_url}/blob/main/{readme_path}" class="quick-link">&#x1F4C4; Plan Source</a>')
     if plan.target_repo_url:
         repo_name = plan.target_repo.split('/')[-1] if '/' in plan.target_repo else plan.target_repo
@@ -386,7 +387,8 @@ def generate_phase_page(plan: PlanData, phase: PhaseData, config: dict) -> str:
     links = [f'<a href="index.html" class="quick-link">&#x2190; {html.escape(plan.name)} Overview</a>']
     planning_repo_url = get_planning_repo_url(config)
     if planning_repo_url:
-        doc_path = f"Plans/{plan.name}/{phase.doc}" if phase.doc else ""
+        plan_prefix = f"Plans/{plan.status_folder}/{plan.name}" if plan.status_folder else f"Plans/{plan.name}"
+        doc_path = f"{plan_prefix}/{phase.doc}" if phase.doc else ""
         if doc_path:
             links.append(f'<a href="{planning_repo_url}/blob/main/{doc_path}" class="quick-link">&#x1F4DD; Phase Source</a>')
     if plan.target_repo_url:

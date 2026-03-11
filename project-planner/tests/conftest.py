@@ -54,7 +54,7 @@ Some more content here.
 @pytest.fixture
 def plan_dir(tmp_path):
     """Create a minimal plan directory structure."""
-    plan = tmp_path / "Plans" / "TestPlan"
+    plan = tmp_path / "Plans" / "Active" / "TestPlan"
     plan.mkdir(parents=True)
 
     (plan / "README.md").write_text("""\

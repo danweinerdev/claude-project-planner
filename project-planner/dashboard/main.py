@@ -62,13 +62,29 @@ def main(planning_root: Path = None):
     # Write CSS
     (output_dir / "styles.css").write_text(CSS)
 
-    # Parse all plans
+    # Parse all plans (status subfolders, with flat fallback for legacy)
+    STATUS_FOLDERS = ("New", "Ready", "Active", "Complete")
     plans = []
-    for plan_path in sorted(plans_dir.iterdir()):
-        if plan_path.is_dir():
-            plan = parse_plan(plan_path)
-            if plan:
-                plans.append(plan)
+    has_status_folders = any((plans_dir / f).is_dir() for f in STATUS_FOLDERS)
+
+    if has_status_folders:
+        for folder_name in STATUS_FOLDERS:
+            folder = plans_dir / folder_name
+            if not folder.exists():
+                continue
+            for plan_path in sorted(folder.iterdir()):
+                if plan_path.is_dir():
+                    plan = parse_plan(plan_path)
+                    if plan:
+                        plan.status_folder = folder_name
+                        plans.append(plan)
+    else:
+        # Legacy flat layout
+        for plan_path in sorted(plans_dir.iterdir()):
+            if plan_path.is_dir():
+                plan = parse_plan(plan_path)
+                if plan:
+                    plans.append(plan)
 
     print(f"Parsed {len(plans)} plans")
 
