@@ -12,7 +12,7 @@ Read `planning-config.json` (at repo root) to find the planning root:
 - `planningRoot` of `"<dir>"` → artifacts under `<dir>/` from repo root
 - `planningRoot` of `"/absolute/path"` → artifacts in an external directory (standalone planning repo)
 
-**Templates and schema** (`Shared/`) are read from the **plugin directory**, not from the planning root. The plugin directory contains `commands/`, `agents/`, and `Shared/` as siblings — find it by globbing for `**/commands/research.md` in both the current directory and `~/.claude/plugins/cache/`. If multiple matches are found (e.g., multiple cached plugin versions), sort by version number and use the highest. Then go one level up.
+**Templates and schema** (`shared/`) are read from the **plugin directory**, not from the planning root. The plugin directory contains `commands/`, `agents/`, and `shared/` as siblings — find it by globbing for `**/commands/research.md` in both the current directory and `~/.claude/plugins/cache/`. If multiple matches are found (e.g., multiple cached plugin versions), sort by version number and use the highest. Then go one level up.
 
 If `dashboard` is `true` in `planning-config.json`, run dashboard commands (`make dashboard`) from the planning root directory.
 
@@ -85,7 +85,7 @@ Invoke the `researcher` agent to check naming conventions across all artifacts. 
 - Phase numbering: zero-padded, sequential, no gaps
 
 ### Completeness Mode
-Invoke the `researcher` agent to check each artifact against `Shared/frontmatter-schema.md`. The agent returns missing fields and empty sections. Checks to perform:
+Invoke the `researcher` agent to check each artifact against `shared/frontmatter-schema.md`. The agent returns missing fields and empty sections. Checks to perform:
 - Required frontmatter fields present (title, type, status, created, updated)
 - Body has expected sections per template
 - Plans have at least one phase defined
@@ -114,7 +114,7 @@ After making changes (only if `dashboard` is `true` in `planning-config.json`):
 - Run `make dashboard` from the planning root to update the HTML dashboard
 
 ## Context
-- Orchestration: `Shared/orchestration.md`
-- Schema: `Shared/frontmatter-schema.md`
+- Orchestration: `shared/orchestration.md`
+- Schema: `shared/frontmatter-schema.md`
 - Conventions: `CLAUDE.md`
 - Agent: `researcher`

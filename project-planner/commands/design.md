@@ -12,7 +12,7 @@ Read `planning-config.json` (at repo root) to find the planning root:
 - `planningRoot` of `"<dir>"` → artifacts under `<dir>/` from repo root
 - `planningRoot` of `"/absolute/path"` → artifacts in an external directory (standalone planning repo)
 
-**Templates and schema** (`Shared/`) are read from the **plugin directory**, not from the planning root. The plugin directory contains `commands/`, `agents/`, and `Shared/` as siblings — find it by globbing for `**/commands/research.md` in both the current directory and `~/.claude/plugins/cache/`. If multiple matches are found (e.g., multiple cached plugin versions), sort by version number and use the highest. Then go one level up.
+**Templates and schema** (`shared/`) are read from the **plugin directory**, not from the planning root. The plugin directory contains `commands/`, `agents/`, and `shared/` as siblings — find it by globbing for `**/commands/research.md` in both the current directory and `~/.claude/plugins/cache/`. If multiple matches are found (e.g., multiple cached plugin versions), sort by version number and use the highest. Then go one level up.
 
 If `dashboard` is `true` in `planning-config.json`, run dashboard commands (`make dashboard`) from the planning root directory.
 
@@ -30,9 +30,9 @@ When you need to define the technical architecture for a component or system bef
    - Review any related research documents
 
 2. **Draft Design**
-   - Create `Designs/<ComponentName>/README.md` using `Shared/templates/design.md`
+   - Create `Designs/<ComponentName>/README.md` using `shared/templates/design.md`
    - Document: overview, architecture (components, data flow, interfaces), design decisions (with alternatives considered), error handling, testing strategy, migration plan
-   - **Testing strategy must include structural verification:** Read `Shared/language-verification.md` and include the language-appropriate structural checks (sanitizers, static analysis, type checking) in the Testing Strategy section. These define what "structurally correct" means for this component beyond passing tests.
+   - **Testing strategy must include structural verification:** Read `shared/language-verification.md` and include the language-appropriate structural checks (sanitizers, static analysis, type checking) in the Testing Strategy section. These define what "structurally correct" means for this component beyond passing tests.
    - Set status to `draft`
 
 3. **Review**
@@ -53,7 +53,7 @@ Designs/<ComponentName>/README.md
 ```
 
 ## Document Structure
-See `Shared/templates/design.md`:
+See `shared/templates/design.md`:
 - **Overview**: Component role in the system
 - **Architecture**: Components, data flow, interfaces
 - **Design Decisions**: Each with context, options, decision, rationale
@@ -62,7 +62,7 @@ See `Shared/templates/design.md`:
 - **Migration / Rollout**: Transition plan
 
 ## Context
-- Orchestration: `Shared/orchestration.md`
-- Template: `Shared/templates/design.md`
-- Schema: `Shared/frontmatter-schema.md`
+- Orchestration: `shared/orchestration.md`
+- Template: `shared/templates/design.md`
+- Schema: `shared/frontmatter-schema.md`
 - Agents: `researcher`, `plan-reviewer`

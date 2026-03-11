@@ -18,7 +18,7 @@ Read `planning-config.json` (at repo root) to find the planning root:
 - `planningRoot` of `"<dir>"` → artifacts under `<dir>/` from repo root
 - `planningRoot` of `"/absolute/path"` → artifacts in an external directory (standalone planning repo)
 
-**Templates and schema** (`Shared/`) are in the **plugin directory**, not the planning root. The plugin directory contains `commands/`, `agents/`, and `Shared/` as siblings — find it by globbing for `**/commands/research.md` in both the current directory and `~/.claude/plugins/cache/`. If multiple matches are found (e.g., multiple cached plugin versions), sort by version number and use the highest. Then go one level up.
+**Templates and schema** (`shared/`) are in the **plugin directory**, not the planning root. The plugin directory contains `commands/`, `agents/`, and `shared/` as siblings — find it by globbing for `**/commands/research.md` in both the current directory and `~/.claude/plugins/cache/`. If multiple matches are found (e.g., multiple cached plugin versions), sort by version number and use the highest. Then go one level up.
 
 ## Review Lenses
 
@@ -37,7 +37,7 @@ Evaluate the document against these four lenses:
 - Are the phase boundaries logical?
 
 ### 3. Convention Compliance
-- Does frontmatter follow `Shared/frontmatter-schema.md`?
+- Does frontmatter follow `shared/frontmatter-schema.md`?
 - Are file names following project conventions?
 - Is the plan hierarchy (Plan > Phase > Task > Subtask) used correctly?
 - Are status values valid?

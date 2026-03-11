@@ -12,7 +12,7 @@ Read `planning-config.json` (at repo root) to find the planning root:
 - `planningRoot` of `"<dir>"` → artifacts under `<dir>/` from repo root
 - `planningRoot` of `"/absolute/path"` → artifacts in an external directory (standalone planning repo)
 
-**Templates and schema** (`Shared/`) are read from the **plugin directory**, not from the planning root. The plugin directory contains `commands/`, `agents/`, and `Shared/` as siblings — find it by globbing for `**/commands/research.md` in both the current directory and `~/.claude/plugins/cache/`. If multiple matches are found (e.g., multiple cached plugin versions), sort by version number and use the highest. Then go one level up.
+**Templates and schema** (`shared/`) are read from the **plugin directory**, not from the planning root. The plugin directory contains `commands/`, `agents/`, and `shared/` as siblings — find it by globbing for `**/commands/research.md` in both the current directory and `~/.claude/plugins/cache/`. If multiple matches are found (e.g., multiple cached plugin versions), sort by version number and use the highest. Then go one level up.
 
 ## When to Use
 After implementation is complete and tests pass. The goal is reducing complexity without changing behavior — making code easier to read, maintain, and extend.
@@ -93,7 +93,7 @@ Modifies code files in the target repository. No planning artifacts are created 
 - Not a rewrite (preserve existing structure, just clean it up)
 
 ## Context
-- Orchestration: `Shared/orchestration.md`
-- Schema: `Shared/frontmatter-schema.md`
+- Orchestration: `shared/orchestration.md`
+- Schema: `shared/frontmatter-schema.md`
 - Local repo paths: `planning-config.local.json`
 - Agents: `code-reviewer`, `code-implementer`

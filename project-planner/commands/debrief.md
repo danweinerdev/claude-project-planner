@@ -12,7 +12,7 @@ Read `planning-config.json` (at repo root) to find the planning root:
 - `planningRoot` of `"<dir>"` → artifacts under `<dir>/` from repo root
 - `planningRoot` of `"/absolute/path"` → artifacts in an external directory (standalone planning repo)
 
-**Templates and schema** (`Shared/`) are read from the **plugin directory**, not from the planning root. The plugin directory contains `commands/`, `agents/`, and `Shared/` as siblings — find it by globbing for `**/commands/research.md` in both the current directory and `~/.claude/plugins/cache/`. If multiple matches are found (e.g., multiple cached plugin versions), sort by version number and use the highest. Then go one level up.
+**Templates and schema** (`shared/`) are read from the **plugin directory**, not from the planning root. The plugin directory contains `commands/`, `agents/`, and `shared/` as siblings — find it by globbing for `**/commands/research.md` in both the current directory and `~/.claude/plugins/cache/`. If multiple matches are found (e.g., multiple cached plugin versions), sort by version number and use the highest. Then go one level up.
 
 If `dashboard` is `true` in `planning-config.json`, run dashboard commands (`make dashboard`) from the planning root directory.
 
@@ -37,7 +37,7 @@ When a plan phase has been completed (or substantially completed) and you want t
      - Insights to carry forward
 
 3. **Write Debrief**
-   - Create `Plans/<PlanName>/notes/<NN>-<Phase-Name>.md` using `Shared/templates/debrief.md`
+   - Create `Plans/<PlanName>/notes/<NN>-<Phase-Name>.md` using `shared/templates/debrief.md`
    - Fill in all sections: Decisions Made, Requirements Assessment, Deviations, Risks & Issues, Lessons Learned, Impact on Subsequent Phases
    - The filename mirrors the phase doc number (e.g., `01-Core-Setup.md` -> `notes/01-Core-Setup.md`)
 
@@ -56,7 +56,7 @@ Plans/<PlanName>/notes/<NN>-<Phase-Name>.md
 ```
 
 ## Document Structure
-See `Shared/templates/debrief.md`:
+See `shared/templates/debrief.md`:
 - **Decisions Made**: Key choices with rationale
 - **Requirements Assessment**: Acceptance criteria met/not met
 - **Deviations**: What changed from plan and why
@@ -65,8 +65,8 @@ See `Shared/templates/debrief.md`:
 - **Impact on Subsequent Phases**: Downstream changes needed
 
 ## Context
-- Template: `Shared/templates/debrief.md`
-- Schema: `Shared/frontmatter-schema.md`
+- Template: `shared/templates/debrief.md`
+- Schema: `shared/frontmatter-schema.md`
 - Target plan: `Plans/<PlanName>/`
 - Related specs: `Specs/`
 - Related designs: `Designs/`

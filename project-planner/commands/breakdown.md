@@ -12,7 +12,7 @@ Read `planning-config.json` (at repo root) to find the planning root:
 - `planningRoot` of `"<dir>"` → artifacts under `<dir>/` from repo root
 - `planningRoot` of `"/absolute/path"` → artifacts in an external directory (standalone planning repo)
 
-**Templates and schema** (`Shared/`) are read from the **plugin directory**, not from the planning root. The plugin directory contains `commands/`, `agents/`, and `Shared/` as siblings — find it by globbing for `**/commands/research.md` in both the current directory and `~/.claude/plugins/cache/`. If multiple matches are found (e.g., multiple cached plugin versions), sort by version number and use the highest. Then go one level up.
+**Templates and schema** (`shared/`) are read from the **plugin directory**, not from the planning root. The plugin directory contains `commands/`, `agents/`, and `shared/` as siblings — find it by globbing for `**/commands/research.md` in both the current directory and `~/.claude/plugins/cache/`. If multiple matches are found (e.g., multiple cached plugin versions), sort by version number and use the highest. Then go one level up.
 
 If `dashboard` is `true` in `planning-config.json`, run dashboard commands (`make dashboard`) from the planning root directory.
 
@@ -44,7 +44,7 @@ When a plan phase needs more detail: additional tasks, subtask checklists, imple
 3. **Expand Detail**
    - Add new tasks to the phase frontmatter `tasks[]` array
    - **Every task must have a `verification` field** — a specific answer to "how do we know this work is good and complete?" (e.g., "parser handles valid input, malformed input, and empty input", "API returns 200 with valid payload and 400 with missing fields", "migration runs idempotently on empty and populated databases"). Verification means covering each new or changed behavior — never use test counts as a metric. Audit existing tasks and add `verification` to any that lack it.
-   - **Structural verification:** Read `Shared/language-verification.md` and detect the project language. Include the appropriate structural checks (sanitizers, static analysis, type checking) in task verification fields — either per-task or as a dedicated final verification task. These run during implementation, not as deferred acceptance criteria.
+   - **Structural verification:** Read `shared/language-verification.md` and detect the project language. Include the appropriate structural checks (sanitizers, static analysis, type checking) in task verification fields — either per-task or as a dedicated final verification task. These run during implementation, not as deferred acceptance criteria.
    - Add subtask checklists (`- [ ]`) under each task section in the body
    - Add implementation notes where helpful
    - Refine acceptance criteria
@@ -61,7 +61,7 @@ When a plan phase needs more detail: additional tasks, subtask checklists, imple
 Updates existing phase document(s) in place. No new files created unless new phases are needed.
 
 ## Document Structure
-Follows the same structure as phase docs — see `Shared/frontmatter-schema.md`.
+Follows the same structure as phase docs — see `shared/frontmatter-schema.md`.
 
 Task sections in the body:
 ```markdown
@@ -76,8 +76,8 @@ Implementation guidance, edge cases, etc.
 ```
 
 ## Context
-- Orchestration: `Shared/orchestration.md`
-- Schema: `Shared/frontmatter-schema.md`
+- Orchestration: `shared/orchestration.md`
+- Schema: `shared/frontmatter-schema.md`
 - Target plan: `Plans/<PlanName>/`
 - Related specs: `Specs/`
 - Related designs: `Designs/`

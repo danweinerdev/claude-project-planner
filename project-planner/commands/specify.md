@@ -12,7 +12,7 @@ Read `planning-config.json` (at repo root) to find the planning root:
 - `planningRoot` of `"<dir>"` → artifacts under `<dir>/` from repo root
 - `planningRoot` of `"/absolute/path"` → artifacts in an external directory (standalone planning repo)
 
-**Templates and schema** (`Shared/`) are read from the **plugin directory**, not from the planning root. The plugin directory contains `commands/`, `agents/`, and `Shared/` as siblings — find it by globbing for `**/commands/research.md` in both the current directory and `~/.claude/plugins/cache/`. If multiple matches are found (e.g., multiple cached plugin versions), sort by version number and use the highest. Then go one level up.
+**Templates and schema** (`shared/`) are read from the **plugin directory**, not from the planning root. The plugin directory contains `commands/`, `agents/`, and `shared/` as siblings — find it by globbing for `**/commands/research.md` in both the current directory and `~/.claude/plugins/cache/`. If multiple matches are found (e.g., multiple cached plugin versions), sort by version number and use the highest. Then go one level up.
 
 If `dashboard` is `true` in `planning-config.json`, run dashboard commands (`make dashboard`) from the planning root directory.
 
@@ -27,7 +27,7 @@ When you need to define the requirements for a feature before designing or imple
    - Review any related research or brainstorm documents
 
 2. **Draft Specification**
-   - Create `Specs/<FeatureName>/README.md` using `Shared/templates/spec.md`
+   - Create `Specs/<FeatureName>/README.md` using `shared/templates/spec.md`
    - Write: overview, goals, non-goals, requirements (functional + non-functional), user stories, acceptance criteria, constraints, dependencies
    - Set status to `draft`
 
@@ -49,7 +49,7 @@ Specs/<FeatureName>/README.md
 ```
 
 ## Document Structure
-See `Shared/templates/spec.md`:
+See `shared/templates/spec.md`:
 - **Overview**: Feature purpose
 - **Goals / Non-Goals**: Scope boundaries
 - **Requirements**: Functional and non-functional
@@ -58,7 +58,7 @@ See `Shared/templates/spec.md`:
 - **Constraints / Dependencies / Open Questions**
 
 ## Context
-- Orchestration: `Shared/orchestration.md`
-- Template: `Shared/templates/spec.md`
-- Schema: `Shared/frontmatter-schema.md`
+- Orchestration: `shared/orchestration.md`
+- Template: `shared/templates/spec.md`
+- Schema: `shared/frontmatter-schema.md`
 - Agents: `researcher`, `spec-reviewer`

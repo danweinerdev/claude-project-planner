@@ -334,7 +334,7 @@ project-planner/                   # The plugin itself (not your project)
 │   ├── researcher.md
 │   ├── plan-reviewer.md
 │   └── spec-reviewer.md
-├── Shared/
+├── shared/
 │   ├── frontmatter-schema.md     # Artifact metadata schema
 │   └── templates/                # Document templates
 ├── dashboard/                    # Dashboard generator package

@@ -41,7 +41,7 @@ How errors are detected, reported, and recovered from.
 How the design will be validated.
 
 ### Structural Verification
-Language-specific checks beyond tests (see `Shared/language-verification.md`).
+Language-specific checks beyond tests (see `shared/language-verification.md`).
 
 ## Migration / Rollout
 How to transition from current state to the new design.

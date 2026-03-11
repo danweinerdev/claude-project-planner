@@ -12,7 +12,7 @@ Read `planning-config.json` (at repo root) to find the planning root:
 - `planningRoot` of `"<dir>"` → artifacts under `<dir>/` from repo root
 - `planningRoot` of `"/absolute/path"` → artifacts in an external directory (standalone planning repo)
 
-**Templates and schema** (`Shared/`) are read from the **plugin directory**, not from the planning root. The plugin directory contains `commands/`, `agents/`, and `Shared/` as siblings — find it by globbing for `**/commands/research.md` in both the current directory and `~/.claude/plugins/cache/`. If multiple matches are found (e.g., multiple cached plugin versions), sort by version number and use the highest. Then go one level up.
+**Templates and schema** (`shared/`) are read from the **plugin directory**, not from the planning root. The plugin directory contains `commands/`, `agents/`, and `shared/` as siblings — find it by globbing for `**/commands/research.md` in both the current directory and `~/.claude/plugins/cache/`. If multiple matches are found (e.g., multiple cached plugin versions), sort by version number and use the highest. Then go one level up.
 
 If `dashboard` is `true` in `planning-config.json`, run dashboard commands (`make dashboard`) from the planning root directory.
 
@@ -40,7 +40,7 @@ When you need to generate and evaluate multiple approaches to a problem before c
    - Consider both conventional and creative approaches
 
 4. **Evaluate**
-   - Create `Brainstorm/<topic-slug>.md` using `Shared/templates/brainstorm.md`
+   - Create `Brainstorm/<topic-slug>.md` using `shared/templates/brainstorm.md`
    - Build a comparison matrix against the criteria
    - Make a recommendation with rationale
 
@@ -56,7 +56,7 @@ Brainstorm/<topic-slug>.md
 ```
 
 ## Document Structure
-See `Shared/templates/brainstorm.md`:
+See `shared/templates/brainstorm.md`:
 - **Problem Statement**: What we're solving
 - **Ideas**: Each with description, pros, cons, effort
 - **Evaluation**: Comparison matrix
@@ -64,7 +64,7 @@ See `Shared/templates/brainstorm.md`:
 - **Next Steps**: What to do with the decision
 
 ## Context
-- Orchestration: `Shared/orchestration.md`
-- Template: `Shared/templates/brainstorm.md`
-- Schema: `Shared/frontmatter-schema.md`
+- Orchestration: `shared/orchestration.md`
+- Template: `shared/templates/brainstorm.md`
+- Schema: `shared/frontmatter-schema.md`
 - Agent: `researcher`

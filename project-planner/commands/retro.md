@@ -12,7 +12,7 @@ Read `planning-config.json` (at repo root) to find the planning root:
 - `planningRoot` of `"<dir>"` → artifacts under `<dir>/` from repo root
 - `planningRoot` of `"/absolute/path"` → artifacts in an external directory (standalone planning repo)
 
-**Templates and schema** (`Shared/`) are read from the **plugin directory**, not from the planning root. The plugin directory contains `commands/`, `agents/`, and `Shared/` as siblings — find it by globbing for `**/commands/research.md` in both the current directory and `~/.claude/plugins/cache/`. If multiple matches are found (e.g., multiple cached plugin versions), sort by version number and use the highest. Then go one level up.
+**Templates and schema** (`shared/`) are read from the **plugin directory**, not from the planning root. The plugin directory contains `commands/`, `agents/`, and `shared/` as siblings — find it by globbing for `**/commands/research.md` in both the current directory and `~/.claude/plugins/cache/`. If multiple matches are found (e.g., multiple cached plugin versions), sort by version number and use the highest. Then go one level up.
 
 If `dashboard` is `true` in `planning-config.json`, run dashboard commands (`make dashboard`) from the planning root directory.
 
@@ -33,7 +33,7 @@ After completing a significant piece of work (a plan, a sprint, a milestone) to 
    - Optionally review recent debriefs from `Plans/*/notes/` for context
 
 3. **Write Retrospective**
-   - Create `Retro/YYYY-MM-DD-<slug>.md` using `Shared/templates/retro.md`
+   - Create `Retro/YYYY-MM-DD-<slug>.md` using `shared/templates/retro.md`
    - Date is today's date
    - Fill in: What Went Well, What Could Be Improved, Action Items, Key Metrics, Takeaways
    - Set status to `draft` (user can mark `complete` after review)
@@ -50,7 +50,7 @@ Retro/YYYY-MM-DD-<slug>.md
 ```
 
 ## Document Structure
-See `Shared/templates/retro.md`:
+See `shared/templates/retro.md`:
 - **What Went Well**: Things to continue doing
 - **What Could Be Improved**: Things to change
 - **Action Items**: Specific, actionable improvements (checklist)
@@ -58,6 +58,6 @@ See `Shared/templates/retro.md`:
 - **Takeaways**: Summary of key lessons
 
 ## Context
-- Template: `Shared/templates/retro.md`
-- Schema: `Shared/frontmatter-schema.md`
+- Template: `shared/templates/retro.md`
+- Schema: `shared/frontmatter-schema.md`
 - Retro directory: `Retro/`

@@ -12,7 +12,7 @@ Read `planning-config.json` (at repo root) to find the planning root:
 - `planningRoot` of `"<dir>"` → artifacts under `<dir>/` from repo root
 - `planningRoot` of `"/absolute/path"` → artifacts in an external directory (standalone planning repo)
 
-**Templates and schema** (`Shared/`) are read from the **plugin directory**, not from the planning root. The plugin directory contains `commands/`, `agents/`, and `Shared/` as siblings — find it by globbing for `**/commands/research.md` in both the current directory and `~/.claude/plugins/cache/`. If multiple matches are found (e.g., multiple cached plugin versions), sort by version number and use the highest. Then go one level up.
+**Templates and schema** (`shared/`) are read from the **plugin directory**, not from the planning root. The plugin directory contains `commands/`, `agents/`, and `shared/` as siblings — find it by globbing for `**/commands/research.md` in both the current directory and `~/.claude/plugins/cache/`. If multiple matches are found (e.g., multiple cached plugin versions), sort by version number and use the highest. Then go one level up.
 
 ## When to Use
 When you need a critical review of an artifact before committing to it. Good for stress-testing plans before approval, finding gaps in specs, or challenging design assumptions. Unlike reviewers (which check for structural quality), this skill actively tries to break the thinking.
@@ -85,7 +85,7 @@ When you need a critical review of an artifact before committing to it. Good for
 No new artifact is created. This skill produces an inline analysis presented to the user. If the user chooses to update the artifact, modify it in place. If a research document is needed, use the `/research` workflow.
 
 ## Context
-- Orchestration: `Shared/orchestration.md`
+- Orchestration: `shared/orchestration.md`
 - Agent: `researcher`
 
 ## What This Is NOT

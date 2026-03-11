@@ -12,7 +12,7 @@ Read `planning-config.json` (at repo root) to find the planning root:
 - `planningRoot` of `"<dir>"` → artifacts under `<dir>/` from repo root
 - `planningRoot` of `"/absolute/path"` → artifacts in an external directory (standalone planning repo)
 
-**Templates and schema** (`Shared/`) are read from the **plugin directory**, not from the planning root. The plugin directory contains `commands/`, `agents/`, and `Shared/` as siblings — find it by globbing for `**/commands/research.md` in both the current directory and `~/.claude/plugins/cache/`. If multiple matches are found (e.g., multiple cached plugin versions), sort by version number and use the highest. Then go one level up.
+**Templates and schema** (`shared/`) are read from the **plugin directory**, not from the planning root. The plugin directory contains `commands/`, `agents/`, and `shared/` as siblings — find it by globbing for `**/commands/research.md` in both the current directory and `~/.claude/plugins/cache/`. If multiple matches are found (e.g., multiple cached plugin versions), sort by version number and use the highest. Then go one level up.
 
 If `dashboard` is `true` in `planning-config.json`, run dashboard commands (`make dashboard`) from the planning root directory.
 
@@ -48,7 +48,7 @@ When a plan is approved and you're ready to implement a phase. This skill **coor
 
 Before executing any tasks, audit every task in the phase for a `verification` field in its frontmatter entry. Every task must answer the question: **"How do we know this work is good and complete?"**
 
-Also read `Shared/language-verification.md` and detect the target project language. Verify that the phase includes the language-appropriate structural checks (sanitizers, static analysis, type checking) — either in individual task verification fields or as a dedicated verification task. If missing, flag this alongside any tasks missing verification criteria.
+Also read `shared/language-verification.md` and detect the target project language. Verify that the phase includes the language-appropriate structural checks (sanitizers, static analysis, type checking) — either in individual task verification fields or as a dedicated verification task. If missing, flag this alongside any tasks missing verification criteria.
 
 Scan the phase's `tasks[]` array and separate tasks into two lists:
 - **Ready**: tasks that have a non-empty `verification` field with specific, observable criteria
@@ -201,8 +201,8 @@ Updates existing plan artifacts in place:
 Code changes go to the target repository (not the planning root).
 
 ## Context
-- Orchestration: `Shared/orchestration.md`
-- Schema: `Shared/frontmatter-schema.md`
+- Orchestration: `shared/orchestration.md`
+- Schema: `shared/frontmatter-schema.md`
 - Target plan: `Plans/<PlanName>/`
 - Related specs: `Specs/`
 - Related designs: `Designs/`

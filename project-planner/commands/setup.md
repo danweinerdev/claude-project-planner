@@ -15,7 +15,7 @@ When setting up a new or existing repository to work with the project-planner pl
 1. Detects the repository type (normal repo, worktree, or bare repo)
 2. For worktrees, searches sibling worktrees for an existing `planning-config.json` and inherits settings
 3. Generates `planning-config.json` — the config that tells the plugin where planning artifacts live
-4. Bootstraps planning directories (Plans/, Research/, Brainstorm/, Specs/, Designs/, Retro/, Shared/) if they don't exist
+4. Bootstraps planning directories (Plans/, Research/, Brainstorm/, Specs/, Designs/, Retro/, shared/) if they don't exist
 5. Creates a launcher script (`claude.sh` / `claude.cmd`) for launching Claude with the plugin
 6. Sets up `.gitignore` for generated files
 7. Cleans any stale legacy symlinks
@@ -64,7 +64,7 @@ For most setups the defaults are correct — skip questions when the answer is o
 
 The setup tool lives in the **project-planner plugin directory** (the directory containing this command file).
 
-The plugin directory contains `commands/`, `agents/`, and `Shared/` as siblings — find it by globbing for `**/commands/setup.md` in both the current directory and `~/.claude/plugins/cache/`. If multiple matches are found (e.g., multiple cached plugin versions), sort by version number and use the highest. Then go one level up.
+The plugin directory contains `commands/`, `agents/`, and `shared/` as siblings — find it by globbing for `**/commands/setup.md` in both the current directory and `~/.claude/plugins/cache/`. If multiple matches are found (e.g., multiple cached plugin versions), sort by version number and use the highest. Then go one level up.
 
 ```bash
 python3 <planner-dir>/setup-repo.py <target-repo> [--planning-root <path>] [--dashboard]

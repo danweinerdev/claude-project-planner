@@ -20,7 +20,7 @@ project-planner/                  # Marketplace repo root
 │   ├── setup/                   # Shared library for setup tools
 │   ├── commands/                # Slash commands (auto-namespaced /planner:*)
 │   ├── agents/                  # Subagent definitions
-│   ├── Shared/
+│   ├── shared/
 │   │   ├── frontmatter-schema.md # Single source of truth for artifact metadata
 │   │   └── templates/           # Document templates
 │   ├── Research/                # Research artifacts (flat)
@@ -47,7 +47,7 @@ project-planner/                  # Marketplace repo root
 ## Conventions
 
 ### Frontmatter
-All artifacts use YAML frontmatter as the machine-readable data layer. See `Shared/frontmatter-schema.md` for the complete schema. The dashboard reads exclusively from frontmatter — no markdown table parsing.
+All artifacts use YAML frontmatter as the machine-readable data layer. See `shared/frontmatter-schema.md` for the complete schema. The dashboard reads exclusively from frontmatter — no markdown table parsing.
 
 ### Plan Hierarchy
 ```
@@ -71,7 +71,7 @@ Plan (README.md)       <- like a Jira Project
 - Specs/Designs: `<Name>/README.md`
 
 ### Templates
-Always use templates from `Shared/templates/` when creating new artifacts. Replace `{{PLACEHOLDERS}}` with actual values.
+Always use templates from `shared/templates/` when creating new artifacts. Replace `{{PLACEHOLDERS}}` with actual values.
 
 ## Skills
 
@@ -163,8 +163,8 @@ Opt-in: requires `"dashboard": true` in `planning-config.json`. Generated via `m
 When adding, removing, or renaming skills (`commands/`), agents (`agents/`), or modifying user-facing behavior in the setup library (`setup/`), update these files to stay in sync:
 - **`README.md`** — command/agent counts, tables, Mermaid diagrams, directory listing
 - **`CLAUDE.md`** — skill table, agent table, workflow lifecycle
-- **`Shared/templates/claude-md-standalone.md`** — skill table, agent table, workflow lifecycle
-- **`Shared/templates/claude-md-embedded.md`** — skill table
+- **`shared/templates/claude-md-standalone.md`** — skill table, agent table, workflow lifecycle
+- **`shared/templates/claude-md-embedded.md`** — skill table
 
 ## Versioning
 

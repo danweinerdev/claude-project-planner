@@ -5,7 +5,7 @@ What "good and complete" looks like beyond passing tests. Each language file cov
 ## How to Use
 
 1. Detect the project language from file extensions, build files, or project config
-2. Read the matching file from `Shared/Languages/`
+2. Read the matching file from `shared/languages/`
 3. Include the relevant checks in your output (verification fields, testing strategy, review findings)
 
 When a project uses multiple languages, read and apply each relevant file.
@@ -21,13 +21,13 @@ When a project uses multiple languages, read and apply each relevant file.
 
 | Language | File |
 |----------|------|
-| C / C++ | `Shared/Languages/cpp.md` |
-| Rust | `Shared/Languages/rust.md` |
-| Go | `Shared/Languages/go.md` |
-| Python | `Shared/Languages/python.md` |
-| TypeScript / JavaScript | `Shared/Languages/typescript.md` |
-| Java / Kotlin | `Shared/Languages/java.md` |
-| Swift | `Shared/Languages/swift.md` |
+| C / C++ | `shared/languages/cpp.md` |
+| Rust | `shared/languages/rust.md` |
+| Go | `shared/languages/go.md` |
+| Python | `shared/languages/python.md` |
+| TypeScript / JavaScript | `shared/languages/typescript.md` |
+| Java / Kotlin | `shared/languages/java.md` |
+| Swift | `shared/languages/swift.md` |
 
 ## Unlisted Languages
 

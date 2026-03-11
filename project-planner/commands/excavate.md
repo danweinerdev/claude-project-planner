@@ -12,7 +12,7 @@ Read `planning-config.json` (at repo root) to find the planning root:
 - `planningRoot` of `"<dir>"` → artifacts under `<dir>/` from repo root
 - `planningRoot` of `"/absolute/path"` → artifacts in an external directory (standalone planning repo)
 
-**Templates and schema** (`Shared/`) are read from the **plugin directory**, not from the planning root. The plugin directory contains `commands/`, `agents/`, and `Shared/` as siblings — find it by globbing for `**/commands/research.md` in both the current directory and `~/.claude/plugins/cache/`. If multiple matches are found (e.g., multiple cached plugin versions), sort by version number and use the highest. Then go one level up.
+**Templates and schema** (`shared/`) are read from the **plugin directory**, not from the planning root. The plugin directory contains `commands/`, `agents/`, and `shared/` as siblings — find it by globbing for `**/commands/research.md` in both the current directory and `~/.claude/plugins/cache/`. If multiple matches are found (e.g., multiple cached plugin versions), sort by version number and use the highest. Then go one level up.
 
 If `dashboard` is `true` in `planning-config.json`, run dashboard commands (`make dashboard`) from the planning root directory.
 
@@ -61,7 +61,7 @@ When you need to understand an unfamiliar codebase or subsystem before planning 
    Each pass produces findings that inform the next. Don't try to understand everything at once.
 
 4. **Synthesize**
-   - Create `Research/<codebase-or-subsystem-slug>.md` using `Shared/templates/research.md`
+   - Create `Research/<codebase-or-subsystem-slug>.md` using `shared/templates/research.md`
    - Organize findings into:
      - **Architecture**: How the system is structured
      - **Key Patterns**: Conventions the codebase follows
@@ -91,8 +91,8 @@ Research/<codebase-or-subsystem-slug>.md
 - **Stop when diminishing returns**: You don't need to understand every line. Stop when you can confidently describe what each major component does and how they interact
 
 ## Context
-- Orchestration: `Shared/orchestration.md`
-- Template: `Shared/templates/research.md`
-- Schema: `Shared/frontmatter-schema.md`
+- Orchestration: `shared/orchestration.md`
+- Template: `shared/templates/research.md`
+- Schema: `shared/frontmatter-schema.md`
 - Agent: `researcher`
 - Local repo paths: `planning-config.local.json`

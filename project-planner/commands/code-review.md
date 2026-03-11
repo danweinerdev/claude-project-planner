@@ -12,7 +12,7 @@ Read `planning-config.json` (at repo root) to find the planning root:
 - `planningRoot` of `"<dir>"` → artifacts under `<dir>/` from repo root
 - `planningRoot` of `"/absolute/path"` → artifacts in an external directory (standalone planning repo)
 
-**Templates and schema** (`Shared/`) are read from the **plugin directory**, not from the planning root. The plugin directory contains `commands/`, `agents/`, and `Shared/` as siblings — find it by globbing for `**/commands/research.md` in both the current directory and `~/.claude/plugins/cache/`. If multiple matches are found (e.g., multiple cached plugin versions), sort by version number and use the highest. Then go one level up.
+**Templates and schema** (`shared/`) are read from the **plugin directory**, not from the planning root. The plugin directory contains `commands/`, `agents/`, and `shared/` as siblings — find it by globbing for `**/commands/research.md` in both the current directory and `~/.claude/plugins/cache/`. If multiple matches are found (e.g., multiple cached plugin versions), sort by version number and use the highest. Then go one level up.
 
 If `dashboard` is `true` in `planning-config.json`, run dashboard commands (`make dashboard`) from the planning root directory.
 
@@ -73,7 +73,7 @@ Pass the planning context and diff information to the `code-reviewer` agent for 
 1. **Plan Accuracy** — Does the code implement what the plan describes?
 2. **Drift Detection** — What's in the code but not in the plan (and vice versa)?
 3. **Quality & Improvement Opportunities** — Missing error handling, edge cases, new or changed behaviors without corresponding tests
-4. **Structural Verification** — Read `Shared/language-verification.md` and check whether the language-appropriate structural checks (sanitizers, static analysis, type checking) were included in task verification and actually run. Flag if the plan specified them but they weren't executed, or if the project language warrants them but they were never planned.
+4. **Structural Verification** — Read `shared/language-verification.md` and check whether the language-appropriate structural checks (sanitizers, static analysis, type checking) were included in task verification and actually run. Flag if the plan specified them but they weren't executed, or if the project language warrants them but they were never planned.
 5. **Assumption Verification** — Hardcoded values, implicit dependencies, unvalidated assumptions
 6. **Planning Blind Spots** — Things the code had to handle that the plan didn't anticipate
 
@@ -120,8 +120,8 @@ No new artifact is created. This skill produces an inline review presented to th
 - Not a substitute for tests — assumes the test suite validates correctness independently
 
 ## Context
-- Orchestration: `Shared/orchestration.md`
-- Schema: `Shared/frontmatter-schema.md`
+- Orchestration: `shared/orchestration.md`
+- Schema: `shared/frontmatter-schema.md`
 - Target plan: `Plans/<PlanName>/`
 - Related specs: `Specs/`
 - Related designs: `Designs/`

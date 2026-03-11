@@ -8,7 +8,7 @@ Planning artifacts under `{{PLANNING_ROOT}}/` — managed by project-planner.
 ├── Makefile                      # make dashboard / make open / make clean
 ├── generate-dashboard.py         # Dashboard generator (Python 3, stdlib only)
 ├── planning-config.json          # Planning configuration
-├── Shared/
+├── shared/
 │   ├── frontmatter-schema.md     # Artifact metadata schema
 │   └── templates/                # Document templates
 ├── Research/                     # Research artifacts

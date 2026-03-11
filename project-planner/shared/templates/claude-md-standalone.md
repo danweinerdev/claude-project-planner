@@ -11,7 +11,7 @@
 ├── generate-dashboard.py         # Dashboard generator (Python 3, stdlib only)
 ├── planning-config.json          # Planning configuration
 ├── .gitignore
-├── Shared/
+├── shared/
 │   ├── frontmatter-schema.md     # Single source of truth for artifact metadata
 │   └── templates/                # Document templates
 ├── Research/                     # Research artifacts (flat)
@@ -34,7 +34,7 @@
 ## Conventions
 
 ### Frontmatter
-All artifacts use YAML frontmatter as the machine-readable data layer. See `Shared/frontmatter-schema.md` for the complete schema. The dashboard reads exclusively from frontmatter — no markdown table parsing.
+All artifacts use YAML frontmatter as the machine-readable data layer. See `shared/frontmatter-schema.md` for the complete schema. The dashboard reads exclusively from frontmatter — no markdown table parsing.
 
 ### Plan Hierarchy
 ```
@@ -58,7 +58,7 @@ Plan (README.md)       <- like a Jira Project
 - Specs/Designs: `<Name>/README.md`
 
 ### Templates
-Always use templates from `Shared/templates/` when creating new artifacts. Replace `{{PLACEHOLDERS}}` with actual values.
+Always use templates from `shared/templates/` when creating new artifacts. Replace `{{PLACEHOLDERS}}` with actual values.
 
 ## Skills
 
