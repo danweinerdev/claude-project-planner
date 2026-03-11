@@ -23,6 +23,46 @@ If `dashboard` is `true` in `planning-config.json`, run dashboard commands (`mak
 - After completing a feature cycle (good time to archive)
 - When the dashboard feels out of sync with reality
 
+## Pre-flight: Legacy Layout Detection
+
+Before running any mode, check whether `Plans/` uses the **legacy flat layout** (plan directories directly under `Plans/`) instead of the current **status subfolder layout** (`Plans/{New,Ready,Active,Complete}/`).
+
+**Detection**: List the contents of `Plans/`. If there are plan directories (containing `README.md`) directly under `Plans/` — i.e., not inside `New/`, `Ready/`, `Active/`, or `Complete/` — the layout is legacy.
+
+If legacy layout is detected:
+
+1. **Report** the finding and show which plans were detected:
+   ```
+   Legacy Plans/ layout detected — plans are stored flat instead of in status subfolders.
+
+   Found N plans to migrate:
+     - PlanName (status: active) → Plans/Active/PlanName/
+     - OtherPlan (status: complete) → Plans/Complete/OtherPlan/
+     - NewPlan (status: draft) → Plans/New/NewPlan/
+   ```
+
+2. **Warn** the user:
+   ```
+   This migration will move plan directories into status subfolders (New/, Ready/, Active/, Complete/).
+   It will cause a significant number of file moves in version control.
+   Dashboard generation will not work until the migration is complete.
+   This is completely optional — the plugin still supports the flat layout as a fallback.
+   ```
+
+3. **Wait for confirmation**. If the user declines, skip the migration and continue to the requested mode(s) normally.
+
+4. **If confirmed**, perform the migration:
+   - Create `Plans/New/`, `Plans/Ready/`, `Plans/Active/`, `Plans/Complete/` if they don't exist
+   - For each plan directory directly under `Plans/`:
+     - Read the plan's `README.md` frontmatter `status` field
+     - Map status to folder: `draft` → `New/`, `approved` → `Ready/`, `active` → `Active/`, `complete` or `archived` → `Complete/`
+     - If status is missing or unrecognized, default to `New/`
+     - Use `git mv` to move the plan directory into the appropriate status folder
+   - After all moves, report the results
+   - If `dashboard` is `true` in `planning-config.json`, regenerate the dashboard
+
+If status subfolders already exist (even if empty), skip this check entirely — the layout is already migrated.
+
 ## Modes
 
 | Mode | Purpose | Produces |
@@ -40,6 +80,7 @@ Each mode builds on prior work. Status must be accurate before tag analysis is m
 
 ```
 /tend                    # Run all modes sequentially (pause between each)
+/tend migrate            # Run only legacy layout migration check
 /tend status             # Run only status mode
 /tend tags               # Run only tags mode
 /tend filenames          # Run only filenames mode
@@ -98,14 +139,15 @@ Invoke the `researcher` agent to check each artifact against `shared/frontmatter
 
 When running `/tend` without arguments:
 
-1. Run status mode to completion
-2. Ask: "Status complete. Continue to tags?"
-3. On confirmation, run tags mode
-4. Ask: "Tags complete. Continue to filenames?"
-5. On confirmation, run filenames mode
-6. Ask: "Filenames complete. Continue to completeness?"
-7. On confirmation, run completeness mode
-8. Present final summary
+1. Run legacy layout detection pre-flight (if applicable)
+2. Run status mode to completion
+3. Ask: "Status complete. Continue to tags?"
+4. On confirmation, run tags mode
+5. Ask: "Tags complete. Continue to filenames?"
+6. On confirmation, run filenames mode
+7. Ask: "Filenames complete. Continue to completeness?"
+8. On confirmation, run completeness mode
+9. Present final summary
 
 User can stop after any mode.
 
