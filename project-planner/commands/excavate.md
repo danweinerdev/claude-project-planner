@@ -63,9 +63,9 @@ When you need to understand an unfamiliar codebase or subsystem before planning 
 4. **Synthesize**
    - Create `Research/<codebase-or-subsystem-slug>.md` using `shared/templates/research.md`
    - Organize findings into:
-     - **Architecture**: How the system is structured
+     - **Architecture**: How the system is structured (use Mermaid `graph TD` or `flowchart` diagrams)
      - **Key Patterns**: Conventions the codebase follows
-     - **Data Flow**: How data moves through the system
+     - **Data Flow**: How data moves through the system (use Mermaid `flowchart LR` or `sequenceDiagram`)
      - **Dependencies**: External and internal dependencies
      - **Findings**: Insights, risks, technical debt
      - **Open Questions**: What remains unclear after exploration

@@ -45,6 +45,7 @@ When you need to break down a feature, project, or initiative into an actionable
    - Create `Plans/<PlanName>/notes/` directory for future debriefs
    - Populate frontmatter with all phase/task metadata
    - Write body content with task details, subtask checklists, verification criteria, and acceptance criteria
+   - **Use Mermaid diagrams** in the Architecture section and anywhere visual structure helps — prefer `graph TD` for phase dependencies, `flowchart LR` for data flow, etc. over ASCII art
 
 4. **Review**
    - Invoke the `plan-reviewer` agent to review the complete plan

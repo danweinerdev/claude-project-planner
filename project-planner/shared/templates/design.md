@@ -15,11 +15,23 @@ Brief description of the component and its role in the system.
 
 ## Architecture
 
+Use Mermaid diagrams to illustrate structure and flow — prefer over ASCII art or prose-only descriptions.
+
 ### Components
 Describe the major components and their responsibilities.
 
+```mermaid
+graph TD
+    A[Component A] --> B[Component B]
+```
+
 ### Data Flow
 How data moves through the system.
+
+```mermaid
+flowchart LR
+    Input --> Processing --> Output
+```
 
 ### Interfaces
 Public APIs, events, or contracts.

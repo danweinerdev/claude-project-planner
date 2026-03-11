@@ -42,6 +42,7 @@ When you need to generate and evaluate multiple approaches to a problem before c
 4. **Evaluate**
    - Create `Brainstorm/<topic-slug>.md` using `shared/templates/brainstorm.md`
    - Build a comparison matrix against the criteria
+   - Where architectural approaches are compared, use Mermaid diagrams to illustrate key differences
    - Make a recommendation with rationale
 
 5. **Link**

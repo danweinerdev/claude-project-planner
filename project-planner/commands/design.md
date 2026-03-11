@@ -32,6 +32,7 @@ When you need to define the technical architecture for a component or system bef
 2. **Draft Design**
    - Create `Designs/<ComponentName>/README.md` using `shared/templates/design.md`
    - Document: overview, architecture (components, data flow, interfaces), design decisions (with alternatives considered), error handling, testing strategy, migration plan
+   - **Use Mermaid diagrams** for architecture, data flow, and component relationships — prefer `graph TD`, `flowchart LR`, or `sequenceDiagram` over ASCII art or prose-only descriptions
    - **Testing strategy must include structural verification:** Read `shared/language-verification.md` and include the language-appropriate structural checks (sanitizers, static analysis, type checking) in the Testing Strategy section. These define what "structurally correct" means for this component beyond passing tests.
    - Set status to `draft`
 
