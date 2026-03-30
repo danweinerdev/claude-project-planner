@@ -12,12 +12,10 @@ project-planner/                  # Marketplace repo root
 │   ├── CLAUDE.md                 # This file
 │   ├── Makefile                  # make dashboard / make open / make clean / make bump-*
 │   ├── generate-dashboard.py     # Dashboard generator (Python 3, stdlib only)
-│   ├── setup-repo.py            # Configure a repo (normal or worktree) for planner
 │   ├── planning-config.json     # Planning configuration
 │   ├── .gitignore
 │   ├── .claude-plugin/
 │   │   └── plugin.json          # Plugin manifest (name: "planner")
-│   ├── setup/                   # Shared library for setup tools
 │   ├── commands/                # Slash commands (auto-namespaced /planner:*)
 │   ├── agents/                  # Subagent definitions
 │   ├── shared/
@@ -154,7 +152,7 @@ Use `/planner:excavate` to understand unfamiliar codebases. Use `/planner:diagra
 The planning root's `planning-config.json` drives all path resolution:
 - `mode`: `"standalone"` (own repo) or `"embedded"` (subdirectory of project)
 - `planningRoot`: `"."` for standalone, subdirectory name for embedded
-- `dashboard`: `true` to enable dashboard generation (off by default)
+- `dashboard`: `true` to enable dashboard generation (off by default). When enabled, also set `title` and `description` for the dashboard HTML.
 - `repositories`: map of external repo keys to GitHub URLs (standalone mode)
 - `planMapping`: map of plan names to target repos
 - `planRepository`: key for the planning repo itself
@@ -181,7 +179,7 @@ Opt-in: requires `"dashboard": true` in `planning-config.json`. Generated via `m
 
 ## Maintenance Rules
 
-When adding, removing, or renaming skills (`commands/`), agents (`agents/`), or modifying user-facing behavior in the setup library (`setup/`), update these files to stay in sync:
+When adding, removing, or renaming skills (`commands/`), agents (`agents/`), or modifying user-facing behavior, update these files to stay in sync:
 - **`README.md`** — command/agent counts, tables, Mermaid diagrams, directory listing
 - **`CLAUDE.md`** — skill table, agent table, workflow lifecycle
 - **`shared/templates/claude-md-standalone.md`** — skill table, agent table, workflow lifecycle

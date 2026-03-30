@@ -57,7 +57,7 @@ claude --plugin-dir /path/to/project-planner
 
 ### Use with git worktrees
 
-Run `/planner:setup` in each worktree. The setup tool auto-detects worktrees and inherits `planningRoot` and `dashboard` settings from siblings:
+Run `/planner:setup` in each worktree. Setup auto-detects worktrees and inherits `planningRoot` and `dashboard` settings from siblings:
 
 ```bash
 # In the first worktree — provide the planning root explicitly
@@ -237,7 +237,6 @@ A dedicated repository for planning. Plans reference external code repositories 
 {
   "mode": "standalone",
   "planningRoot": ".",
-  "title": "My Project Dashboard",
   "repositories": {
     "my-app": { "github": "org/my-app" }
   }
@@ -261,8 +260,7 @@ Planning lives inside your project as a subdirectory:
 ```json
 {
   "mode": "embedded",
-  "planningRoot": "Planning",
-  "title": "My Project Dashboard"
+  "planningRoot": "Planning"
 }
 ```
 
@@ -279,9 +277,9 @@ Point multiple code repos at one shared planning repo using an absolute `plannin
 
 ## Dashboard
 
-A static HTML dashboard generated from artifact frontmatter. Python 3 stdlib only — no dependencies.
+Optional static HTML dashboard generated from artifact frontmatter. Python 3 stdlib only — no dependencies. Opt-in: set `"dashboard": true` in `planning-config.json` (use `/planner:setup --dashboard` to enable during setup).
 
-All artifact-mutating skills auto-regenerate the dashboard after writing. You can also trigger it manually:
+When enabled, artifact-mutating skills auto-regenerate the dashboard after writing. You can also trigger it manually:
 
 ```bash
 make dashboard        # generate
@@ -290,7 +288,7 @@ make clean            # remove generated files
 make test             # run test suite
 ```
 
-To disable dashboard generation, set `"dashboard": false` in `planning-config.json`.
+To disable dashboard generation, remove the `"dashboard"` key or set it to `false` in `planning-config.json`.
 
 ### Pages
 
