@@ -5,45 +5,38 @@ A Claude Code plugin for structured project planning with lifecycle skills, revi
 ## Directory Structure
 
 ```
-project-planner/                  # Marketplace repo root
+project-planner/                  # Repository root = plugin root
 ├── .claude-plugin/
-│   └── marketplace.json          # Marketplace manifest
-├── project-planner/              # Plugin directory (this plugin)
-│   ├── CLAUDE.md                 # This file
-│   ├── Makefile                  # make dashboard / make open / make clean / make bump-*
-│   ├── generate-dashboard.py     # Dashboard generator (Python 3, stdlib only)
-│   ├── planning-config.json     # Planning configuration
-│   ├── .gitignore
-│   ├── .claude-plugin/
-│   │   └── plugin.json          # Plugin manifest (name: "planner")
-│   ├── commands/                # Slash commands (auto-namespaced /planner:*)
-│   ├── agents/                  # Subagent definitions
-│   ├── shared/
-│   │   ├── frontmatter-schema.md # Single source of truth for artifact metadata
-│   │   └── templates/           # Document templates
-│   ├── Research/                # Research artifacts (flat)
-│   ├── Brainstorm/              # Brainstorm artifacts (flat)
-│   ├── Specs/                   # Specs (subdirectory per feature)
-│   │   └── <feature>/README.md
-│   ├── Designs/                 # Designs (subdirectory per component)
-│   │   └── <component>/README.md
-│   ├── Plans/                   # Implementation plans
-│   │   ├── New/                 # Draft plans, not yet approved
-│   │   ├── Ready/               # Approved, ready to implement
-│   │   ├── Active/              # Currently being implemented
-│   │   └── Complete/            # Done, frozen — AI skips unless asked
-│   │   └── <status>/<PlanName>/
-│   │       ├── README.md        # Frontmatter with phases[], overview
-│   │       ├── 01-Phase-Name.md # Frontmatter with tasks[], details
-│   │       └── notes/           # After-action notes
-│   │           └── 01-Phase-Name.md # Debrief for Phase 1
-│   ├── Retro/                   # Retrospectives
-│   │   └── YYYY-MM-DD-<slug>.md
-│   └── Dashboard/               # Generated HTML (gitignored)
-├── .claude/
-│   └── settings.local.json
-├── README.md                    # Marketplace README
-└── LICENSE
+│   └── plugin.json               # Plugin manifest (name: "planner")
+├── CLAUDE.md                     # This file
+├── Makefile                      # make dashboard / make open / make clean / make bump-*
+├── generate-dashboard.py         # Dashboard generator (Python 3, stdlib only)
+├── planning-config.json          # Planning configuration
+├── .gitignore
+├── commands/                     # Slash commands (auto-namespaced /planner:*)
+├── agents/                       # Subagent definitions
+├── shared/
+│   ├── frontmatter-schema.md     # Single source of truth for artifact metadata
+│   └── templates/                # Document templates
+├── Research/                     # Research artifacts (flat)
+├── Brainstorm/                   # Brainstorm artifacts (flat)
+├── Specs/                        # Specs (subdirectory per feature)
+│   └── <feature>/README.md
+├── Designs/                      # Designs (subdirectory per component)
+│   └── <component>/README.md
+├── Plans/                        # Implementation plans
+│   ├── New/                      # Draft plans, not yet approved
+│   ├── Ready/                    # Approved, ready to implement
+│   ├── Active/                   # Currently being implemented
+│   └── Complete/                 # Done, frozen — AI skips unless asked
+│   └── <status>/<PlanName>/
+│       ├── README.md             # Frontmatter with phases[], overview
+│       ├── 01-Phase-Name.md      # Frontmatter with tasks[], details
+│       └── notes/                # After-action notes
+│           └── 01-Phase-Name.md  # Debrief for Phase 1
+├── Retro/                        # Retrospectives
+│   └── YYYY-MM-DD-<slug>.md
+└── Dashboard/                    # Generated HTML (gitignored)
 ```
 
 ## Conventions
@@ -187,7 +180,7 @@ When adding, removing, or renaming skills (`commands/`), agents (`agents/`), or 
 
 ## Versioning
 
-The plugin uses `vMAJOR.MINOR.PATCH` semver. The version is declared in both `plugin.json` and `marketplace.json` and must stay in sync. Claude Code caches plugins by version — **users will not see changes unless the version is bumped**.
+The plugin uses `vMAJOR.MINOR.PATCH` semver. The version is declared in `.claude-plugin/plugin.json`. Claude Code caches plugins by version — **users will not see changes unless the version is bumped**.
 
 | Bump | When | Command |
 |------|------|---------|
@@ -195,4 +188,4 @@ The plugin uses `vMAJOR.MINOR.PATCH` semver. The version is declared in both `pl
 | **minor** | New or completed feature, new skill, meaningful behavior change | `make bump-minor` |
 | **major** | Breaking changes to artifact format, config schema, or skill interface | `make bump-major` |
 
-Each `make bump-*` target updates both JSON files, creates a commit (`v1.2.3`), and adds a git tag (`v1.2.3`). Always bump before pushing a release.
+Each `make bump-*` target updates `plugin.json`, creates a commit (`v1.2.3`), and adds a git tag (`v1.2.3`). Always bump before pushing a release.

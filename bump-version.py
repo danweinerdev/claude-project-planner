@@ -1,12 +1,11 @@
 #!/usr/bin/env python3
-"""Bump the plugin version in both marketplace.json and plugin.json."""
+"""Bump the plugin version in plugin.json."""
 
 import json
 import sys
 from pathlib import Path
 
 PLUGIN_DIR = Path(__file__).resolve().parent
-MARKETPLACE_JSON = PLUGIN_DIR.parent / ".claude-plugin" / "marketplace.json"
 PLUGIN_JSON = PLUGIN_DIR / ".claude-plugin" / "plugin.json"
 
 
@@ -23,10 +22,7 @@ def bump(version: str, part: str) -> str:
 
 def update_json(path: Path, new_version: str) -> None:
     data = json.loads(path.read_text())
-    if "plugins" in data:
-        data["plugins"][0]["version"] = new_version
-    else:
-        data["version"] = new_version
+    data["version"] = new_version
     path.write_text(json.dumps(data, indent=2) + "\n")
 
 
@@ -40,7 +36,6 @@ def main() -> None:
     new_version = bump(current, part)
 
     update_json(PLUGIN_JSON, new_version)
-    update_json(MARKETPLACE_JSON, new_version)
 
     print(new_version)
 

@@ -4,7 +4,7 @@ A [Claude Code](https://docs.anthropic.com/en/docs/claude-code) plugin for struc
 
 ## How It Works
 
-Project Planner is a Claude Code **plugin**. When loaded, it registers 18 slash commands (namespaced under `/planner:*`) and 4 review agents that Claude can delegate to. All artifacts are Markdown files with YAML frontmatter — the dashboard generator reads frontmatter exclusively, so there's no brittle table parsing.
+Project Planner is a standalone Claude Code **plugin**. When loaded (via `--plugin-dir` or through a marketplace), it registers 18 slash commands (namespaced under `/planner:*`) and 4 review agents that Claude can delegate to. All artifacts are Markdown files with YAML frontmatter — the dashboard generator reads frontmatter exclusively, so there's no brittle table parsing.
 
 ```mermaid
 graph LR

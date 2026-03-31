@@ -133,7 +133,7 @@ Check `<target>/.claude/skills/` and `<target>/.claude/agents/` for leftover fil
 
 **Symlinks**: Remove any `.md` symlinks that point into the plugin directory (these are from the legacy symlink-based setup).
 
-**Copies**: Compare filenames in `.claude/skills/*.md` against `commands/*.md` in the plugin directory, and `.claude/agents/*.md` against `agents/*.md`. Remove matching files (these are stale copies from before the marketplace plugin system). Keep non-matching files — they may be user-created.
+**Copies**: Compare filenames in `.claude/skills/*.md` against `commands/*.md` in the plugin directory, and `.claude/agents/*.md` against `agents/*.md`. Remove matching files (these are stale copies from before the plugin system). Keep non-matching files — they may be user-created.
 
 Remove empty `.claude/skills/` or `.claude/agents/` directories after cleanup.
 
