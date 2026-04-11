@@ -9,6 +9,8 @@ tools:
   - Bash
   - WebSearch
   - WebFetch
+  - mcp__plugin_context7_context7__resolve-library-id
+  - mcp__plugin_context7_context7__query-docs
 ---
 
 # Researcher Agent
@@ -47,9 +49,10 @@ You are invoked at the start of `/brainstorm`, `/specify`, `/design`, and `/plan
    - Use Glob to find relevant file structures
    - Read key files to understand current architecture
 
-3. **Search the web** if needed:
-   - Look up documentation for relevant technologies
-   - Find best practices or reference implementations
+3. **Look up library documentation** when the topic touches a specific framework, SDK, API, or CLI tool:
+   - Prefer `mcp__plugin_context7_context7__resolve-library-id` + `mcp__plugin_context7_context7__query-docs` over WebSearch/WebFetch — context7 returns current, authoritative docs and doesn't depend on guessing URLs
+   - Use context7 even for well-known libraries (React, Django, Express, etc.) — your training data may not reflect recent changes
+   - Fall back to WebSearch/WebFetch only for things context7 doesn't cover: blog posts, RFCs, GitHub discussions, or general best-practice reading
 
 4. **Synthesize findings** into a structured summary:
 

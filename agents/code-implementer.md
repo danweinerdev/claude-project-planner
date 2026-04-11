@@ -9,6 +9,8 @@ tools:
   - Grep
   - Glob
   - Bash
+  - mcp__plugin_context7_context7__resolve-library-id
+  - mcp__plugin_context7_context7__query-docs
 ---
 
 # Code Implementer Agent
@@ -55,6 +57,7 @@ You receive from the coordinator:
   - Import patterns
   - Error handling patterns
   - Test patterns and naming
+- **Verify library usage against current docs.** When you call into a framework, SDK, or API — especially one that has evolved recently — use `mcp__plugin_context7_context7__resolve-library-id` + `mcp__plugin_context7_context7__query-docs` to confirm the API syntax, configuration, and idioms you're using are current. Your training data may lag behind reality. Do this even for well-known libraries; the cost of a context7 lookup is far lower than the cost of shipping code that uses a deprecated API.
 
 ### 4. Validate
 - Check the task's **verification criteria** — confirm the implementation satisfies them

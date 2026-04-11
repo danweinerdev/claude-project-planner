@@ -7,6 +7,8 @@ tools:
   - Grep
   - Glob
   - Bash
+  - mcp__plugin_context7_context7__resolve-library-id
+  - mcp__plugin_context7_context7__query-docs
 ---
 
 # Quality Scanner Agent
@@ -63,7 +65,7 @@ If after validation you still can't confirm a finding, downgrade it to a **Quest
 - Concurrency issues: shared mutable state, missing locks, race conditions, async/await misuse
 - Resource leaks: unclosed files/connections/handles, goroutine leaks, timers never canceled
 - Unhandled error paths that can actually be hit (verify the path is reachable)
-- Incorrect use of library APIs (verify via docs or existing correct usage in the repo)
+- Incorrect use of library APIs — when the diff touches a library/framework/SDK, verify the usage against current docs via `mcp__plugin_context7_context7__resolve-library-id` + `mcp__plugin_context7_context7__query-docs` before flagging anything as wrong (and before ruling anything as correct). Your training data may lag behind the library's current API; context7 is authoritative. Only fall back to "existing correct usage in the repo" when context7 doesn't cover the library.
 
 ### 2. Safety
 - Input validation gaps at trust boundaries (user input, network, file parsing)
