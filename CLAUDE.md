@@ -116,7 +116,28 @@ Always use templates from `shared/templates/` when creating new artifacts. Repla
 | `plan-reviewer` | Sonnet | Reviews plans for completeness, feasibility, conventions |
 | `spec-reviewer` | Haiku | Reviews specs for testability, completeness, ambiguity |
 | `code-implementer` | Opus | Implements code from plan tasks in the target codebase |
-| `code-reviewer` | Sonnet | Reviews code changes against plan, specs, and designs |
+| `code-reviewer` | Sonnet | **Orchestrator** — dispatches the 4 specialized reviewers in parallel and synthesizes their reports |
+| `drift-detector` | Sonnet | Diff + plan only — flags missing work, scope creep, approach drift |
+| `quality-scanner` | Sonnet | Diff + code only (intent-blind) — correctness, safety, maintainability, over-engineering |
+| `spec-compliance` | Sonnet | Diff + specs/designs only — requirements coverage, contract violations |
+| `blind-spot-finder` | Sonnet | Diff only — adversarial fresh-eyes reviewer |
+
+### Code Review Architecture
+
+`/code-review` uses a **tiered dispatch** model to keep the primary context lean while preserving intent isolation between reviewers:
+
+1. **Primary context** (`/code-review` command) identifies only the minimum references: plan path, phase doc path, target repo path, and diff scope. It does **not** read plans, specs, designs, or git diffs.
+2. **`code-reviewer` orchestrator** (fresh context) loads everything itself — plan, phase, related specs/designs, prior debriefs, diffs — then dispatches the four specialized reviewers in parallel, each with exactly the inputs for its lane.
+3. **Specialized reviewers** each run in their own fresh context. Intent isolation is enforced by what they're given:
+   - `drift-detector` sees diff + plan (no specs/designs)
+   - `quality-scanner` sees diff + code only (intent-blind)
+   - `spec-compliance` sees diff + specs/designs (no plan)
+   - `blind-spot-finder` sees diff only (no context at all)
+4. **`code-reviewer`** synthesizes the four reports — highlighting agreements, disagreements, and findings only `blind-spot-finder` caught — and returns one complete report (synthesis + raw sub-reports) back to primary.
+
+`drift-detector`, `quality-scanner`, and `blind-spot-finder` are required to validate every finding against the actual code (full file + calling context), not just the diff hunk, because diffs lie by omission.
+
+`/implement` and `/simplify` bypass the orchestrator and invoke `quality-scanner` directly for fast intent-blind quality checks on a single task or file.
 
 ## Workflow Lifecycle
 

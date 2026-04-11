@@ -40,7 +40,7 @@ Planning artifacts under `{{PLANNING_ROOT}}/` — managed by project-planner.
 | `/design` | Technical architecture → `{{PLANNING_ROOT}}/Designs/<component>/README.md` |
 | `/plan` | Create implementation plan → `{{PLANNING_ROOT}}/Plans/New/<Name>/` |
 | `/breakdown` | Add detail to plan phases |
-| `/code-review` | Review code against the plan — drift, gaps, blind spots |
+| `/code-review` | Orchestrated code review — drift + quality + spec compliance + blind spots |
 | `/debrief` | After-action notes for completed phases |
 | `/retro` | Capture learnings → `{{PLANNING_ROOT}}/Retro/YYYY-MM-DD-<slug>.md` |
 | `/dashboard` | Regenerate HTML dashboard |

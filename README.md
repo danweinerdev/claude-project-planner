@@ -86,7 +86,7 @@ All commands are namespaced as `/planner:*` automatically by the plugin system.
 | `/planner:plan` | Create implementation plan | `Plans/New/<Name>/README.md` + phase docs |
 | `/planner:breakdown` | Add detail to plan phases | Updates phase `.md` with tasks/subtasks |
 | `/planner:implement` | Execute a plan phase | Code + updated task/phase statuses |
-| `/planner:code-review` | Review code against plan | Inline findings (drift, gaps, blind spots) |
+| `/planner:code-review` | Review code — orchestrated drift + quality + spec + blind-spot review | Unified report (synthesis + raw sub-reports) |
 | `/planner:simplify` | Post-implementation cleanup | Simplified code, tests verified |
 | `/planner:debrief` | After-action notes | `Plans/Active/<Name>/notes/<phase>.md` |
 | `/planner:retro` | Capture learnings | `Retro/YYYY-MM-DD-<slug>.md` |
@@ -191,14 +191,60 @@ graph TD
 
 ## Agents
 
-The plugin includes 4 review agents that Claude can delegate to:
+The plugin includes review agents that Claude can delegate to:
 
 | Agent | Model | Purpose |
 |-------|-------|---------|
 | `researcher` | Sonnet | Gathers context from artifacts, codebase, and web |
 | `plan-reviewer` | Sonnet | Reviews plans for completeness, feasibility, and conventions |
 | `spec-reviewer` | Haiku | Reviews specs for testability, completeness, and ambiguity |
-| `code-reviewer` | Sonnet | Reviews code changes against plan, specs, and designs |
+| `code-implementer` | Opus | Implements code from plan tasks in the target codebase |
+| `code-reviewer` | Sonnet | **Orchestrator** — dispatches the 4 specialized reviewers below in parallel and synthesizes their reports |
+| `drift-detector` | Sonnet | Diff + plan only — missing work, scope creep, approach drift |
+| `quality-scanner` | Sonnet | Diff + code only (intent-blind) — correctness, safety, maintainability, over-engineering |
+| `spec-compliance` | Sonnet | Diff + specs/designs only — requirements coverage, contract violations |
+| `blind-spot-finder` | Sonnet | Diff only — adversarial fresh-eyes reviewer |
+
+### Code Review Architecture
+
+`/code-review` uses a **tiered dispatch** model that keeps the primary context lean and enforces intent isolation between reviewers:
+
+```mermaid
+graph TD
+    primary["Primary context<br/>(/code-review command)"]
+    orch["code-reviewer<br/>(orchestrator, fresh context)"]
+    drift["drift-detector<br/>diff + plan"]
+    qual["quality-scanner<br/>diff + code<br/>(intent-blind)"]
+    spec["spec-compliance<br/>diff + specs/designs"]
+    blind["blind-spot-finder<br/>diff only"]
+
+    primary -->|"plan path<br/>phase path<br/>repo path<br/>diff scope"| orch
+    orch -->|loads plan/phase/<br/>specs/designs/diffs| orch
+    orch --> drift
+    orch --> qual
+    orch --> spec
+    orch --> blind
+    drift --> orch
+    qual --> orch
+    spec --> orch
+    blind --> orch
+    orch -->|"synthesized report<br/>+ raw sub-reports"| primary
+
+    classDef primary fill:#5a4a7a,stroke:#333,color:#fff
+    classDef orch fill:#6a5a3a,stroke:#333,color:#fff
+    classDef sub fill:#3a5a6a,stroke:#333,color:#fff
+
+    class primary primary
+    class orch orch
+    class drift,qual,spec,blind sub
+```
+
+- **Primary context** only identifies the review target — plan path, phase path, repo path, diff scope. No diffs or plan content touch primary.
+- **`code-reviewer`** runs in a fresh context, loads everything itself, and dispatches the four specialized reviewers in parallel with exactly what each needs.
+- **Each specialized reviewer** runs in its own fresh context with narrow inputs, preserving intent isolation. `drift-detector`, `quality-scanner`, and `blind-spot-finder` must validate findings against the full file and calling context, not just the diff hunk.
+- **`code-reviewer`** synthesizes the four reports — highlighting confirmed findings, disagreements, and blind spots only `blind-spot-finder` caught — then returns one complete report to primary.
+
+`/implement` and `/simplify` bypass the orchestrator and invoke `quality-scanner` directly for fast intent-blind quality checks on a single task or file.
 
 ## Deployment Modes
 
@@ -328,9 +374,14 @@ project-planner/                   # The plugin itself (not your project)
 │   ├── status.md
 │   └── tend.md
 ├── agents/                       # Review agents
-│   ├── code-reviewer.md
-│   ├── researcher.md
+│   ├── blind-spot-finder.md
+│   ├── code-implementer.md
+│   ├── code-reviewer.md          # Orchestrator
+│   ├── drift-detector.md
 │   ├── plan-reviewer.md
+│   ├── quality-scanner.md
+│   ├── researcher.md
+│   ├── spec-compliance.md
 │   └── spec-reviewer.md
 ├── shared/
 │   ├── frontmatter-schema.md     # Artifact metadata schema

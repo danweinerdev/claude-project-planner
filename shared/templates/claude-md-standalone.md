@@ -91,7 +91,7 @@ Always use templates from `shared/templates/` when creating new artifacts. Repla
 | `/design` | Technical architecture → `Designs/<component>/README.md` |
 | `/plan` | Create implementation plan → `Plans/New/<Name>/` |
 | `/breakdown` | Add detail to plan phases |
-| `/code-review` | Review code against the plan — drift, gaps, blind spots |
+| `/code-review` | Orchestrated code review — drift + quality + spec compliance + blind spots |
 | `/debrief` | After-action notes for completed phases |
 | `/retro` | Capture learnings → `Retro/YYYY-MM-DD-<slug>.md` |
 | `/dashboard` | Regenerate HTML dashboard |
@@ -105,7 +105,24 @@ Always use templates from `shared/templates/` when creating new artifacts. Repla
 | `plan-reviewer` | Sonnet | Reviews plans for completeness, feasibility, conventions |
 | `spec-reviewer` | Haiku | Reviews specs for testability, completeness, ambiguity |
 | `code-implementer` | Opus | Implements code from plan tasks in the target codebase |
-| `code-reviewer` | Sonnet | Reviews code changes against plan, specs, and designs |
+| `code-reviewer` | Sonnet | Orchestrator — dispatches the 4 specialized reviewers in parallel and synthesizes their reports |
+| `drift-detector` | Sonnet | Diff + plan only — missing work, scope creep, approach drift |
+| `quality-scanner` | Sonnet | Diff + code only (intent-blind) — correctness, safety, maintainability, over-engineering |
+| `spec-compliance` | Sonnet | Diff + specs/designs only — requirements coverage, contract violations |
+| `blind-spot-finder` | Sonnet | Diff only — adversarial fresh-eyes reviewer |
+
+### Code Review Architecture
+
+`/code-review` uses a tiered dispatch model:
+
+1. **Primary context** passes only references (plan path, phase path, repo path, diff scope) to `code-reviewer`. No diffs or plan content touch primary.
+2. **`code-reviewer`** runs in a fresh context, loads plan/phase/specs/designs/diffs itself, then dispatches the four specialized reviewers in parallel with exactly the inputs each lane needs.
+3. **Each specialized reviewer** runs in its own fresh context. Intent isolation is enforced by what they're given — `quality-scanner` and `blind-spot-finder` never see the plan, `drift-detector` never sees specs, etc.
+4. **`code-reviewer`** synthesizes the four reports — highlighting confirmed findings, disagreements, and blind spots only `blind-spot-finder` caught — and returns one complete report (synthesis + raw sub-reports) to primary.
+
+`drift-detector`, `quality-scanner`, and `blind-spot-finder` are required to validate findings against the full file and calling context, not just the diff hunk.
+
+`/implement` and `/simplify` bypass the orchestrator and invoke `quality-scanner` directly for fast intent-blind checks on a single task or file.
 
 ## Workflow Lifecycle
 
