@@ -2,15 +2,6 @@
 name: code-implementer
 description: "Implements a single plan task in the target codebase — reads the task, writes the code, runs the tests, and reports back with files changed, commit hash, and any blockers. Invoke from /implement for each task in a wave. Delivers working, verified code, not scaffolding."
 model: opus
-tools:
-  - Read
-  - Write
-  - Edit
-  - Grep
-  - Glob
-  - Bash
-  - mcp__plugin_context7_context7__resolve-library-id
-  - mcp__plugin_context7_context7__query-docs
 ---
 
 # Code Implementer Agent
@@ -57,7 +48,7 @@ You receive from the coordinator:
   - Import patterns
   - Error handling patterns
   - Test patterns and naming
-- **Verify library usage against current docs.** When you call into a framework, SDK, or API — especially one that has evolved recently — use `mcp__plugin_context7_context7__resolve-library-id` + `mcp__plugin_context7_context7__query-docs` to confirm the API syntax, configuration, and idioms you're using are current. Your training data may lag behind reality. Do this even for well-known libraries; the cost of a context7 lookup is far lower than the cost of shipping code that uses a deprecated API.
+- **Verify library usage against current docs.** When you call into a framework, SDK, or API — especially one that has evolved recently — check whether the session has a documentation-lookup MCP server available (such as `context7`) and use it to confirm the API syntax, configuration, and idioms you're using are current. Your training data may lag behind reality. Do this even for well-known libraries; the cost of a docs lookup is far lower than the cost of shipping code that uses a deprecated API. If no docs MCP is available, fall back to reading the library's existing usage in the repo, plus WebFetch against the library's documentation site.
 
 ### 4. Validate
 - Check the task's **verification criteria** — confirm the implementation satisfies them

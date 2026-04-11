@@ -246,6 +246,21 @@ graph TD
 
 `/implement` and `/simplify` bypass the orchestrator and invoke `quality-scanner` directly for fast intent-blind quality checks on a single task or file.
 
+### MCP Server Inheritance
+
+The plugin aims to be **generic** — it should work with whatever MCP servers your project has configured without hard-coding server names. It achieves this by splitting agents into two groups:
+
+| Group | Agents | Behavior |
+|---|---|---|
+| **Inherit session tools** (no `tools:` frontmatter) | `researcher`, `code-implementer`, `quality-scanner` | Automatically pick up any MCP servers available in the session — `context7`, Linear, Notion, Slack, whatever. They use these for library docs, ticket lookups, and API verification. Guardrails in the agent body keep `researcher` and `quality-scanner` read-only. |
+| **Restricted allowlist** (`tools:` frontmatter) | `plan-reviewer`, `spec-reviewer`, `code-reviewer`, `drift-detector`, `spec-compliance`, `blind-spot-finder` | Tight allowlist of built-in tools only. No MCP access. These agents depend on intent isolation — the value of `blind-spot-finder` is that it's given only the diff; adding MCPs would dilute that. |
+
+If you want stricter guarantees on the inheriting agents (e.g., preventing `code-implementer` from touching your ticketing MCP), drop an override into your project's `.claude/agents/<name>.md` — project-local agents take precedence over plugin-provided ones and can declare an explicit `tools:` list of your choosing.
+
+Recommended MCP servers to install for the best experience:
+- **context7** — current library docs. `researcher`, `code-implementer`, and `quality-scanner` all benefit immediately.
+- Any project-relevant knowledge-base MCP (Linear, Notion, Confluence, Jira) — `researcher` will use them to pull in reverse references during planning.
+
 ## Deployment Modes
 
 ```mermaid

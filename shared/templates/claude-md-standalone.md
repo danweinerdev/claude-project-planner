@@ -124,6 +124,12 @@ Always use templates from `shared/templates/` when creating new artifacts. Repla
 
 `/implement` and `/simplify` bypass the orchestrator and invoke `quality-scanner` directly for fast intent-blind checks on a single task or file.
 
+### MCP Server Inheritance
+
+`researcher`, `code-implementer`, and `quality-scanner` have no `tools:` frontmatter, so they inherit every tool available in the session — including any MCP servers the project has configured (e.g., `context7` for library docs). The other six agents (`plan-reviewer`, `spec-reviewer`, `code-reviewer`, `drift-detector`, `spec-compliance`, `blind-spot-finder`) have explicit allowlists and stay restricted to built-in tools, because their intent isolation depends on not having more than they need.
+
+To restrict the inheriting agents in this project, drop an override at `.claude/agents/<name>.md` — project-local agents take precedence over plugin-provided ones.
+
 ## Workflow Lifecycle
 
 The typical flow through skills:
