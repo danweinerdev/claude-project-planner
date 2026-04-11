@@ -37,19 +37,30 @@ When a plan phase has been completed (or substantially completed) and you want t
      - Problems encountered and how they were resolved
      - Insights to carry forward
 
-3. **Write Debrief**
+3. **Spot Skill Opportunities**
+   Review the phase for repeated actions that would benefit from being enshrined as a reusable skill. Look for:
+   - Manual sequences you (or the user) ran more than once — multi-step git workflows, recurring investigations, file-munging pipelines, check-lists that were applied by hand
+   - Sequences of slash commands that always went together
+   - Codebase operations that lacked a helper/script and had to be redone in each task
+   - Checks or validations that should have been automated but were done mentally
+
+   For each opportunity, capture: what the repeated action was, where the skill should live (new `/planner:*` slash command, a project-level Claude skill, a codebase helper, a shell script, a Makefile target), why a skill would help, and a rough shape (inputs, outputs, when to invoke).
+
+   Ask the user to confirm or extend the list before writing — they may have noticed patterns you didn't.
+
+4. **Write Debrief**
    - Create `Plans/Active/<PlanName>/notes/<NN>-<Phase-Name>.md` using `shared/templates/debrief.md`
-   - Fill in all sections: Decisions Made, Requirements Assessment, Deviations, Risks & Issues, Lessons Learned, Impact on Subsequent Phases
+   - Fill in all sections: Decisions Made, Requirements Assessment, Deviations, Risks & Issues, Lessons Learned, Impact on Subsequent Phases, **Skill Opportunities**
    - The filename mirrors the phase doc number (e.g., `01-Core-Setup.md` -> `notes/01-Core-Setup.md`)
 
-4. **Update Phase Status**
+5. **Update Phase Status**
    - Set the phase status to `complete` in both:
      - The phase doc frontmatter
      - The plan README's `phases[]` array
    - Update `updated` dates
    - If this was the final phase and all phases are now complete, move the plan from `Plans/Active/` to `Plans/Complete/` (`git mv Plans/Active/<PlanName> Plans/Complete/<PlanName>`)
 
-5. **Regenerate Dashboard** (only if `dashboard` is `true` in `planning-config.json`)
+6. **Regenerate Dashboard** (only if `dashboard` is `true` in `planning-config.json`)
    - Run `make dashboard` from the planning root to update the HTML dashboard
 
 ## Output
@@ -65,6 +76,7 @@ See `shared/templates/debrief.md`:
 - **Risks & Issues Encountered**: Problems and resolutions
 - **Lessons Learned**: Insights for the future
 - **Impact on Subsequent Phases**: Downstream changes needed
+- **Skill Opportunities**: Repeated actions that should become reusable skills
 
 ## Context
 - Template: `shared/templates/debrief.md`

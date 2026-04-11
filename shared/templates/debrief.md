@@ -41,3 +41,14 @@ Insights to carry forward.
 Any changes needed to downstream phases.
 
 -
+
+## Skill Opportunities
+Repeated actions during this phase that would benefit from being enshrined as a reusable skill — a Claude Code slash command, a codebase utility, a script, or a saved query. Flag anything you did by hand more than once, or anything you expect to do again the next time a similar phase comes up.
+
+For each opportunity, note:
+- **What you did repeatedly** (the manual sequence or pattern)
+- **Where it belongs** (new `/planner:*` slash command, project-level skill, codebase helper, shell script, Makefile target)
+- **Why a skill** (what pain does it remove, what consistency does it enforce)
+- **Rough shape** (inputs, outputs, when to invoke)
+
+-
