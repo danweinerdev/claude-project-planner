@@ -26,7 +26,7 @@ When you need to gather and synthesize information about a topic before making d
    - Determine if this is codebase research, external research, or both
 
 2. **Gather Information**
-   - Invoke the `researcher` agent with the topic and questions
+   - Invoke the `planner:researcher` agent with the topic and questions
    - The agent will scan existing artifacts, codebase, and web as needed
 
 3. **Synthesize**
@@ -57,4 +57,4 @@ See `shared/templates/research.md`:
 - Orchestration: `shared/orchestration.md`
 - Template: `shared/templates/research.md`
 - Schema: `shared/frontmatter-schema.md`
-- Agent: `researcher`
+- Agent: `planner:researcher`

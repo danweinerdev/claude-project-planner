@@ -15,9 +15,9 @@ Read `planning-config.json` (at repo root) to find the planning root:
 **Templates and schema** (`shared/`) are read from the **plugin directory**, not from the planning root. The plugin directory contains `commands/`, `agents/`, and `shared/` as siblings — find it by globbing for `**/commands/research.md` in both the current directory and `~/.claude/plugins/cache/`. If multiple matches are found (e.g., multiple cached plugin versions), sort by version number and use the highest. Then go one level up.
 
 ## When to Use
-When you need an **adversarial** critical review of a planning artifact before committing to it. Good for stress-testing plans before approval, finding gaps in specs, and challenging design assumptions. This is not a structural review (`plan-reviewer` and `spec-reviewer` handle that). This skill actively tries to break the thinking.
+When you need an **adversarial** critical review of a planning artifact before committing to it. Good for stress-testing plans before approval, finding gaps in specs, and challenging design assumptions. This is not a structural review (`planner:plan-reviewer` and `planner:spec-reviewer` handle that). This skill actively tries to break the thinking.
 
-Think of it as the planning-artifact counterpart to `blind-spot-finder` (which does the same thing against code diffs): fresh eyes, hostile framing, deliberately looking for what the author *didn't* think about.
+Think of it as the planning-artifact counterpart to `planner:blind-spot-finder` (which does the same thing against code diffs): fresh eyes, hostile framing, deliberately looking for what the author *didn't* think about.
 
 ## Process
 
@@ -26,7 +26,7 @@ Think of it as the planning-artifact counterpart to `blind-spot-finder` (which d
    - Confirm the artifact path before proceeding
 
 2. **Gather Context**
-   Invoke the `researcher` agent with these instructions:
+   Invoke the `planner:researcher` agent with these instructions:
    - Read the full target artifact
    - Read all documents referenced in its `related` frontmatter
    - Search for any specs, designs, or plans that reference this artifact (by filename or title)
@@ -105,9 +105,9 @@ No new artifact is created. This skill produces an inline analysis presented to 
 
 ## Context
 - Orchestration: `shared/orchestration.md`
-- Agent: `researcher`
+- Agent: `planner:researcher`
 
 ## What This Is NOT
-- Not a structural review (that's what `plan-reviewer` and `spec-reviewer` agents do)
-- Not a code review (this operates on planning artifacts, not code — use `/code-review` for code, which dispatches `blind-spot-finder` for the code equivalent of this skill's lens)
+- Not a structural review (that's what `planner:plan-reviewer` and `planner:spec-reviewer` agents do)
+- Not a code review (this operates on planning artifacts, not code — use `/code-review` for code, which dispatches `planner:blind-spot-finder` for the code equivalent of this skill's lens)
 - Not a blocker — findings are advisory, the user decides what to act on

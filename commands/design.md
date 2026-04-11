@@ -23,7 +23,7 @@ When you need to define the technical architecture for a component or system bef
 
 1. **Gather Context**
    - Ask what component to design
-   - Invoke the `researcher` agent to gather context:
+   - Invoke the `planner:researcher` agent to gather context:
      - Related specifications from `Specs/`
      - Existing architecture from `Designs/`
      - Current codebase patterns
@@ -37,7 +37,7 @@ When you need to define the technical architecture for a component or system bef
    - Set status to `draft`
 
 3. **Review**
-   - Invoke the `plan-reviewer` agent to review the design
+   - Invoke the `planner:plan-reviewer` agent to review the design
    - Address critical and major issues
    - Update status to `review` once addressed
 
@@ -66,4 +66,4 @@ See `shared/templates/design.md`:
 - Orchestration: `shared/orchestration.md`
 - Template: `shared/templates/design.md`
 - Schema: `shared/frontmatter-schema.md`
-- Agents: `researcher`, `plan-reviewer`
+- Agents: `planner:researcher`, `planner:plan-reviewer`

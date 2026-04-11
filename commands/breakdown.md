@@ -27,8 +27,8 @@ When a plan phase needs more detail: additional tasks, subtask checklists, imple
    - Read the current phase document
    - Read the plan README for overall context
 
-2. **Load Context** (delegated to `researcher` agent)
-   Invoke the `researcher` agent with these instructions:
+2. **Load Context** (delegated to `planner:researcher` agent)
+   Invoke the `planner:researcher` agent with these instructions:
    - Read related specs from `Specs/` for requirements that should be reflected in this phase
    - Read related designs from `Designs/` for architectural constraints, component boundaries, and interfaces
    - Review existing tasks and subtasks in the current phase
@@ -82,4 +82,4 @@ Implementation guidance, edge cases, etc.
 - Target plan: `Plans/{New,Ready,Active}/<PlanName>/`
 - Related specs: `Specs/`
 - Related designs: `Designs/`
-- Agent: `researcher`
+- Agent: `planner:researcher`

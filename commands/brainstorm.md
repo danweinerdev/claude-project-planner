@@ -26,7 +26,7 @@ When you need to generate and evaluate multiple approaches to a problem before c
    - Clarify constraints and evaluation criteria
 
 2. **Gather Context**
-   - Invoke the `researcher` agent to gather context on the problem space:
+   - Invoke the `planner:researcher` agent to gather context on the problem space:
      - Check `Research/` and `Brainstorm/` for prior work on related topics
      - Check `Specs/` for related specifications
      - Check `Designs/` for related architecture docs
@@ -68,4 +68,4 @@ See `shared/templates/brainstorm.md`:
 - Orchestration: `shared/orchestration.md`
 - Template: `shared/templates/brainstorm.md`
 - Schema: `shared/frontmatter-schema.md`
-- Agent: `researcher`
+- Agent: `planner:researcher`
