@@ -116,7 +116,6 @@ Always use templates from `shared/templates/` when creating new artifacts. Repla
 | `plan-reviewer` | Sonnet | Reviews plans for completeness, feasibility, conventions |
 | `spec-reviewer` | Haiku | Reviews specs for testability, completeness, ambiguity |
 | `code-implementer` | Opus | Implements code from plan tasks in the target codebase |
-| `code-reviewer` | Sonnet | **Orchestrator** — dispatches the 4 specialized reviewers in parallel and synthesizes their reports |
 | `drift-detector` | Sonnet | Diff + plan only — flags missing work, scope creep, approach drift |
 | `quality-scanner` | Sonnet | Diff + code only (intent-blind) — correctness, safety, maintainability, over-engineering |
 | `spec-compliance` | Sonnet | Diff + specs/designs only — requirements coverage, contract violations |
@@ -124,20 +123,21 @@ Always use templates from `shared/templates/` when creating new artifacts. Repla
 
 ### Code Review Architecture
 
-`/code-review` uses a **tiered dispatch** model to keep the primary context lean while preserving intent isolation between reviewers:
+`/code-review` orchestrates the four specialized reviewers **from the primary context**. Claude Code does not allow subagents to spawn subagents, so the orchestration has to live in the slash command (which runs in the primary context), not in an orchestrator subagent.
 
-1. **Primary context** (`/code-review` command) identifies only the minimum references: plan path, phase doc path, target repo path, and diff scope. It does **not** read plans, specs, designs, or git diffs.
-2. **`code-reviewer` orchestrator** (fresh context) loads everything itself — plan, phase, related specs/designs, prior debriefs, diffs — then dispatches the four specialized reviewers in parallel, each with exactly the inputs for its lane.
-3. **Specialized reviewers** each run in their own fresh context. Intent isolation is enforced by what they're given:
+1. **`/code-review` (primary context)** identifies the minimum references — plan path, phase doc path, target repo path, diff scope — and resolves just enough planning metadata to dispatch with the right inputs (plan's `related` frontmatter for spec/design paths, a concrete git diff range). It does **not** read plan/spec/design bodies or diff contents.
+2. **Four specialized reviewers** are dispatched in parallel via `Task` (a single message with four tool calls) using the plugin-namespaced form: `planner:drift-detector`, `planner:quality-scanner`, `planner:spec-compliance`, `planner:blind-spot-finder`. Each runs in its own fresh context. Intent isolation is enforced by what they're given:
    - `drift-detector` sees diff + plan (no specs/designs)
    - `quality-scanner` sees diff + code only (intent-blind)
    - `spec-compliance` sees diff + specs/designs (no plan)
    - `blind-spot-finder` sees diff only (no context at all)
-4. **`code-reviewer`** synthesizes the four reports — highlighting agreements, disagreements, and findings only `blind-spot-finder` caught — and returns one complete report (synthesis + raw sub-reports) back to primary.
+3. **Primary context** synthesizes the four reports — highlighting agreements, disagreements, and findings only `blind-spot-finder` caught — and presents the unified review to the user.
+
+**Hard contract**: `/code-review` MUST dispatch the four sub-agents via Task. It MUST NOT read the plan body, spec bodies, design bodies, or full diff and write findings itself — that would collapse the intent isolation and produce a single-pass review cosplaying as a four-lane review. If any dispatch fails, `/code-review` returns a loud error and stops; it does not fall back to self-synthesis.
 
 `drift-detector`, `quality-scanner`, and `blind-spot-finder` are required to validate every finding against the actual code (full file + calling context), not just the diff hunk, because diffs lie by omission.
 
-`/implement` and `/simplify` bypass the orchestrator and invoke `quality-scanner` directly for fast intent-blind quality checks on a single task or file.
+`/implement` dispatches `quality-scanner` directly (via `planner:quality-scanner`) for per-task reviews, and `/simplify` dispatches it in `simplify` mode for complexity analysis. Both bypass the full four-lane review because the question they're asking is local to the code at hand.
 
 ### MCP Server Inheritance
 
@@ -150,7 +150,6 @@ Agents fall into two groups based on how they handle MCP servers:
 
 **Restricted allowlist (`tools:` frontmatter)** — intent isolation matters more than MCP access:
 - `plan-reviewer`, `spec-reviewer` — narrow artifact review; no need for outside tools
-- `code-reviewer` — orchestrator only; the specialized reviewers it dispatches are where the work happens
 - `drift-detector`, `spec-compliance`, `blind-spot-finder` — each is deliberately given only what its lane needs. Adding MCPs to these would dilute the intent isolation that makes the orchestrated review valuable.
 
 The inheriting agents carry behavioral guardrails in their bodies (`researcher` and `quality-scanner` are read-only even though they could technically inherit Write/Edit from the session). Projects that want stricter guarantees can drop overrides into `.claude/agents/<name>.md` at the project level — those take precedence over plugin-provided agents.

@@ -105,7 +105,6 @@ Always use templates from `shared/templates/` when creating new artifacts. Repla
 | `plan-reviewer` | Sonnet | Reviews plans for completeness, feasibility, conventions |
 | `spec-reviewer` | Haiku | Reviews specs for testability, completeness, ambiguity |
 | `code-implementer` | Opus | Implements code from plan tasks in the target codebase |
-| `code-reviewer` | Sonnet | Orchestrator — dispatches the 4 specialized reviewers in parallel and synthesizes their reports |
 | `drift-detector` | Sonnet | Diff + plan only — missing work, scope creep, approach drift |
 | `quality-scanner` | Sonnet | Diff + code only (intent-blind) — correctness, safety, maintainability, over-engineering |
 | `spec-compliance` | Sonnet | Diff + specs/designs only — requirements coverage, contract violations |
@@ -113,20 +112,21 @@ Always use templates from `shared/templates/` when creating new artifacts. Repla
 
 ### Code Review Architecture
 
-`/code-review` uses a tiered dispatch model:
+`/code-review` orchestrates the four specialized reviewers from the **primary context** (Claude Code doesn't allow subagents to spawn subagents, so orchestration must happen in the slash command, not in an intermediate orchestrator agent):
 
-1. **Primary context** passes only references (plan path, phase path, repo path, diff scope) to `code-reviewer`. No diffs or plan content touch primary.
-2. **`code-reviewer`** runs in a fresh context, loads plan/phase/specs/designs/diffs itself, then dispatches the four specialized reviewers in parallel with exactly the inputs each lane needs.
-3. **Each specialized reviewer** runs in its own fresh context. Intent isolation is enforced by what they're given — `quality-scanner` and `blind-spot-finder` never see the plan, `drift-detector` never sees specs, etc.
-4. **`code-reviewer`** synthesizes the four reports — highlighting confirmed findings, disagreements, and blind spots only `blind-spot-finder` caught — and returns one complete report (synthesis + raw sub-reports) to primary.
+1. **Primary** reads only metadata — plan's `related` frontmatter for spec/design paths, a concrete git diff range — without touching plan, spec, design bodies or full diff contents.
+2. **Primary** dispatches the four specialized reviewers in parallel via Task using plugin-namespaced names (`planner:drift-detector`, `planner:quality-scanner`, `planner:spec-compliance`, `planner:blind-spot-finder`). Each runs in its own fresh context with only the inputs for its lane — `quality-scanner` and `blind-spot-finder` never see the plan, `drift-detector` never sees specs, etc.
+3. **Primary** synthesizes the four reports: confirmed findings (caught by 2+ reviewers), disagreements, blind spots only `blind-spot-finder` caught.
 
 `drift-detector`, `quality-scanner`, and `blind-spot-finder` are required to validate findings against the full file and calling context, not just the diff hunk.
 
-`/implement` and `/simplify` bypass the orchestrator and invoke `quality-scanner` directly for fast intent-blind checks on a single task or file.
+**Hard contract**: `/code-review` must dispatch the four sub-agents via Task and must not do the review itself in the primary context. If any dispatch fails, the command returns a loud error and stops.
+
+`/implement` dispatches `quality-scanner` directly after each task for fast intent-blind checks. `/simplify` dispatches it in `simplify` mode for complexity analysis. Both bypass the full four-lane review because the question they're asking is local to the code at hand.
 
 ### MCP Server Inheritance
 
-`researcher`, `code-implementer`, and `quality-scanner` have no `tools:` frontmatter, so they inherit every tool available in the session — including any MCP servers the project has configured (e.g., `context7` for library docs). The other six agents (`plan-reviewer`, `spec-reviewer`, `code-reviewer`, `drift-detector`, `spec-compliance`, `blind-spot-finder`) have explicit allowlists and stay restricted to built-in tools, because their intent isolation depends on not having more than they need.
+`researcher`, `code-implementer`, and `quality-scanner` have no `tools:` frontmatter, so they inherit every tool available in the session — including any MCP servers the project has configured (e.g., `context7` for library docs). The other five agents (`plan-reviewer`, `spec-reviewer`, `drift-detector`, `spec-compliance`, `blind-spot-finder`) have explicit allowlists and stay restricted to built-in tools, because their intent isolation depends on not having more than they need.
 
 To restrict the inheriting agents in this project, drop an override at `.claude/agents/<name>.md` — project-local agents take precedence over plugin-provided ones.
 

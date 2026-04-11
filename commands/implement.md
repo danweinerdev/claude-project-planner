@@ -19,7 +19,7 @@ If `dashboard` is `true` in `planning-config.json`, run dashboard commands (`mak
 ## When to Use
 When a plan is approved and you're ready to implement a phase. This skill **coordinates** implementation: it delegates actual code work to `code-implementer` agents, runs them in parallel where dependencies allow, triggers `quality-scanner` agents after each task for a fast intent-blind quality check, and manages the review-fix cycle. It bridges the gap between `/plan` (which defines *what* to build) and `/debrief` (which captures *what happened*).
 
-Per-task reviews during `/implement` use `quality-scanner` (not the full `code-reviewer` orchestrator) because the relevant question after a single task is "is this code any good?" not "does the whole phase still align with the plan?". The full orchestrated review happens at the end of the phase via `/code-review`.
+Per-task reviews during `/implement` dispatch `quality-scanner` directly (not the full four-lane review) because the relevant question after a single task is "is this code any good?" not "does the whole phase still align with the plan?". The full four-lane orchestrated review happens at end-of-phase via `/code-review`, which dispatches `drift-detector`, `quality-scanner`, `spec-compliance`, and `blind-spot-finder` in parallel and synthesizes their reports.
 
 ## Process
 
@@ -101,7 +101,7 @@ Before launching each wave, check whether two or more tasks in the same wave mig
 #### For Each Wave
 
 **a. Launch implementer agents (parallel)**
-- For each task in the wave, launch a `code-implementer` agent via the Task tool
+- For each task in the wave, launch a `planner:code-implementer` agent via the Task tool (use the plugin-namespaced name — bare `code-implementer` will not resolve)
 - Each agent receives: task ID, title, subtasks, relevant spec/design context, target codebase path, any notes from prior task debriefs
 - Launch all tasks in the wave as concurrent Task tool calls
 - Update each task's status to `in-progress` in the phase frontmatter
@@ -112,7 +112,7 @@ Before launching each wave, check whether two or more tasks in the same wave mig
 - If an agent reports success → proceed to review
 
 **c. Review completed tasks**
-- For each successfully completed task, invoke the `quality-scanner` agent
+- For each successfully completed task, dispatch `planner:quality-scanner` via the Task tool (use the plugin-namespaced name — bare `quality-scanner` will not resolve)
 - Scope the review to that task's changes — pass the target repo path, the file list, and the commit range from the implementer's report
 - The scanner evaluates the code intent-blind: correctness, safety, maintainability, testing, over-engineering
 - Do **not** pass plan/spec/design context — `quality-scanner` is deliberately intent-blind, and the full orchestrated `/code-review` at end-of-phase covers the plan/spec/design perspective

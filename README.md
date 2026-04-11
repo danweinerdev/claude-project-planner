@@ -199,7 +199,6 @@ The plugin includes review agents that Claude can delegate to:
 | `plan-reviewer` | Sonnet | Reviews plans for completeness, feasibility, and conventions |
 | `spec-reviewer` | Haiku | Reviews specs for testability, completeness, and ambiguity |
 | `code-implementer` | Opus | Implements code from plan tasks in the target codebase |
-| `code-reviewer` | Sonnet | **Orchestrator** — dispatches the 4 specialized reviewers below in parallel and synthesizes their reports |
 | `drift-detector` | Sonnet | Diff + plan only — missing work, scope creep, approach drift |
 | `quality-scanner` | Sonnet | Diff + code only (intent-blind) — correctness, safety, maintainability, over-engineering |
 | `spec-compliance` | Sonnet | Diff + specs/designs only — requirements coverage, contract violations |
@@ -207,44 +206,43 @@ The plugin includes review agents that Claude can delegate to:
 
 ### Code Review Architecture
 
-`/code-review` uses a **tiered dispatch** model that keeps the primary context lean and enforces intent isolation between reviewers:
+`/code-review` dispatches the four specialized reviewers **from the primary context** (the slash command itself), because Claude Code does not allow subagents to spawn other subagents. The orchestration is inside the slash command, not an intermediate orchestrator agent.
 
 ```mermaid
 graph TD
-    primary["Primary context<br/>(/code-review command)"]
-    orch["code-reviewer<br/>(orchestrator, fresh context)"]
-    drift["drift-detector<br/>diff + plan"]
-    qual["quality-scanner<br/>diff + code<br/>(intent-blind)"]
-    spec["spec-compliance<br/>diff + specs/designs"]
-    blind["blind-spot-finder<br/>diff only"]
+    primary["Primary context<br/>(/code-review command)<br/>loads only metadata,<br/>dispatches + synthesizes"]
+    drift["planner:drift-detector<br/>diff + plan"]
+    qual["planner:quality-scanner<br/>diff + code<br/>(intent-blind)"]
+    spec["planner:spec-compliance<br/>diff + specs/designs"]
+    blind["planner:blind-spot-finder<br/>diff only"]
 
-    primary -->|"plan path<br/>phase path<br/>repo path<br/>diff scope"| orch
-    orch -->|loads plan/phase/<br/>specs/designs/diffs| orch
-    orch --> drift
-    orch --> qual
-    orch --> spec
-    orch --> blind
-    drift --> orch
-    qual --> orch
-    spec --> orch
-    blind --> orch
-    orch -->|"synthesized report<br/>+ raw sub-reports"| primary
+    primary -->|parallel Task dispatch| drift
+    primary -->|parallel Task dispatch| qual
+    primary -->|parallel Task dispatch| spec
+    primary -->|parallel Task dispatch| blind
+    drift --> primary
+    qual --> primary
+    spec --> primary
+    blind --> primary
+    primary -->|synthesized report| user["User"]
 
     classDef primary fill:#5a4a7a,stroke:#333,color:#fff
-    classDef orch fill:#6a5a3a,stroke:#333,color:#fff
     classDef sub fill:#3a5a6a,stroke:#333,color:#fff
+    classDef user fill:#4a6741,stroke:#333,color:#fff
 
     class primary primary
-    class orch orch
     class drift,qual,spec,blind sub
+    class user user
 ```
 
-- **Primary context** only identifies the review target — plan path, phase path, repo path, diff scope. No diffs or plan content touch primary.
-- **`code-reviewer`** runs in a fresh context, loads everything itself, and dispatches the four specialized reviewers in parallel with exactly what each needs.
-- **Each specialized reviewer** runs in its own fresh context with narrow inputs, preserving intent isolation. `drift-detector`, `quality-scanner`, and `blind-spot-finder` must validate findings against the full file and calling context, not just the diff hunk.
-- **`code-reviewer`** synthesizes the four reports — highlighting confirmed findings, disagreements, and blind spots only `blind-spot-finder` caught — then returns one complete report to primary.
+- **Primary context (`/code-review`)** identifies the plan/phase/repo/diff-scope references, reads only the plan's `related` frontmatter to find spec/design paths, and resolves a concrete `git diff` range. It does **not** read plan bodies, spec bodies, design bodies, or full diff contents.
+- **Four specialized reviewers** run in parallel in their own fresh contexts. Each sees only the inputs for its lane. `blind-spot-finder` in particular sees only the diff — no plan, no specs, no designs — because its adversarial value depends on that isolation.
+- **`drift-detector`, `quality-scanner`, and `blind-spot-finder`** validate every finding against the full file and calling context, not just the diff hunk, because diffs lie by omission.
+- **Primary context** then synthesizes the four reports — highlighting confirmed findings (caught by 2+ reviewers), disagreements between reviewers (often the most valuable signal), and blind spots only `blind-spot-finder` caught — and presents the unified review to the user.
 
-`/implement` and `/simplify` bypass the orchestrator and invoke `quality-scanner` directly for fast intent-blind quality checks on a single task or file.
+**Hard contract:** `/code-review` must dispatch the four sub-agents via Task. It must not do the review in primary and present it as a four-lane result. If any dispatch fails, the command returns a loud error and stops — there is no fallback to self-synthesis.
+
+`/implement` dispatches `quality-scanner` directly after each task for a fast intent-blind quality check. `/simplify` dispatches it in `simplify` mode for complexity analysis. Both bypass the full four-lane review because the question they're asking is local to the code at hand.
 
 ### MCP Server Inheritance
 
@@ -253,7 +251,7 @@ The plugin aims to be **generic** — it should work with whatever MCP servers y
 | Group | Agents | Behavior |
 |---|---|---|
 | **Inherit session tools** (no `tools:` frontmatter) | `researcher`, `code-implementer`, `quality-scanner` | Automatically pick up any MCP servers available in the session — `context7`, Linear, Notion, Slack, whatever. They use these for library docs, ticket lookups, and API verification. Guardrails in the agent body keep `researcher` and `quality-scanner` read-only. |
-| **Restricted allowlist** (`tools:` frontmatter) | `plan-reviewer`, `spec-reviewer`, `code-reviewer`, `drift-detector`, `spec-compliance`, `blind-spot-finder` | Tight allowlist of built-in tools only. No MCP access. These agents depend on intent isolation — the value of `blind-spot-finder` is that it's given only the diff; adding MCPs would dilute that. |
+| **Restricted allowlist** (`tools:` frontmatter) | `plan-reviewer`, `spec-reviewer`, `drift-detector`, `spec-compliance`, `blind-spot-finder` | Tight allowlist of built-in tools only. No MCP access. These agents depend on intent isolation — the value of `blind-spot-finder` is that it's given only the diff; adding MCPs would dilute that. |
 
 If you want stricter guarantees on the inheriting agents (e.g., preventing `code-implementer` from touching your ticketing MCP), drop an override into your project's `.claude/agents/<name>.md` — project-local agents take precedence over plugin-provided ones and can declare an explicit `tools:` list of your choosing.
 
@@ -391,7 +389,6 @@ project-planner/                   # The plugin itself (not your project)
 ├── agents/                       # Review agents
 │   ├── blind-spot-finder.md
 │   ├── code-implementer.md
-│   ├── code-reviewer.md          # Orchestrator
 │   ├── drift-detector.md
 │   ├── plan-reviewer.md
 │   ├── quality-scanner.md

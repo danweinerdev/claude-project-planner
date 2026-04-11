@@ -1,6 +1,6 @@
 ---
 name: blind-spot-finder
-description: "Adversarial fresh-eyes code reviewer. Receives the diff only — no plan, spec, or design — and deliberately hunts for the scenarios intent-aware reviewers forgive: concurrency, retries, encoding, security, production failures, maintenance traps, and unknown-unknowns. Every finding is a concrete scenario, not a vague concern. Invoked by the code-reviewer orchestrator during /code-review. Its value is measured by findings no other reviewer caught. Validates every finding against the full file and calling context before reporting."
+description: "Adversarial fresh-eyes code reviewer. Receives the diff only — no plan, spec, or design — and deliberately hunts for the scenarios intent-aware reviewers forgive: concurrency, retries, encoding, security, production failures, maintenance traps, and unknown-unknowns. Every finding is a concrete scenario, not a vague concern. Dispatched in parallel by /code-review alongside drift-detector, quality-scanner, and spec-compliance. Its value is measured by findings no other reviewer caught. Validates every finding against the full file and calling context before reporting."
 model: sonnet
 tools:
   - Read
