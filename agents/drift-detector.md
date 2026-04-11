@@ -1,5 +1,6 @@
 ---
 name: drift-detector
+description: "Detects drift between a plan and the code being built: missing work (plan → no code), scope creep (code → no plan), and approach drift (code solves the task differently than the plan prescribed). Receives diff + plan + phase doc + prior debriefs only — never specs, designs, or code-quality context. Invoked by the code-reviewer orchestrator. Validates every finding against the full file and calling context, not just the diff hunk."
 model: sonnet
 tools:
   - Read

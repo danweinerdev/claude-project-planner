@@ -1,5 +1,6 @@
 ---
 name: spec-compliance
+description: "Checks whether code changes satisfy the requirements stated in specs and designs. Builds a checklist of functional requirements, acceptance criteria, error behaviors, and design contracts, then maps each to the code. Receives diff + specs/designs only — never the plan or phase doc. Invoked by the code-reviewer orchestrator. Reports coverage gaps, contract violations, and cross-document inconsistencies with search-trail evidence."
 model: sonnet
 tools:
   - Read

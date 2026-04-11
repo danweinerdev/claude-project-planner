@@ -1,5 +1,6 @@
 ---
 name: spec-reviewer
+description: "Reviews specifications for testability, completeness, and ambiguity. Invoke before approving a spec, when a spec is revised, or when acceptance criteria need to be stress-tested for measurability. Returns findings with severity and a verdict of Approve or Revise."
 model: haiku
 tools:
   - Read

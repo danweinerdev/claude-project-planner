@@ -1,5 +1,6 @@
 ---
 name: plan-reviewer
+description: "Reviews implementation plans and design documents for completeness, feasibility, convention compliance, and gap analysis. Invoke before approving a plan, when a plan is revised, or when a design needs a structural sanity check. Returns findings with severity and a verdict of Approve or Revise."
 model: sonnet
 tools:
   - Read

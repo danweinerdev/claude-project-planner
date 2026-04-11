@@ -1,5 +1,6 @@
 ---
 name: researcher
+description: "Gathers context from planning artifacts, codebase, and the web to inform planning decisions. Invoke at the start of /brainstorm, /specify, /design, /plan, /poke-holes, or any skill that needs a compound view of existing research, specs, designs, plans, retros, and related code before new work begins."
 model: sonnet
 tools:
   - Read

@@ -1,5 +1,6 @@
 ---
 name: code-implementer
+description: "Implements a single plan task in the target codebase — reads the task, writes the code, runs the tests, and reports back with files changed, commit hash, and any blockers. Invoke from /implement for each task in a wave. Delivers working, verified code, not scaffolding."
 model: opus
 tools:
   - Read

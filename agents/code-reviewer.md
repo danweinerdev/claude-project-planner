@@ -1,5 +1,6 @@
 ---
 name: code-reviewer
+description: "Orchestrates /code-review. Loads plan/phase/specs/designs/diffs in its own fresh context, dispatches the four specialized reviewers (drift-detector, quality-scanner, spec-compliance, blind-spot-finder) in parallel, then synthesizes their reports into a unified review that highlights confirmed findings, reviewer disagreements, and blind spots only blind-spot-finder caught. Invoke from /code-review with just plan path, phase path, target repo path, and diff scope — the orchestrator handles the rest."
 model: sonnet
 tools:
   - Read
