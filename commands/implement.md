@@ -17,7 +17,9 @@ Read `planning-config.json` (at repo root) to find the planning root:
 If `dashboard` is `true` in `planning-config.json`, run dashboard commands (`make dashboard`) from the planning root directory.
 
 ## When to Use
-When a plan is approved and you're ready to implement a phase. This skill **coordinates** implementation: it delegates actual code work to `code-implementer` agents, runs them in parallel where dependencies allow, triggers `code-reviewer` agents after each task, and manages the review-fix cycle. It bridges the gap between `/plan` (which defines *what* to build) and `/debrief` (which captures *what happened*).
+When a plan is approved and you're ready to implement a phase. This skill **coordinates** implementation: it delegates actual code work to `code-implementer` agents, runs them in parallel where dependencies allow, triggers `quality-scanner` agents after each task for a fast intent-blind quality check, and manages the review-fix cycle. It bridges the gap between `/plan` (which defines *what* to build) and `/debrief` (which captures *what happened*).
+
+Per-task reviews during `/implement` use `quality-scanner` (not the full `code-reviewer` orchestrator) because the relevant question after a single task is "is this code any good?" not "does the whole phase still align with the plan?". The full orchestrated review happens at the end of the phase via `/code-review`.
 
 ## Process
 
@@ -110,9 +112,10 @@ Before launching each wave, check whether two or more tasks in the same wave mig
 - If an agent reports success → proceed to review
 
 **c. Review completed tasks**
-- For each successfully completed task, invoke the `code-reviewer` agent
-- Scope the review to that task's changes (pass the file list and commit from the implementer's report)
-- The reviewer evaluates against the plan/specs/designs
+- For each successfully completed task, invoke the `quality-scanner` agent
+- Scope the review to that task's changes — pass the target repo path, the file list, and the commit range from the implementer's report
+- The scanner evaluates the code intent-blind: correctness, safety, maintainability, testing, over-engineering
+- Do **not** pass plan/spec/design context — `quality-scanner` is deliberately intent-blind, and the full orchestrated `/code-review` at end-of-phase covers the plan/spec/design perspective
 
 **d. Process review findings**
 - **Critical findings** → resume the `code-implementer` agent to address the issue, then re-review
@@ -191,7 +194,7 @@ These conditions require stopping and asking the user:
 2. **Spec ambiguity**: The spec or design doesn't cover a case encountered during implementation. Ask the user to clarify rather than guessing.
 3. **Scope expansion**: Implementation reveals work not captured in the plan. Flag it — don't silently expand scope.
 4. **Destructive action**: Any action that would delete data, modify production config, or affect shared systems needs explicit approval.
-5. **Unresolvable review findings**: A `code-reviewer` flags critical issues that the implementer can't resolve after 2 review-fix cycles. Escalate to user.
+5. **Unresolvable review findings**: `quality-scanner` flags critical issues that the implementer can't resolve after 2 review-fix cycles. Escalate to user.
 6. **File conflicts**: If parallel tasks in a wave produce conflicting changes to the same files, present the conflict to the user before proceeding.
 
 Everything else is autonomous. Don't ask for confirmation between waves.

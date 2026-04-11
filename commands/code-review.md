@@ -27,66 +27,71 @@ Use this:
 
 ## Process
 
-### 1. Identify Target
-- Ask which plan and phase to review (or infer from context — look for plans with status `active` and phases with status `in-progress`)
-- If not specified, scan `Plans/Active/*/README.md` for the active plan and find the in-progress phase
-- Read the plan README to understand overall context, architecture, and key decisions
-- Read the target phase document for task list, subtasks, acceptance criteria, and deliverable
+The primary context does as little as possible here. Its job is to identify the **review target** — just enough references for the `code-reviewer` orchestrator to do the heavy lifting in its own fresh context. Primary does **not** load diffs, read planning artifacts, or walk directories. All of that happens inside the orchestrator.
 
-### 2. Locate Target Codebase
-- Read `planning-config.json` for mode and repository mapping
-- If standalone mode with `planMapping`, find the target repo for this plan
-- If `planning-config.local.json` exists, read it for local filesystem paths
-- Verify the target repo/directory exists and is accessible
+### 1. Identify the Review Target
+Collect exactly these pieces of information:
 
-### 3. Gather the Diff
-Collect the full picture of code changes for this phase:
+- **Plan and phase**: ask the user, or infer from context. If inferring, list `Plans/Active/*/README.md` (filenames only — do **not** read them) and pick the single active plan if there is one. If ambiguous, ask. Capture:
+  - Plan path (e.g., `Plans/Active/<PlanName>/README.md`)
+  - Phase doc path (e.g., `Plans/Active/<PlanName>/<NN>-<Phase-Name>.md`)
+- **Target repo path**: look up `planning-config.json` → `planMapping` for this plan, then `planning-config.local.json` → `repositories.<key>.path` for the absolute path. If the local config doesn't exist or doesn't have an entry, ask the user where the code lives.
+- **Diff scope**: if the user specified a branch, commit range, or "working + staged", record that verbatim. If they didn't, record "orchestrator to determine" — the orchestrator will figure it out from the phase's `created` date or by asking.
 
-**a. Working changes**
-- Run `git status` in the target repo to see uncommitted changes
-- Run `git diff` for unstaged changes and `git diff --cached` for staged changes
+Do not read the plan README, phase doc, specs, or designs in the primary context. Do not run `git diff`, `git log`, or `git status` in the primary context. The orchestrator handles all of this.
 
-**b. Committed changes**
-- Determine the commit range for this phase's work. Strategies (try in order):
-  1. If the user specifies a branch or commit range, use that
-  2. If the phase doc has a `created` date, find the earliest commit on or after that date that touches relevant files
-  3. If the plan has a tracking branch, diff against the base branch
-  4. Ask the user for the base commit or branch to compare against
-- Run `git log --oneline` for the commit range to understand the progression
-- Run `git diff <base>..<head>` for the cumulative diff
+### 2. Dispatch the `code-reviewer` Orchestrator
+Launch the `code-reviewer` agent via the Task tool with a minimal prompt containing only:
 
-**c. Scope summary**
-- Report how many files changed, lines added/removed, commits included
-- List the files changed so the user can verify the scope is correct before proceeding
+- The plan path
+- The phase doc path
+- The target repo path
+- The diff scope (or "determine from phase created date")
+- A note if the user wants the review limited to a specific subset (e.g., "only files matching X")
 
-### 4. Load Planning Context
-Read all relevant planning artifacts:
-- **Plan README**: `Plans/Active/<PlanName>/README.md` — architecture, key decisions, phase list
-- **Phase doc**: `Plans/Active/<PlanName>/<NN>-<Phase-Name>.md` — tasks, subtasks, deliverable, acceptance criteria
-- **Related specs**: from the plan's `related` frontmatter — requirements, user stories, acceptance criteria
-- **Related designs**: from the plan's `related` frontmatter — architecture, components, interfaces, error handling
-- **Prior debriefs**: `Plans/Active/<PlanName>/notes/` — lessons from earlier phases, known issues carried forward
+The orchestrator runs in a fresh context. Inside that context it will:
+1. Read the plan README and phase doc to find `related` specs, designs, and prior debriefs
+2. Resolve the diff scope and load the actual diffs via `git`
+3. Read `shared/language-verification.md` if structural verification is relevant
+4. Dispatch the **four specialized reviewers in parallel**, each receiving only the inputs for its lane:
 
-### 5. Invoke Code Reviewer Agent
-Pass the planning context and diff information to the `code-reviewer` agent for analysis. The agent evaluates the code through five lenses:
+   | Agent | Sees | Role |
+   |---|---|---|
+   | `drift-detector` | Diff + plan + phase doc + prior debriefs | Missing work, scope creep, approach drift |
+   | `quality-scanner` | Diff + code only (intent-blind) | Correctness, safety, maintainability, testing, over-engineering |
+   | `spec-compliance` | Diff + specs + designs | Requirements coverage, contract violations |
+   | `blind-spot-finder` | Diff only | Adversarial fresh-eyes, scenarios no one anticipated |
 
-1. **Plan Accuracy** — Does the code implement what the plan describes?
-2. **Drift Detection** — What's in the code but not in the plan (and vice versa)?
-3. **Quality & Improvement Opportunities** — Missing error handling, edge cases, new or changed behaviors without corresponding tests
-4. **Structural Verification** — Read `shared/language-verification.md` and check whether the language-appropriate structural checks (sanitizers, static analysis, type checking) were included in task verification and actually run. Flag if the plan specified them but they weren't executed, or if the project language warrants them but they were never planned.
-5. **Assumption Verification** — Hardcoded values, implicit dependencies, unvalidated assumptions
-6. **Planning Blind Spots** — Things the code had to handle that the plan didn't anticipate
+5. Synthesize the four reports into a unified review that:
+   - **Confirms** findings multiple reviewers caught independently
+   - **Surfaces disagreements** between reviewers
+   - **Highlights unique blind-spot findings** no other reviewer caught
+   - Deduplicates overlapping findings and promotes cross-validated Questions to full findings
 
-### 6. Present Findings
-Show the review results to the user, organized by lens and severity:
+6. Return the complete synthesized report — including the raw sub-reports verbatim — back to the primary context.
+
+The primary context never sees the raw diffs, the full plan/spec/design content, or the individual reviewer outputs in its own window. That stays inside the orchestrator's context. Primary only receives the final report.
+
+### 3. Present Findings
+The `code-reviewer` orchestrator returns a complete self-contained report — synthesis plus the raw reports from all four sub-reviewers. Show that full report to the user; do **not** re-summarize it. The synthesis is already the summary, and the raw reports are the evidence the user may want to drill into. Your job here is to render, not to condense.
+
+The report is structured to lead with:
+1. **Overall verdict** and top items to address
+2. **Confirmed findings** (caught by 2+ reviewers — high confidence)
+3. **Disagreements** between reviewers — these often reveal that planning artifacts are out of sync with each other or with reality
+4. **Blind spots only `blind-spot-finder` caught** — explicitly call these out; they exist precisely because intent-aware reviewers forgave them
+5. Per-lane findings (drift / quality / spec compliance) not already covered above
+6. Open questions that need human judgment
+
+Severity levels:
 - **Critical**: Blocks the phase — must fix before considering the phase complete
-- **Major**: Significant gap between plan and code — should address
+- **Major**: Significant gap — should address
 - **Minor**: Worth noting but not blocking
 - **Question**: Needs clarification from the user or team
 
 Never use "pre-existing" to justify deferring or hiding a finding. "Pre-existing" describes origin, not impact. Present findings by what they do to the user, not when they were introduced. The user decides what is worth fixing.
 
-### 7. Offer Next Steps
+### 4. Offer Next Steps
 Based on findings, suggest appropriate actions:
 
 **If alignment is strong:**
@@ -127,4 +132,5 @@ No new artifact is created. This skill produces an inline review presented to th
 - Related designs: `Designs/`
 - Prior debriefs: `Plans/Active/<PlanName>/notes/`
 - Local repo paths: `planning-config.local.json`
-- Agent: `code-reviewer`
+- Orchestrator agent: `code-reviewer`
+- Specialized reviewers: `drift-detector`, `quality-scanner`, `spec-compliance`, `blind-spot-finder`

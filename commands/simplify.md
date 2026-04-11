@@ -27,33 +27,14 @@ This is distinct from `/implement` (which builds features) and from a regular co
    - If a `planning-config.local.json` exists, read it to find local repo paths
 
 2. **Analyze Complexity**
-   Invoke the `code-reviewer` agent to read the target code and identify simplification opportunities. Pass it the target file paths or module and the simplification criteria below. The agent returns findings grouped by file, each with: what the issue is, why it matters, what the simplification would look like, and the risk level.
+   Invoke the `quality-scanner` agent in `simplify` mode to read the target code and identify simplification opportunities. Pass it the target repo path and the target file paths or module. The scanner is intent-blind by design — do not pass plan, spec, or design context. It returns findings grouped by file, each with: what the issue is, why it matters, what the simplification would look like, and the risk level.
 
-   **Simplification criteria to pass to the agent:**
+   `quality-scanner` already covers the simplification lenses you want here — structural issues, naming, dead code, and over-engineering — under its Maintainability and Over-Engineering lenses. In `simplify` mode it puts extra weight on the Over-Engineering lens.
 
-   **Structural**
-   - Functions that do too many things (candidates for splitting)
-   - Deep nesting that could be flattened (early returns, guard clauses)
-   - Repeated patterns that could be extracted (only if 3+ occurrences)
-   - Unnecessary abstractions (wrappers that add no value)
-
-   **Naming**
-   - Variables/functions whose names don't match their purpose
-   - Abbreviations that hurt readability
-   - Inconsistent naming conventions within a module
-
-   **Dead Code**
-   - Unused imports, variables, functions
-   - Commented-out code
-   - Unreachable branches
-
-   **Over-Engineering**
-   - Premature abstractions (interfaces with one implementation)
-   - Configuration for things that never change
-   - Layers that just pass through
+   Expect the scanner to validate every finding against the full file and the calling context, not just the hunk, so the risk level it reports is grounded in actual usage.
 
 3. **Present Findings**
-   Present the `code-reviewer` agent's findings to the user, grouped by file. For each finding:
+   Present the `quality-scanner` agent's findings to the user, grouped by file. For each finding:
    - What the issue is
    - Why it matters (readability, maintainability, or correctness risk)
    - What the simplification would look like
@@ -96,4 +77,4 @@ Modifies code files in the target repository. No planning artifacts are created 
 - Orchestration: `shared/orchestration.md`
 - Schema: `shared/frontmatter-schema.md`
 - Local repo paths: `planning-config.local.json`
-- Agents: `code-reviewer`, `code-implementer`
+- Agents: `quality-scanner`, `code-implementer`
