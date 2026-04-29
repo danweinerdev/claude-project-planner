@@ -123,7 +123,7 @@ If the optional `sdd-dashboard` plugin is installed:
 
 ### MCP Server Inheritance
 
-`researcher`, `code-implementer`, and `quality-scanner` have no `tools:` frontmatter, so they inherit every tool available in the session — including any MCP servers the project has configured (e.g., `context7` for library docs). The other five agents (`plan-reviewer`, `spec-reviewer`, `drift-detector`, `spec-compliance`, `blind-spot-finder`) have explicit allowlists and stay restricted to built-in tools, because their intent isolation depends on not having more than they need.
+`researcher`, `code-implementer`, `quality-scanner`, `plan-reviewer`, and `spec-reviewer` have no `tools:` frontmatter, so they inherit every tool available in the session — including any MCP servers the project has configured (e.g., `context7` for library docs, Linear/Jira/Notion for tickets). The other three agents (`drift-detector`, `spec-compliance`, `blind-spot-finder`) have explicit allowlists and stay restricted to built-in tools, because their intent isolation depends on not having more than they need.
 
 To restrict the inheriting agents in this project, drop an override at `.claude/agents/<name>.md` — project-local agents take precedence over plugin-provided ones.
 

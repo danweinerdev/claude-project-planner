@@ -243,14 +243,14 @@ The plugin aims to be **generic** — it should work with whatever MCP servers y
 
 | Group | Agents | Behavior |
 |---|---|---|
-| **Inherit session tools** (no `tools:` frontmatter) | `researcher`, `code-implementer`, `quality-scanner` | Automatically pick up any MCP servers available in the session — `context7`, Linear, Notion, Slack, whatever. They use these for library docs, ticket lookups, and API verification. Guardrails in the agent body keep `researcher` and `quality-scanner` read-only. |
-| **Restricted allowlist** (`tools:` frontmatter) | `plan-reviewer`, `spec-reviewer`, `drift-detector`, `spec-compliance`, `blind-spot-finder` | Tight allowlist of built-in tools only. No MCP access. These agents depend on intent isolation — the value of `blind-spot-finder` is that it's given only the diff; adding MCPs would dilute that. |
+| **Inherit session tools** (no `tools:` frontmatter) | `researcher`, `code-implementer`, `quality-scanner`, `plan-reviewer`, `spec-reviewer` | Automatically pick up any MCP servers available in the session — `context7`, Linear, Notion, Slack, whatever. They use these for library docs, ticket lookups, and API verification. Guardrails in each agent's body keep the read-only ones (`researcher`, `quality-scanner`, `plan-reviewer`, `spec-reviewer`) from making write-shaped calls even though they technically could. |
+| **Restricted allowlist** (`tools:` frontmatter) | `drift-detector`, `spec-compliance`, `blind-spot-finder` | Tight allowlist of built-in tools only. No MCP access. These three depend on intent isolation — `blind-spot-finder`'s value is that it's given only the diff; adding MCPs would let intent leak in through tickets or external docs. |
 
 If you want stricter guarantees on the inheriting agents (e.g., preventing `code-implementer` from touching your ticketing MCP), drop an override into your project's `.claude/agents/<name>.md` — project-local agents take precedence over plugin-provided ones and can declare an explicit `tools:` list of your choosing.
 
 Recommended MCP servers to install for the best experience:
-- **context7** — current library docs. `researcher`, `code-implementer`, and `quality-scanner` all benefit immediately.
-- Any project-relevant knowledge-base MCP (Linear, Notion, Confluence, Jira) — `researcher` will use them to pull in reverse references during planning.
+- **context7** — current library docs. `researcher`, `code-implementer`, `quality-scanner`, `plan-reviewer`, and `spec-reviewer` all benefit immediately.
+- Any project-relevant knowledge-base MCP (Linear, Notion, Confluence, Jira) — `researcher` uses them during planning; `plan-reviewer` and `spec-reviewer` use them to cross-check artifacts against the linked source-of-truth tickets.
 
 ## Where Planning Artifacts Live
 

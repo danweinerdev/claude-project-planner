@@ -146,12 +146,15 @@ Agents fall into two groups based on how they handle MCP servers:
 - `researcher` — uses doc-lookup MCPs for library research; falls back to WebFetch/WebSearch
 - `code-implementer` — uses doc-lookup MCPs to verify current API syntax while writing code
 - `quality-scanner` — uses doc-lookup MCPs when judging whether diff code uses a library correctly
+- `plan-reviewer` — uses doc-lookup MCPs to verify planned APIs are real and current; uses ticket/KB MCPs to cross-check the plan against linked tickets
+- `spec-reviewer` — uses ticket/KB MCPs to compare a spec against its source-of-truth ticket; uses doc-lookup MCPs to verify external API contracts the spec assumes
 
-**Restricted allowlist (`tools:` frontmatter)** — intent isolation matters more than MCP access:
-- `plan-reviewer`, `spec-reviewer` — narrow artifact review; no need for outside tools
-- `drift-detector`, `spec-compliance`, `blind-spot-finder` — each is deliberately given only what its lane needs. Adding MCPs to these would dilute the intent isolation that makes the orchestrated review valuable.
+**Restricted allowlist (`tools:` frontmatter)** — these three review agents have no MCP access on purpose. Their value comes from intent isolation: each is shown only what its lane needs, and MCP access would let intent leak in through external sources:
+- `drift-detector` — diff + plan only. Reading specs/designs (or fetching tickets that *are* specs) would erase the lane.
+- `spec-compliance` — diff + specs/designs only. Reading the plan via tickets would muddy what counts as "the spec."
+- `blind-spot-finder` — diff only. Any external context erodes the diff-only adversarial guarantee.
 
-The inheriting agents carry behavioral guardrails in their bodies (`researcher` and `quality-scanner` are read-only even though they could technically inherit Write/Edit from the session). Projects that want stricter guarantees can drop overrides into `.claude/agents/<name>.md` at the project level — those take precedence over plugin-provided agents.
+The inheriting agents carry behavioral guardrails in their bodies (`researcher`, `quality-scanner`, `plan-reviewer`, and `spec-reviewer` are read-only even though they could technically inherit Write/Edit and write-shaped MCP calls from the session). Projects that want stricter guarantees can drop overrides into `.claude/agents/<name>.md` at the project level — those take precedence over plugin-provided agents.
 
 ## Workflow Lifecycle
 
