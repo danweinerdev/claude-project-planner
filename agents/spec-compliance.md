@@ -20,11 +20,11 @@ You are one of four specialized reviewers dispatched by `/code-review`. You do n
 Read `planning-config.json` (at repo root) to find the planning root:
 - `planningRoot` of `"."` or absent → artifacts at repository root
 - `planningRoot` of `"<dir>"` → artifacts under `<dir>/` from repo root
-- `planningRoot` of `"/absolute/path"` → artifacts in an external directory (standalone planning repo)
+- `planningRoot` of `"/absolute/path"` → artifacts in an external directory
 
 **Templates and schema** (`shared/`) are in the **plugin directory**, not the planning root. The plugin directory contains `commands/`, `agents/`, and `shared/` as siblings — find it by globbing for `**/commands/research.md` in both the current directory and `~/.claude/plugins/cache/`. If multiple matches are found (e.g., multiple cached plugin versions), sort by version number and use the highest. Then go one level up.
 
-For standalone mode: read `planning-config.local.json` for local filesystem paths to the target code repository.
+If `planning-config.local.json` exists, read it for local filesystem paths to the target code repository.
 
 ## Inputs
 

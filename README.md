@@ -37,10 +37,10 @@ graph LR
 
 ## Quick Start
 
-### Use with an existing project (embedded mode)
+### From any repo
 
 ```bash
-# From your project root
+# From the repo where you want planning artifacts to live
 claude --plugin-dir /path/to/sdd-planner
 
 # Then inside Claude:
@@ -48,17 +48,7 @@ claude --plugin-dir /path/to/sdd-planner
 # Generates planning-config.json, bootstraps directories
 ```
 
-### Use as a standalone planning repo
-
-```bash
-# Create a new repo for planning
-mkdir my-planning && cd my-planning && git init
-claude --plugin-dir /path/to/sdd-planner
-
-# Then inside Claude:
-> /sdd-planner:setup
-# Generates planning-config.json, bootstraps directories
-```
+`/sdd-planner:setup` lays out planning artifacts wherever you want them — at the repo root (planningRoot of `"."`), under a subdirectory (e.g. `"Planning"`), or in an entirely separate directory pointed at by an absolute path. See [Where Planning Artifacts Live](#where-planning-artifacts-live) below for the trade-offs.
 
 ### Use with git worktrees
 
@@ -262,77 +252,35 @@ Recommended MCP servers to install for the best experience:
 - **context7** — current library docs. `researcher`, `code-implementer`, and `quality-scanner` all benefit immediately.
 - Any project-relevant knowledge-base MCP (Linear, Notion, Confluence, Jira) — `researcher` will use them to pull in reverse references during planning.
 
-## Deployment Modes
+## Where Planning Artifacts Live
 
-```mermaid
-graph TB
-    subgraph standalone ["Standalone Mode"]
-        direction TB
-        PR["Planning Repo"]
-        PR --> PC1["planning-config.json<br/>planningRoot: '.'"]
-        PR --> Plans1["Plans/ Research/ ..."]
+`planningRoot` in `planning-config.json` is just a path. It can be relative or absolute — the plugin doesn't care. Pick whichever suits your repo layout:
 
-        CR["Code Repo (separate)"]
-        PC1 -. "repositories: { app: ... }" .-> CR
-    end
+| `planningRoot` value | Effect |
+|---|---|
+| `"."` (or omitted) | Artifacts live at the repository root. Useful when the repo's whole purpose is planning. |
+| `"Planning"` (relative) | Artifacts live in a subdirectory of the current repo. Useful when planning lives next to code. |
+| `"/home/user/Code/my-planning-repo"` (absolute) | Artifacts live in an external directory, often shared by multiple code repos. |
 
-    subgraph embedded ["Embedded Mode"]
-        direction TB
-        ER["Project Repo"]
-        ER --> PD["Planning/"]
-        PD --> PC2["planning-config.json<br/>planningRoot: 'Planning'"]
-        PD --> Plans2["Plans/ Research/ ..."]
-        ER --> Src["src/ lib/ ..."]
-    end
-
-    classDef config fill:#6a5a3a,stroke:#333,color:#fff
-    class PC1,PC2 config
-```
-
-### Standalone
-
-A dedicated repository for planning. Plans reference external code repositories via `planning-config.json`:
+Plans can reference code in other repos via `repositories` and `planMapping`:
 
 ```json
 {
-  "mode": "standalone",
   "planningRoot": ".",
   "repositories": {
     "my-app": { "github": "org/my-app" }
-  }
+  },
+  "planMapping": {
+    "MyPlan": { "repo": "my-app" }
+  },
+  "planRepository": "my-app"
 }
 ```
 
-Local filesystem paths go in `planning-config.local.json` (gitignored):
+Absolute filesystem paths to those code repos go in `planning-config.local.json` (gitignored):
 
 ```json
-{
-  "repositories": {
-    "my-app": { "path": "/home/user/Code/my-app" }
-  }
-}
-```
-
-### Embedded
-
-Planning lives inside your project as a subdirectory:
-
-```json
-{
-  "mode": "embedded",
-  "planningRoot": "Planning"
-}
-```
-
-### Cross-repo (standalone with absolute path)
-
-Point multiple code repos at one shared planning repo using an absolute `planningRoot`:
-
-```json
-{
-  "mode": "standalone",
-  "planningRoot": "/home/user/Code/my-planning-repo"
-}
+{ "repositories": { "my-app": { "path": "/home/user/Code/my-app" } } }
 ```
 
 ## Dashboard

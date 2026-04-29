@@ -175,9 +175,8 @@ Use `/sdd-planner:excavate` to understand unfamiliar codebases. Use `/sdd-planne
 
 ### planning-config.json
 The planning root's `planning-config.json` drives all path resolution:
-- `mode`: `"standalone"` (own repo) or `"embedded"` (subdirectory of project)
-- `planningRoot`: `"."` for standalone, subdirectory name for embedded
-- `repositories`: map of external repo keys to GitHub URLs (standalone mode)
+- `planningRoot`: where artifacts live, as a path. Use `"."` if planning artifacts are at the repo root, a relative subdirectory name (e.g., `"Planning"`) if they live inside a project, or an absolute path (e.g., `"/home/user/Code/my-planning-repo"`) if they live in an external directory shared by multiple repos. There is no other distinction — the path is just a path.
+- `repositories`: map of external repo keys to GitHub URLs (used when plans target code in other repos)
 - `planMapping`: map of plan names to target repos
 - `planRepository`: key for the planning repo itself
 
@@ -198,8 +197,8 @@ The HTML dashboard previously lived here has moved to a companion plugin: [`sdd-
 When adding, removing, or renaming skills (`commands/`), agents (`agents/`), or modifying user-facing behavior, update these files to stay in sync:
 - **`README.md`** — command/agent counts, tables, Mermaid diagrams, directory listing
 - **`CLAUDE.md`** — skill table, agent table, workflow lifecycle
-- **`shared/templates/claude-md-standalone.md`** — skill table, agent table, workflow lifecycle
-- **`shared/templates/claude-md-embedded.md`** — skill table
+- **`shared/templates/claude-md-full.md`** — full CLAUDE.md template for a planning-only repo (skill table, agent table, workflow lifecycle)
+- **`shared/templates/claude-md-snippet.md`** — embeddable section to drop into an existing project's CLAUDE.md (skill table only)
 
 ## Versioning
 

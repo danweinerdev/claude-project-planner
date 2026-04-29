@@ -150,9 +150,8 @@ If the `sdd-dashboard` plugin is installed, use `/sdd-dashboard:dashboard` or `/
 
 ### planning-config.json
 The planning root's `planning-config.json` drives all path resolution:
-- `mode`: `"standalone"` (own repo) or `"embedded"` (subdirectory of project)
-- `planningRoot`: `"."` for standalone, subdirectory name for embedded
-- `repositories`: map of external repo keys to GitHub URLs (standalone mode)
+- `planningRoot`: where artifacts live. Use `"."` if planning lives at the repo root, a relative subdirectory name (e.g., `"Planning"`) if it lives inside a project, or an absolute path if it lives elsewhere on disk.
+- `repositories`: map of external repo keys to GitHub URLs (used when plans target code in other repos)
 - `planMapping`: map of plan names to target repos
 - `planRepository`: key for the planning repo itself
 - `dashboard` (optional): `true` to enable HTML generation by the companion `sdd-dashboard` plugin (off by default; ignored if the plugin isn't installed)

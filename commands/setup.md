@@ -90,16 +90,16 @@ Write (or overwrite) `planning-config.json` in the target repository:
 
 ```json
 {
-  "mode": "standalone",
   "planningRoot": "<resolved-planning-root>"
 }
 ```
+
+`planningRoot` is just a path. Use `"."` for "artifacts at the repo root", a relative subdirectory name like `"Planning"` for "artifacts inside this repo", or an absolute path for "artifacts in an external directory". There's no `mode` field — the path itself tells the plugin where to look.
 
 If the user opted into the dashboard, also include `"dashboard": true` along with `"title"` and `"description"` fields (the companion `sdd-dashboard` plugin reads these for the page chrome):
 
 ```json
 {
-  "mode": "standalone",
   "planningRoot": "<resolved-planning-root>",
   "dashboard": true,
   "title": "<project-name> Dashboard",

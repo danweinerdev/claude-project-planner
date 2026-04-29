@@ -10,7 +10,7 @@ description: "Execute a plan phase — implement tasks, track progress, update s
 Read `planning-config.json` (at repo root) to find the planning root:
 - `planningRoot` of `"."` or absent → artifacts at repository root
 - `planningRoot` of `"<dir>"` → artifacts under `<dir>/` from repo root
-- `planningRoot` of `"/absolute/path"` → artifacts in an external directory (standalone planning repo)
+- `planningRoot` of `"/absolute/path"` → artifacts in an external directory
 
 **Templates and schema** (`shared/`) are read from the **plugin directory**, not from the planning root. The plugin directory contains `commands/`, `agents/`, and `shared/` as siblings — find it by globbing for `**/commands/research.md` in both the current directory and `~/.claude/plugins/cache/`. If multiple matches are found (e.g., multiple cached plugin versions), sort by version number and use the highest. Then go one level up.
 
@@ -35,8 +35,8 @@ Per-task reviews during `/implement` dispatch `quality-scanner` directly (not th
 - If phase status is `planned`, update it to `in-progress`
 
 ### 2. Locate Target Codebase
-- Read `planning-config.json` for mode and repository mapping
-- If standalone mode with `planMapping`, find the target repo for this plan
+- Read `planning-config.json` for the repository mapping
+- If `planMapping` has an entry for this plan, find the target repo
 - If `planning-config.local.json` exists, read it for local filesystem paths
 - Verify the target repo/directory exists and is accessible
 
