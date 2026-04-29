@@ -32,7 +32,7 @@ That's it. No plan, no spec, no design, no phase doc. If any are passed, ignore 
 
 ## Process
 
-1. **Read the diff raw.** Run `git status`, `git diff`, `git diff --cached`, and `git log`/`git diff <base>..<head>`. Don't form a hypothesis yet — just notice.
+1. **Read the diff raw.** Use the VCS-appropriate operations from `shared/vcs-detection.md` — `git status`/`git diff`/`git log` for git, `p4 opened`/`p4 diff`/`p4 diff2` for perforce. The orchestrator passes you the detected VCS and the resolved diff command. If the VCS is `none`, there is no diff to read; return that. Don't form a hypothesis yet — just notice.
 
 2. **Read the changed files in full and walk the calling context.** Every finding you write must be validated against the actual code. See "Validation Requirement" below.
 

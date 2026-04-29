@@ -44,7 +44,7 @@ You do **not** receive specs or designs. If you feel the lack, note it as "out o
    - Architecture decisions and key approach notes from the plan README
    - Carry-over items and known issues from prior phase debriefs
 
-2. **Read the diff.** Run `git status`, `git diff`, `git diff --cached`, and `git log`/`git diff <base>..<head>` in the target repo as needed. Group changes by logical concern.
+2. **Read the diff.** The orchestrator passes you the target repo's VCS and the resolved diff command. Use the VCS-appropriate operations from `shared/vcs-detection.md` (e.g., `git status` + `git diff` for git; `p4 opened` + `p4 diff` / `p4 diff2` for perforce). If the VCS is `none`, you have no diff to read — return an explicit "no history available" report. Group changes by logical concern.
 
 3. **Map code to plan.** For each meaningful change, identify which plan task (if any) it implements. For each plan task, identify which code changes (if any) implement it.
 
@@ -60,7 +60,7 @@ You do **not** receive specs or designs. If you feel the lack, note it as "out o
 - **Check the calling context.** If you think a task is unimplemented, grep the repo for the feature name, the function it would live in, the route, the config key, the table — it may have been implemented in a file the diff didn't touch, or in a prior phase.
 - **Check surrounding context.** A function whose diff looks half-written may be completed by unchanged code above or below the hunk.
 - **Check sibling files.** If the plan says "add X to module Y", and the diff only touches `Y/a.py`, read `Y/b.py` and `Y/__init__.py` before claiming X is missing.
-- **Check git history.** `git log --all --oneline -- <path>` and `git log -S "<symbol>"` can reveal work done in commits outside the reviewed range.
+- **Check VCS history beyond the reviewed range.** For git, `git log --all --oneline -- <path>` and `git log -S "<symbol>"` can reveal work done in commits outside the diff scope. For perforce, `p4 filelog <path>` plus `p4 changes -m 50` against the relevant branch serves the same purpose. Skip this if the VCS is `none`.
 
 If after validation you still can't confirm a finding, downgrade it to a **Question** rather than reporting it as drift. A false drift finding wastes the user's time and erodes trust in the review.
 

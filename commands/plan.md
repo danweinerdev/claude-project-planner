@@ -49,7 +49,7 @@ When you need to break down a feature, project, or initiative into an actionable
    - Invoke the `sdd-planner:plan-reviewer` agent to review the complete plan
    - Address any issues raised by the reviewer
    - Update plan status to `approved` once review passes
-   - Move the plan folder from `Plans/New/` to `Plans/Ready/` (`git mv Plans/New/<PlanName> Plans/Ready/<PlanName>`)
+   - Move the plan folder from `Plans/New/` to `Plans/Ready/`. Use the VCS-appropriate move command from `shared/vcs-detection.md` — `git mv` for git, `p4 move` for perforce, plain `mv` if there's no VCS.
 
 ## Output
 ```

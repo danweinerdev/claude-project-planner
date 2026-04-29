@@ -46,7 +46,7 @@ You are **not** given the plan or phase docs. If the caller accidentally passes 
    - Interface contracts from designs (function signatures, data shapes, protocols)
    - Error-handling patterns prescribed by designs
 
-2. **Read the diff.** Run `git status`, `git diff`, `git diff --cached`, and `git log`/`git diff <base>..<head>` as needed.
+2. **Read the diff.** The orchestrator passes you the target repo's VCS and the resolved diff command. Use the VCS-appropriate operations from `shared/vcs-detection.md` (`git status`/`git diff` for git, `p4 opened`/`p4 diff`/`p4 diff2` for perforce). If the VCS is `none`, you have nothing to review — return that as the result.
 
 3. **Map requirements to code.** For each requirement in your checklist, find the code that implements it — or confirm that it isn't implemented anywhere in the repository, not just in the diff.
 

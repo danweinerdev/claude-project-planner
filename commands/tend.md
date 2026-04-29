@@ -54,7 +54,7 @@ If legacy layout is detected:
      - Read the plan's `README.md` frontmatter `status` field
      - Map status to folder: `draft` → `New/`, `approved` → `Ready/`, `active` → `Active/`, `complete` or `archived` → `Complete/`
      - If status is missing or unrecognized, default to `New/`
-     - Use `git mv` to move the plan directory into the appropriate status folder
+     - Use the VCS-appropriate move command from `shared/vcs-detection.md` to move the plan directory into the appropriate status folder
    - After all moves, report the results
 
 If status subfolders already exist (even if empty), skip this check entirely — the layout is already migrated.

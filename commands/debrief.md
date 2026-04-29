@@ -56,7 +56,7 @@ When a plan phase has been completed (or substantially completed) and you want t
      - The phase doc frontmatter
      - The plan README's `phases[]` array
    - Update `updated` dates
-   - If this was the final phase and all phases are now complete, move the plan from `Plans/Active/` to `Plans/Complete/` (`git mv Plans/Active/<PlanName> Plans/Complete/<PlanName>`)
+   - If this was the final phase and all phases are now complete, move the plan from `Plans/Active/` to `Plans/Complete/` using the VCS-appropriate move command (see `shared/vcs-detection.md`)
 
 ## Output
 ```

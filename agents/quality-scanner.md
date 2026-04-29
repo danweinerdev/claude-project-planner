@@ -29,7 +29,7 @@ You are **not** given plans, specs, or designs. If the caller accidentally passe
 
 ## Process
 
-1. **Read the diff.** Use `git status`, `git diff`, `git diff --cached`, and `git log`/`git diff <base>..<head>` as needed. Identify every hunk that matters.
+1. **Read the diff.** Use the VCS-appropriate operations from `shared/vcs-detection.md` for the target repo's VCS — `git status`/`git diff`/`git log` for git, `p4 opened`/`p4 diff`/`p4 diff2` for perforce. The orchestrator passes you the detected VCS and the resolved diff command. If the VCS is `none`, there is no diff to scan; return that as the result. Identify every hunk that matters.
 
 2. **Read the changed files in full.** Never judge a hunk from the hunk alone. See "Validation Requirement" below.
 

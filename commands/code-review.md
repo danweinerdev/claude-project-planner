@@ -76,7 +76,7 @@ To dispatch the sub-agents with the right inputs, you need a little bit of infor
 
 **b. Prior debrief paths.** Use `Glob` on `Plans/Active/<PlanName>/notes/*.md` to get the list of prior debrief paths. Do not read their contents — `drift-detector` will do that.
 
-**c. Resolve the diff scope.** In the target repo, run `git status` and `git log --oneline -20` to orient. If the user gave an explicit range, use it. If the user said "determine from phase created date", read only the frontmatter of the phase doc to get the `created` date, then find the earliest commit on or after that date. If you still can't resolve, ask the user for a base commit. Capture the scope as a concrete `git diff <base>..<head>` command (plus any `--staged`/working coverage the user requested). **Do not** run `git diff` and read the patch content — the sub-agents will.
+**c. Resolve the diff scope.** First, detect the target repo's VCS using `shared/vcs-detection.md`. Then orient using the VCS-appropriate "working-tree status" and "recent history" commands from that file (e.g., `git status` + `git log --oneline -20` for git, `p4 opened` + `p4 changes -m 20` for perforce). If the user gave an explicit range, use it. If the user said "determine from phase created date", read only the frontmatter of the phase doc to get the `created` date, then find the earliest commit/changelist on or after that date. If you still can't resolve (or the VCS is `none`, in which case there is no history), ask the user for a base. Capture the scope as a concrete diff command (`git diff <base>..<head>` for git, `p4 diff2 -dw //path/...@<base> //path/...@<head>` for perforce) plus any unsubmitted/working coverage the user requested. **Do not** run the diff and read the patch content — the sub-agents will. Pass the detected VCS and the resolved diff command to each sub-agent so they don't have to re-detect.
 
 **d. Language-verification note (optional).** If `shared/language-verification.md` exists and the project language warrants structural checks, pass a one-line note to `drift-detector` and `quality-scanner` so they can flag missing sanitizers/static-analysis/type-checking work. You do not need to read the full language-verification doc — just detect the project language from a quick file-extension glance at the target repo and include it as context.
 
@@ -98,13 +98,15 @@ You should NOT have read any spec contents, design contents, diff hunks, or the 
 - Plan path, phase doc path
 - Prior debrief paths
 - Target repo path
-- Resolved diff scope
+- Detected VCS label (`git`, `git-worktree`, `perforce`, `none`)
+- Resolved diff command for that VCS
 - Language-verification note (if applicable)
 - ❌ Do NOT pass spec paths, design paths, or any diff content.
 
 **Task call 2 — `sdd-planner:quality-scanner`**
 - Target repo path
-- Resolved diff scope
+- Detected VCS label
+- Resolved diff command
 - `mode: review`
 - Language-verification note (if applicable)
 - ❌ Do NOT pass plan path, phase path, spec paths, or design paths. Intent-blindness is the point.
@@ -112,12 +114,14 @@ You should NOT have read any spec contents, design contents, diff hunks, or the 
 **Task call 3 — `sdd-planner:spec-compliance`**
 - Spec paths, design paths
 - Target repo path
-- Resolved diff scope
+- Detected VCS label
+- Resolved diff command
 - ❌ Do NOT pass plan path or phase path.
 
 **Task call 4 — `sdd-planner:blind-spot-finder`**
 - Target repo path
-- Resolved diff scope
+- Detected VCS label
+- Resolved diff command
 - ❌ Do NOT pass anything else. Not the plan, not the specs, not the designs, not the phase doc, not even the language-verification note. The diff-only guarantee is this reviewer's entire contribution.
 
 Wait for all four to return before continuing.

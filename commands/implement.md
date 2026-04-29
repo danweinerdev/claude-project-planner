@@ -30,7 +30,7 @@ Per-task reviews during `/implement` dispatch `quality-scanner` directly (not th
   - Plan status must be `approved` or `active`
   - Phase status must be `planned` or `in-progress` (not `complete`, `blocked`, or `deferred`)
   - Any phases in `depends_on` must be `complete`
-- If plan is in `Plans/Ready/`, move it to `Plans/Active/` (`git mv Plans/Ready/<PlanName> Plans/Active/<PlanName>`) and update plan status to `active`
+- If plan is in `Plans/Ready/`, move it to `Plans/Active/` using the VCS-appropriate move command (see `shared/vcs-detection.md` — `git mv` for git, `p4 move` for perforce, plain `mv` if none) and update plan status to `active`
 - If plan status is `approved`, update it to `active`
 - If phase status is `planned`, update it to `in-progress`
 
@@ -136,7 +136,7 @@ Once all tasks are complete (or all remaining tasks are blocked):
 **All tasks complete:**
 - Update phase status to `complete` in both the phase doc and plan README
 - Update `updated` dates
-- If all phases in the plan are now complete, move the plan from `Plans/Active/` to `Plans/Complete/` (`git mv Plans/Active/<PlanName> Plans/Complete/<PlanName>`)
+- If all phases in the plan are now complete, move the plan from `Plans/Active/` to `Plans/Complete/` using the VCS-appropriate move command (see `shared/vcs-detection.md`)
 - Suggest running `/debrief` to capture what happened
 
 **Some tasks blocked:**
