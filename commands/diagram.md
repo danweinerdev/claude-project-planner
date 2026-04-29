@@ -42,7 +42,7 @@ When you need a visual representation of architecture, data flow, task dependenc
    - Build the Mermaid source from the artifact data
    - Use clear, descriptive node labels
    - Group related nodes with `subgraph` where appropriate
-   - Use consistent styling: status colors match dashboard conventions
+   - Use consistent styling: status colors are reused across diagrams
      - Green (`:::complete`): complete / approved / implemented
      - Amber (`:::active`): in-progress / active / review
      - Gray (`:::planned`): planned / draft

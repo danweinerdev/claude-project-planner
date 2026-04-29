@@ -14,8 +14,6 @@ Read `planning-config.json` (at repo root) to find the planning root:
 
 **Templates and schema** (`shared/`) are read from the **plugin directory**, not from the planning root. The plugin directory contains `commands/`, `agents/`, and `shared/` as siblings — find it by globbing for `**/commands/research.md` in both the current directory and `~/.claude/plugins/cache/`. If multiple matches are found (e.g., multiple cached plugin versions), sort by version number and use the highest. Then go one level up.
 
-If `dashboard` is `true` in `planning-config.json`, run dashboard commands (`make dashboard`) from the planning root directory.
-
 ## When to Use
 When you need to gather and synthesize information about a topic before making decisions. Good for technology evaluations, understanding existing systems, or exploring unknowns.
 
@@ -37,9 +35,6 @@ When you need to gather and synthesize information about a topic before making d
 
 4. **Link**
    - Add cross-references to related artifacts in the `related` frontmatter field
-
-5. **Regenerate Dashboard** (only if `dashboard` is `true` in `planning-config.json`)
-   - Run `make dashboard` from the planning root to update the HTML dashboard
 
 ## Output
 ```

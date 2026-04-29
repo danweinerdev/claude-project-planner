@@ -14,14 +14,12 @@ Read `planning-config.json` (at repo root) to find the planning root:
 
 **Templates and schema** (`shared/`) are read from the **plugin directory**, not from the planning root. The plugin directory contains `commands/`, `agents/`, and `shared/` as siblings — find it by globbing for `**/commands/research.md` in both the current directory and `~/.claude/plugins/cache/`. If multiple matches are found (e.g., multiple cached plugin versions), sort by version number and use the highest. Then go one level up.
 
-If `dashboard` is `true` in `planning-config.json`, run dashboard commands (`make dashboard`) from the planning root directory.
-
 ## When to Use
 - Artifacts have accumulated and status is unclear
 - Before starting new work, to understand what's active
 - Periodically, to keep planning artifacts healthy
 - After completing a feature cycle (good time to archive)
-- When the dashboard feels out of sync with reality
+- When the plan artifacts feel out of sync with reality
 
 ## Pre-flight: Legacy Layout Detection
 
@@ -45,7 +43,6 @@ If legacy layout is detected:
    ```
    This migration will move plan directories into status subfolders (New/, Ready/, Active/, Complete/).
    It will cause a significant number of file moves in version control.
-   Dashboard generation will not work until the migration is complete.
    This is completely optional — the plugin still supports the flat layout as a fallback.
    ```
 
@@ -59,7 +56,6 @@ If legacy layout is detected:
      - If status is missing or unrecognized, default to `New/`
      - Use `git mv` to move the plan directory into the appropriate status folder
    - After all moves, report the results
-   - If `dashboard` is `true` in `planning-config.json`, regenerate the dashboard
 
 If status subfolders already exist (even if empty), skip this check entirely — the layout is already migrated.
 
@@ -153,9 +149,6 @@ User can stop after any mode.
 
 ## Output
 Modifies artifacts in place based on user-confirmed changes. No new artifacts created.
-
-After making changes (only if `dashboard` is `true` in `planning-config.json`):
-- Run `make dashboard` from the planning root to update the HTML dashboard
 
 ## Context
 - Orchestration: `shared/orchestration.md`

@@ -7,13 +7,8 @@
 ```
 {{PLANNING_ROOT}}/
 ├── CLAUDE.md                     # This file
-├── Makefile                      # make dashboard / make open / make clean
-├── generate-dashboard.py         # Dashboard generator (Python 3, stdlib only)
 ├── planning-config.json          # Planning configuration
 ├── .gitignore
-├── shared/
-│   ├── frontmatter-schema.md     # Single source of truth for artifact metadata
-│   └── templates/                # Document templates
 ├── Research/                     # Research artifacts (flat)
 ├── Brainstorm/                   # Brainstorm artifacts (flat)
 ├── Specs/                        # Specs (subdirectory per feature)
@@ -32,13 +27,13 @@
 │           └── 01-Phase-Name.md  # Debrief for Phase 1
 ├── Retro/                        # Retrospectives
 │   └── YYYY-MM-DD-<slug>.md
-└── Dashboard/                    # Generated HTML (gitignored)
+└── Dashboard/                    # Generated HTML (gitignored, written by the optional sdd-dashboard plugin)
 ```
 
 ## Conventions
 
 ### Frontmatter
-All artifacts use YAML frontmatter as the machine-readable data layer. See `shared/frontmatter-schema.md` for the complete schema. The dashboard reads exclusively from frontmatter — no markdown table parsing.
+All artifacts use YAML frontmatter as the machine-readable data layer. See `shared/frontmatter-schema.md` for the complete schema. The optional `sdd-dashboard` plugin reads exclusively from frontmatter — no markdown table parsing.
 
 ### Plan Hierarchy
 ```
@@ -94,8 +89,10 @@ Always use templates from `shared/templates/` when creating new artifacts. Repla
 | `/code-review` | Orchestrated code review — drift + quality + spec compliance + blind spots |
 | `/debrief` | After-action notes for completed phases |
 | `/retro` | Capture learnings → `Retro/YYYY-MM-DD-<slug>.md` |
-| `/dashboard` | Regenerate HTML dashboard |
-| `/status` | Quick status summary (read-only) |
+
+If the optional `sdd-dashboard` plugin is installed:
+| `/sdd-dashboard:dashboard` | Regenerate HTML dashboard into `Dashboard/` |
+| `/sdd-dashboard:status` | Quick text status summary (read-only) |
 
 ## Agents
 
@@ -136,7 +133,7 @@ The typical flow through skills:
 ```
 /research → /brainstorm → /specify → /design → /plan → /breakdown → [implement] → /code-review → /debrief → /retro
 ```
-Use `/dashboard` or `/status` at any point to check progress.
+If the `sdd-dashboard` plugin is installed, use `/sdd-dashboard:dashboard` or `/sdd-dashboard:status` at any point to check progress.
 
 ## Artifact Status Values
 
@@ -157,8 +154,8 @@ The planning root's `planning-config.json` drives all path resolution:
 - `planningRoot`: `"."` for standalone, subdirectory name for embedded
 - `repositories`: map of external repo keys to GitHub URLs (standalone mode)
 - `planMapping`: map of plan names to target repos
-- `dashboard`: `true` to enable dashboard generation (off by default)
 - `planRepository`: key for the planning repo itself
+- `dashboard` (optional): `true` to enable HTML generation by the companion `sdd-dashboard` plugin (off by default; ignored if the plugin isn't installed)
 
 ### planning-config.local.json (gitignored)
 Local filesystem paths for external repositories:
@@ -168,14 +165,4 @@ Local filesystem paths for external repositories:
 
 ## Dashboard
 
-Opt-in: requires `"dashboard": true` in `planning-config.json`. Generated via `make dashboard` (or `make open` to also open in browser). Python 3, stdlib only. Reads YAML frontmatter from all artifact types, generates static HTML in `Dashboard/`.
-
-### Dashboard Pages
-- `index.html` — stats bar, nav links, in-progress phases, plan cards, recent activity
-- `<plan>/index.html` — plan detail with phase status table
-- `<plan>/<phase>.html` — phase detail with task table and content
-- `knowledge.html` — research + brainstorm index
-- `specs.html` — specifications index
-- `designs.html` — designs index
-- `retros.html` — retrospectives index
-- `knowledge/<slug>.html`, `specs/<slug>.html`, etc. — artifact detail pages
+The HTML dashboard is provided by the optional companion plugin [`sdd-dashboard`](https://github.com/danweinerdev/sdd-dashboard-plugin). Set `"dashboard": true` in `planning-config.json` to opt in, then run `/sdd-dashboard:dashboard` from Claude (or `python3 <sdd-dashboard-plugin>/generate-dashboard.py <planning-root>` directly). Output lands in `<planning-root>/Dashboard/` (gitignored).

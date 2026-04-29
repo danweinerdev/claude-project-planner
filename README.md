@@ -1,10 +1,12 @@
 # Project Planner
 
-A [Claude Code](https://docs.anthropic.com/en/docs/claude-code) plugin for structured project planning. It provides slash commands that guide you through a full planning lifecycle — from research to retrospective — with YAML-frontmatter-driven artifacts and a generated HTML dashboard.
+A [Claude Code](https://docs.anthropic.com/en/docs/claude-code) plugin for structured project planning. It provides slash commands that guide you through a full planning lifecycle — from research to retrospective — with YAML-frontmatter-driven artifacts.
+
+For the optional HTML dashboard view of these artifacts, install the companion [`sdd-dashboard`](https://github.com/danweinerdev/sdd-dashboard-plugin) plugin.
 
 ## How It Works
 
-Project Planner is a standalone Claude Code **plugin**. When loaded (via `--plugin-dir` or through a marketplace), it registers 18 slash commands (namespaced under `/planner:*`) and 4 review agents that Claude can delegate to. All artifacts are Markdown files with YAML frontmatter — the dashboard generator reads frontmatter exclusively, so there's no brittle table parsing.
+Project Planner is a standalone Claude Code **plugin**. When loaded (via `--plugin-dir` or through a marketplace), it registers 16 slash commands (namespaced under `/planner:*`) and 8 review/implementation agents that Claude can delegate to. All artifacts are Markdown files with YAML frontmatter — companion tools (like `sdd-dashboard`) read frontmatter exclusively, so there's no brittle table parsing.
 
 ```mermaid
 graph LR
@@ -21,13 +23,16 @@ graph LR
     subgraph Project ["Your Project"]
         config["planning-config.json"]
         artifacts["Plans/ Research/ Specs/ ..."]
-        dashboard["Dashboard/ (generated HTML)"]
+    end
+
+    subgraph Optional ["sdd-dashboard (separate plugin)"]
+        dash["Dashboard/ (generated HTML)"]
     end
 
     CC -->|--plugin-dir| Plugin
     CC -->|reads| config
     commands -->|create & update| artifacts
-    artifacts -->|make dashboard| dashboard
+    artifacts -. "/sdd-dashboard:dashboard" .-> dash
 ```
 
 ## Quick Start
@@ -57,7 +62,7 @@ claude --plugin-dir /path/to/project-planner
 
 ### Use with git worktrees
 
-Run `/planner:setup` in each worktree. Setup auto-detects worktrees and inherits `planningRoot` and `dashboard` settings from siblings:
+Run `/planner:setup` in each worktree. Setup auto-detects worktrees and inherits `planningRoot` from siblings:
 
 ```bash
 # In the first worktree — provide the planning root explicitly
@@ -99,8 +104,8 @@ All commands are namespaced as `/planner:*` automatically by the plugin system.
 | `/planner:tend` | Artifact hygiene | Updates stale statuses, tags, conventions |
 | `/planner:diagram` | Generate Mermaid diagrams | `Diagrams/<subject>.md` or inline |
 | `/planner:excavate` | Progressive codebase discovery | `Research/<codebase>.md` |
-| `/planner:dashboard` | Regenerate HTML dashboard | `Dashboard/` |
-| `/planner:status` | Quick status summary | Text output (read-only) |
+
+For the HTML dashboard and quick text status, install the companion [`sdd-dashboard`](https://github.com/danweinerdev/sdd-dashboard-plugin) plugin. It adds `/sdd-dashboard:dashboard` and `/sdd-dashboard:status`.
 
 ## Workflow Lifecycle
 
@@ -123,8 +128,6 @@ graph TD
     tend["🔧 /planner:tend"]
     diagram["📊 /planner:diagram"]
     excavate["🔍 /planner:excavate"]
-    status["📋 /planner:status"]
-    dashboard["📈 /planner:dashboard"]
 
     poke -. "before approving" .-> specify
     poke -. "before approving" .-> design
@@ -143,7 +146,7 @@ graph TD
     class plan,breakdown execution
     class implement,codereview,simplify implementation
     class debrief,retro review
-    class poke,tend,diagram,excavate,status,dashboard utility
+    class poke,tend,diagram,excavate utility
 ```
 
 | Phase | Commands | What happens |
@@ -154,7 +157,7 @@ graph TD
 | **Execution** | `plan`, `breakdown` | Structure work into phases, tasks, subtasks |
 | **Implementation** | `implement`, `code-review`, `simplify` | Build it, verify it, then clean it up |
 | **Review** | `debrief`, `retro` | Capture what happened and what you learned |
-| **Utilities** | `poke-holes`, `tend`, `diagram`, `status`, `dashboard` | Challenge, maintain, visualize, configure, monitor |
+| **Utilities** | `poke-holes`, `tend`, `diagram`, `excavate` | Challenge, maintain, visualize, explore |
 
 ## Plan Hierarchy
 
@@ -268,7 +271,6 @@ graph TB
         PR["Planning Repo"]
         PR --> PC1["planning-config.json<br/>planningRoot: '.'"]
         PR --> Plans1["Plans/ Research/ ..."]
-        PR --> Gen1["generate-dashboard.py"]
 
         CR["Code Repo (separate)"]
         PC1 -. "repositories: { app: ... }" .-> CR
@@ -280,7 +282,6 @@ graph TB
         ER --> PD["Planning/"]
         PD --> PC2["planning-config.json<br/>planningRoot: 'Planning'"]
         PD --> Plans2["Plans/ Research/ ..."]
-        PD --> Gen2["generate-dashboard.py"]
         ER --> Src["src/ lib/ ..."]
     end
 
@@ -336,30 +337,12 @@ Point multiple code repos at one shared planning repo using an absolute `plannin
 
 ## Dashboard
 
-Optional static HTML dashboard generated from artifact frontmatter. Python 3 stdlib only — no dependencies. Opt-in: set `"dashboard": true` in `planning-config.json` (use `/planner:setup --dashboard` to enable during setup).
+The HTML dashboard previously bundled with this plugin has moved to a companion plugin, [`sdd-dashboard`](https://github.com/danweinerdev/sdd-dashboard-plugin). Install it alongside `project-planner` to get:
 
-When enabled, artifact-mutating skills auto-regenerate the dashboard after writing. You can also trigger it manually:
+- `/sdd-dashboard:dashboard` — regenerate the static HTML dashboard from artifact frontmatter
+- `/sdd-dashboard:status` — quick text-only status summary (read-only)
 
-```bash
-make dashboard        # generate
-make open             # generate and open in browser
-make clean            # remove generated files
-make test             # run test suite
-```
-
-To disable dashboard generation, remove the `"dashboard"` key or set it to `false` in `planning-config.json`.
-
-### Pages
-
-| Page | Content |
-|------|---------|
-| `index.html` | Stats, in-progress work, plan cards, recent activity |
-| `<plan>/index.html` | Plan detail with phase status table |
-| `<plan>/<phase>.html` | Phase detail with task table and body content |
-| `knowledge.html` | Research and brainstorm index |
-| `specs.html` | Specifications index |
-| `designs.html` | Designs index |
-| `retros.html` | Retrospectives index |
+The dashboard is opt-in via `"dashboard": true` in `planning-config.json` (plus optional `title` / `description` for the page chrome). If you don't install the companion plugin, those fields are simply ignored.
 
 ## Directory Structure
 
@@ -371,7 +354,6 @@ project-planner/                   # The plugin itself (not your project)
 │   ├── brainstorm.md
 │   ├── breakdown.md
 │   ├── code-review.md
-│   ├── dashboard.md
 │   ├── debrief.md
 │   ├── design.md
 │   ├── diagram.md
@@ -384,7 +366,6 @@ project-planner/                   # The plugin itself (not your project)
 │   ├── setup.md
 │   ├── simplify.md
 │   ├── specify.md
-│   ├── status.md
 │   └── tend.md
 ├── agents/                       # Review agents
 │   ├── blind-spot-finder.md
@@ -398,10 +379,7 @@ project-planner/                   # The plugin itself (not your project)
 ├── shared/
 │   ├── frontmatter-schema.md     # Artifact metadata schema
 │   └── templates/                # Document templates
-├── dashboard/                    # Dashboard generator package
-├── generate-dashboard.py         # Dashboard entry point (Python 3, stdlib only)
-├── tests/                        # pytest test suite
-├── Makefile                      # make dashboard / make open / make clean / make test
+├── Makefile                      # make bump-patch / bump-minor / bump-major
 ├── CLAUDE.md                     # Claude Code project instructions
 └── README.md
 ```
@@ -409,4 +387,4 @@ project-planner/                   # The plugin itself (not your project)
 ## Requirements
 
 - [Claude Code](https://docs.anthropic.com/en/docs/claude-code) CLI
-- Python 3 (stdlib only, for dashboard generation)
+- Python 3 only if you also use the companion `sdd-dashboard` plugin

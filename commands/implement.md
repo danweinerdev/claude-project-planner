@@ -14,8 +14,6 @@ Read `planning-config.json` (at repo root) to find the planning root:
 
 **Templates and schema** (`shared/`) are read from the **plugin directory**, not from the planning root. The plugin directory contains `commands/`, `agents/`, and `shared/` as siblings — find it by globbing for `**/commands/research.md` in both the current directory and `~/.claude/plugins/cache/`. If multiple matches are found (e.g., multiple cached plugin versions), sort by version number and use the highest. Then go one level up.
 
-If `dashboard` is `true` in `planning-config.json`, run dashboard commands (`make dashboard`) from the planning root directory.
-
 ## When to Use
 When a plan is approved and you're ready to implement a phase. This skill **coordinates** implementation: it delegates actual code work to `code-implementer` agents, runs them in parallel where dependencies allow, triggers `quality-scanner` agents after each task for a fast intent-blind quality check, and manages the review-fix cycle. It bridges the gap between `/plan` (which defines *what* to build) and `/debrief` (which captures *what happened*).
 
@@ -149,9 +147,6 @@ Once all tasks are complete (or all remaining tasks are blocked):
   - Defer blocked tasks and mark phase as `complete`
   - Mark phase as `blocked`
 
-### 7. Regenerate Dashboard (only if `dashboard` is `true` in `planning-config.json`)
-- Run `make dashboard` from the planning root to update the HTML dashboard
-
 ## Task Execution Details
 
 ### Working with Subtasks
@@ -170,7 +165,7 @@ As agents complete each subtask, the coordinator checks them off:
 - [x] Implement the data model
 ```
 
-This gives real-time progress visibility in the dashboard.
+This gives real-time progress visibility in the plan artifacts.
 
 ### Handling Dependencies
 Tasks may have `depends_on` in their frontmatter. The coordinator builds waves from these:

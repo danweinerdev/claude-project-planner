@@ -1,6 +1,6 @@
 # Project Planner
 
-A Claude Code plugin for structured project planning with lifecycle skills, review agents, and an HTML dashboard.
+A Claude Code plugin for structured project planning with lifecycle skills and review agents. The optional HTML dashboard lives in a companion plugin: [sdd-dashboard](https://github.com/danweinerdev/sdd-dashboard-plugin).
 
 ## Directory Structure
 
@@ -9,8 +9,7 @@ project-planner/                  # Repository root = plugin root
 ├── .claude-plugin/
 │   └── plugin.json               # Plugin manifest (name: "planner")
 ├── CLAUDE.md                     # This file
-├── Makefile                      # make dashboard / make open / make clean / make bump-*
-├── generate-dashboard.py         # Dashboard generator (Python 3, stdlib only)
+├── Makefile                      # make bump-patch / bump-minor / bump-major
 ├── planning-config.json          # Planning configuration
 ├── .gitignore
 ├── commands/                     # Slash commands (auto-namespaced /planner:*)
@@ -34,15 +33,14 @@ project-planner/                  # Repository root = plugin root
 │       ├── 01-Phase-Name.md      # Frontmatter with tasks[], details
 │       └── notes/                # After-action notes
 │           └── 01-Phase-Name.md  # Debrief for Phase 1
-├── Retro/                        # Retrospectives
-│   └── YYYY-MM-DD-<slug>.md
-└── Dashboard/                    # Generated HTML (gitignored)
+└── Retro/                        # Retrospectives
+    └── YYYY-MM-DD-<slug>.md
 ```
 
 ## Conventions
 
 ### Frontmatter
-All artifacts use YAML frontmatter as the machine-readable data layer. See `shared/frontmatter-schema.md` for the complete schema. The dashboard reads exclusively from frontmatter — no markdown table parsing.
+All artifacts use YAML frontmatter as the machine-readable data layer. See `shared/frontmatter-schema.md` for the complete schema. The companion `sdd-dashboard` plugin reads exclusively from frontmatter — no markdown table parsing.
 
 ### Plan Hierarchy
 ```
@@ -105,8 +103,6 @@ Always use templates from `shared/templates/` when creating new artifacts. Repla
 | `/planner:diagram` | Generate Mermaid diagrams from artifacts |
 | `/planner:excavate` | Progressive codebase discovery → `Research/<slug>.md` |
 | `/planner:setup` | Set up a repo — generates planning-config.json, bootstraps directories, creates launcher |
-| `/planner:dashboard` | Regenerate HTML dashboard |
-| `/planner:status` | Quick status summary (read-only) |
 
 ## Agents
 
@@ -160,7 +156,7 @@ The typical flow through skills:
 ```
 /planner:setup → /planner:research → /planner:brainstorm → /planner:specify → /planner:design → /planner:plan → /planner:breakdown → /planner:implement → /planner:code-review → /planner:simplify → /planner:debrief → /planner:retro
 ```
-Use `/planner:dashboard` or `/planner:status` at any point to check progress.
+Install the companion [`sdd-dashboard`](https://github.com/danweinerdev/sdd-dashboard-plugin) plugin to add `/sdd-dashboard:dashboard` (HTML dashboard) and `/sdd-dashboard:status` (quick text summary) for checking progress.
 Use `/planner:poke-holes` before approving any artifact. Use `/planner:tend` periodically for hygiene.
 Use `/planner:excavate` to understand unfamiliar codebases. Use `/planner:diagram` to visualize any artifact.
 
@@ -181,10 +177,11 @@ Use `/planner:excavate` to understand unfamiliar codebases. Use `/planner:diagra
 The planning root's `planning-config.json` drives all path resolution:
 - `mode`: `"standalone"` (own repo) or `"embedded"` (subdirectory of project)
 - `planningRoot`: `"."` for standalone, subdirectory name for embedded
-- `dashboard`: `true` to enable dashboard generation (off by default). When enabled, also set `title` and `description` for the dashboard HTML.
 - `repositories`: map of external repo keys to GitHub URLs (standalone mode)
 - `planMapping`: map of plan names to target repos
 - `planRepository`: key for the planning repo itself
+
+The companion `sdd-dashboard` plugin reads two additional fields when generating its HTML dashboard: `dashboard: true` (opt-in switch), and `title` / `description` for the page chrome. They are ignored if the plugin isn't installed.
 
 ### planning-config.local.json (gitignored)
 Local filesystem paths for external repositories:
@@ -194,17 +191,7 @@ Local filesystem paths for external repositories:
 
 ## Dashboard
 
-Opt-in: requires `"dashboard": true` in `planning-config.json`. Generated via `make dashboard` (or `make open` to also open in browser). Python 3, stdlib only. Reads YAML frontmatter from all artifact types, generates static HTML in `Dashboard/`.
-
-### Dashboard Pages
-- `index.html` — stats bar, nav links, in-progress phases, plan cards, recent activity
-- `<plan>/index.html` — plan detail with phase status table
-- `<plan>/<phase>.html` — phase detail with task table and content
-- `knowledge.html` — research + brainstorm index
-- `specs.html` — specifications index
-- `designs.html` — designs index
-- `retros.html` — retrospectives index
-- `knowledge/<slug>.html`, `specs/<slug>.html`, etc. — artifact detail pages
+The HTML dashboard previously lived here has moved to a companion plugin: [`sdd-dashboard`](https://github.com/danweinerdev/sdd-dashboard-plugin). Install it alongside `project-planner` to get `/sdd-dashboard:dashboard` (HTML) and `/sdd-dashboard:status` (text summary). The dashboard is opt-in via `"dashboard": true` in `planning-config.json`.
 
 ## Maintenance Rules
 

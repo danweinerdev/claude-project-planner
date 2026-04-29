@@ -1,16 +1,4 @@
-test:
-	@python -m pytest tests/ -v
-
-.PHONY: dashboard open clean test bump-patch bump-minor bump-major
-
-dashboard:
-	@python3 generate-dashboard.py
-
-open: dashboard
-	@xdg-open Dashboard/index.html 2>/dev/null || open Dashboard/index.html 2>/dev/null || echo "Open Dashboard/index.html in your browser"
-
-clean:
-	@rm -rf Dashboard/
+.PHONY: bump-patch bump-minor bump-major
 
 bump-patch:
 	$(eval VERSION := $(shell python3 bump-version.py patch))

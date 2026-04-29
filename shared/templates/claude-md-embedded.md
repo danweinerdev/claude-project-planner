@@ -5,12 +5,7 @@ Planning artifacts under `{{PLANNING_ROOT}}/` — managed by project-planner.
 ### Planning Structure
 ```
 {{PLANNING_ROOT}}/
-├── Makefile                      # make dashboard / make open / make clean
-├── generate-dashboard.py         # Dashboard generator (Python 3, stdlib only)
 ├── planning-config.json          # Planning configuration
-├── shared/
-│   ├── frontmatter-schema.md     # Artifact metadata schema
-│   └── templates/                # Document templates
 ├── Research/                     # Research artifacts
 ├── Brainstorm/                   # Brainstorm artifacts
 ├── Specs/                        # Specifications
@@ -28,7 +23,7 @@ Planning artifacts under `{{PLANNING_ROOT}}/` — managed by project-planner.
 │       └── notes/
 ├── Retro/                        # Retrospectives
 │   └── YYYY-MM-DD-<slug>.md
-└── Dashboard/                    # Generated HTML (gitignored)
+└── Dashboard/                    # Generated HTML (gitignored, written by the optional sdd-dashboard plugin)
 ```
 
 ### Planning Skills
@@ -43,9 +38,11 @@ Planning artifacts under `{{PLANNING_ROOT}}/` — managed by project-planner.
 | `/code-review` | Orchestrated code review — drift + quality + spec compliance + blind spots |
 | `/debrief` | After-action notes for completed phases |
 | `/retro` | Capture learnings → `{{PLANNING_ROOT}}/Retro/YYYY-MM-DD-<slug>.md` |
-| `/dashboard` | Regenerate HTML dashboard |
-| `/status` | Quick status summary (read-only) |
+
+If the optional `sdd-dashboard` plugin is installed:
+| `/sdd-dashboard:dashboard` | Regenerate HTML dashboard into `{{PLANNING_ROOT}}/Dashboard/` |
+| `/sdd-dashboard:status` | Quick text status summary (read-only) |
 
 ### Planning Configuration
 See `{{PLANNING_ROOT}}/planning-config.json`.
-Dashboard generation is opt-in: set `"dashboard": true` in `planning-config.json`, then run `make -C {{PLANNING_ROOT}} dashboard`.
+The HTML dashboard is provided by the optional companion plugin [`sdd-dashboard`](https://github.com/danweinerdev/sdd-dashboard-plugin). Opt in by setting `"dashboard": true` in `planning-config.json`, then run `/sdd-dashboard:dashboard` from Claude.

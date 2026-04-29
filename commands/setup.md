@@ -24,7 +24,7 @@ When setting up a new or existing repository to work with the project-planner pl
 
 - Copy skills, agents, or plugin files — the plugin discovers its own files via `--plugin-dir`
 - Generate CLAUDE.md — the plugin provides its own context
-- Copy templates, frontmatter schemas, or dashboard generators
+- Copy templates or frontmatter schemas
 - Handle bare repos directly — run setup on individual worktrees instead
 
 ## Arguments
@@ -32,7 +32,7 @@ When setting up a new or existing repository to work with the project-planner pl
 The user may provide these inline with the command:
 - **repo path** — target repository (defaults to current working directory)
 - **--planning-root `<path>`** — where planning artifacts live (defaults to plugin directory)
-- **--dashboard** — enable dashboard generation
+- **--dashboard** — set the `dashboard: true` flag in `planning-config.json` so the companion `sdd-dashboard` plugin (if installed) will generate HTML output
 
 Examples:
 ```
@@ -40,7 +40,7 @@ Examples:
 /setup /path/to/my-project               # specific repo
 /setup my-repo                           # config key lookup
 /setup /path/to/repo --planning-root /path/to/planning
-/setup /path/to/repo --dashboard          # enable dashboard
+/setup /path/to/repo --dashboard          # opt into HTML dashboard generation
 ```
 
 ## Process
@@ -80,9 +80,9 @@ Ask the user about options that aren't already clear from context or arguments. 
 > - In a separate directory (provide path)
 
 **Dashboard** — skip if `--dashboard` was provided or inherited from sibling config:
-> Do you want the HTML dashboard? (generates static HTML from artifact metadata via `make dashboard`)
-> - No (default) — dashboard generation is not enabled
-> - Yes — enables dashboard generation (sets `"dashboard": true` in config)
+> Do you want to opt in to the HTML dashboard? (rendered by the companion `sdd-dashboard` plugin via `/sdd-dashboard:dashboard`)
+> - No (default) — `dashboard` flag is omitted; nothing is generated
+> - Yes — sets `"dashboard": true` in `planning-config.json`. The flag is read by the `sdd-dashboard` plugin if installed; project-planner ignores it.
 
 ### 5. Write planning-config.json
 
@@ -95,7 +95,7 @@ Write (or overwrite) `planning-config.json` in the target repository:
 }
 ```
 
-If dashboard is enabled, also include `"dashboard": true` in the config. If the user wants the dashboard, also add `"title"` and `"description"` fields:
+If the user opted into the dashboard, also include `"dashboard": true` along with `"title"` and `"description"` fields (the companion `sdd-dashboard` plugin reads these for the page chrome):
 
 ```json
 {
@@ -162,7 +162,7 @@ claude --add-dir="<planning-root>" %*
 ### 9. Set Up .gitignore
 
 Ensure the target repository's `.gitignore` includes these entries (add them if missing, don't duplicate):
-- `Dashboard/` (generated HTML)
+- `Dashboard/` (generated HTML — only relevant if the `sdd-dashboard` companion plugin is installed; harmless to add unconditionally)
 - `planning-config.local.json` (local filesystem paths)
 
 ### 10. Report Results
@@ -175,7 +175,7 @@ Display a summary of what was created or updated:
 **Repo:** <path>
 **Type:** normal repo / worktree
 **Planning root:** <path>
-**Dashboard:** enabled / disabled
+**Dashboard flag:** enabled / disabled (rendered by the companion `sdd-dashboard` plugin)
 
 ### Created/Updated
 - planning-config.json
