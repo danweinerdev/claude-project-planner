@@ -1,12 +1,12 @@
 ---
 name: setup
-description: "Set up a repository for project-planner — generates planning-config.json, bootstraps planning directories, creates launcher script. Triggers: /setup, setup repo, configure repo, setup worktree, initialize planner, bootstrap planner"
+description: "Set up a repository for sdd-planner — generates planning-config.json, bootstraps planning directories, creates launcher script. Triggers: /setup, setup repo, configure repo, setup worktree, initialize planner, bootstrap planner"
 ---
 
-# /setup — Configure Repository for Project Planner
+# /setup — Configure Repository for SDD Planner
 
 ## When to Use
-When setting up a new or existing repository to work with the project-planner plugin. This generates `planning-config.json`, bootstraps planning artifact directories, and creates launcher scripts.
+When setting up a new or existing repository to work with the sdd-planner plugin. This generates `planning-config.json`, bootstraps planning artifact directories, and creates launcher scripts.
 
 **Idempotent and safe to re-run.** Overwrites `planning-config.json` and launcher scripts. Creates missing directories without touching existing ones.
 
@@ -76,13 +76,13 @@ Ask the user about options that aren't already clear from context or arguments. 
 
 **Planning root** — skip if `--planning-root` was provided, inherited from sibling, or context makes it obvious:
 > Where do your planning artifacts live?
-> - In the project-planner plugin directory (default)
+> - In the sdd-planner plugin directory (default)
 > - In a separate directory (provide path)
 
 **Dashboard** — skip if `--dashboard` was provided or inherited from sibling config:
 > Do you want to opt in to the HTML dashboard? (rendered by the companion `sdd-dashboard` plugin via `/sdd-dashboard:dashboard`)
 > - No (default) — `dashboard` flag is omitted; nothing is generated
-> - Yes — sets `"dashboard": true` in `planning-config.json`. The flag is read by the `sdd-dashboard` plugin if installed; project-planner ignores it.
+> - Yes — sets `"dashboard": true` in `planning-config.json`. The flag is read by the `sdd-dashboard` plugin if installed; `sdd-planner` ignores it.
 
 ### 5. Write planning-config.json
 

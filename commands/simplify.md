@@ -27,7 +27,7 @@ This is distinct from `/implement` (which builds features) and from a regular co
    - If a `planning-config.local.json` exists, read it to find local repo paths
 
 2. **Analyze Complexity**
-   Dispatch `planner:quality-scanner` in `simplify` mode via the Task tool (use the plugin-namespaced name — bare `quality-scanner` will not resolve). Pass it the target repo path and the target file paths or module. The scanner is intent-blind by design — do not pass plan, spec, or design context. It returns findings grouped by file, each with: what the issue is, why it matters, what the simplification would look like, and the risk level.
+   Dispatch `sdd-planner:quality-scanner` in `simplify` mode via the Task tool (use the plugin-namespaced name — bare `quality-scanner` will not resolve). Pass it the target repo path and the target file paths or module. The scanner is intent-blind by design — do not pass plan, spec, or design context. It returns findings grouped by file, each with: what the issue is, why it matters, what the simplification would look like, and the risk level.
 
    `quality-scanner` already covers the simplification lenses you want here — structural issues, naming, dead code, and over-engineering — under its Maintainability and Over-Engineering lenses. In `simplify` mode it puts extra weight on the Over-Engineering lens.
 
@@ -43,8 +43,8 @@ This is distinct from `/implement` (which builds features) and from a regular co
    Never use "pre-existing" to justify deferring or hiding a finding. "Pre-existing" describes origin, not impact. Present findings by what they do to the user, not when they were introduced. The user decides what is worth fixing.
 
 4. **Apply Changes**
-   With user approval, dispatch `planner:code-implementer` agent(s) via the Task tool (use the plugin-namespaced name) to apply the approved changes:
-   - For each file (or group of independent files), launch a `planner:code-implementer` agent with the approved simplifications and the target file path
+   With user approval, dispatch `sdd-planner:code-implementer` agent(s) via the Task tool (use the plugin-namespaced name) to apply the approved changes:
+   - For each file (or group of independent files), launch a `sdd-planner:code-implementer` agent with the approved simplifications and the target file path
    - The agent makes the change, then runs the project's test suite to verify behavior is preserved
    - If tests fail, the agent reverts the change and reports the failure
    - If no test suite exists, flag this as a risk and ask the user to verify manually

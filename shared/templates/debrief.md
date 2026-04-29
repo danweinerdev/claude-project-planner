@@ -47,7 +47,7 @@ Repeated actions during this phase that would benefit from being enshrined as a 
 
 For each opportunity, note:
 - **What you did repeatedly** (the manual sequence or pattern)
-- **Where it belongs** (new `/planner:*` slash command, project-level skill, codebase helper, shell script, Makefile target)
+- **Where it belongs** (new `/sdd-planner:*` slash command, project-level skill, codebase helper, shell script, Makefile target)
 - **Why a skill** (what pain does it remove, what consistency does it enforce)
 - **Rough shape** (inputs, outputs, when to invoke)
 

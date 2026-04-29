@@ -38,7 +38,7 @@ After completing a significant piece of work (a plan, a sprint, a milestone) to 
    - Codebase operations that lacked automation and cost time in multiple tasks
    - Checks, validations, or reviews that happened mentally and should have been automated
 
-   For each opportunity, capture: the pattern and how often it came up, where the skill should live (new `/planner:*` slash command, a project-level Claude skill, a codebase helper, a shell script, a Makefile target), why a skill helps, and a rough shape (inputs, outputs, when to invoke, which agents or tools it wraps). Include enough detail for a future session to act on it without re-deriving the context.
+   For each opportunity, capture: the pattern and how often it came up, where the skill should live (new `/sdd-planner:*` slash command, a project-level Claude skill, a codebase helper, a shell script, a Makefile target), why a skill helps, and a rough shape (inputs, outputs, when to invoke, which agents or tools it wraps). Include enough detail for a future session to act on it without re-deriving the context.
 
    Ask the user to confirm, prune, or extend the list before writing.
 

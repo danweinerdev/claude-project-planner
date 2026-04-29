@@ -10,7 +10,7 @@ description: "Review implementation code against the plan for drift, gaps, and b
 This skill's entire value comes from dispatching four intent-isolated sub-agents in parallel and synthesizing their independent reports. You are the orchestrator.
 
 **You MUST:**
-1. Dispatch all four sub-agents via the Task tool, using their **plugin-namespaced** names: `planner:drift-detector`, `planner:quality-scanner`, `planner:spec-compliance`, `planner:blind-spot-finder`.
+1. Dispatch all four sub-agents via the Task tool, using their **plugin-namespaced** names: `sdd-planner:drift-detector`, `sdd-planner:quality-scanner`, `sdd-planner:spec-compliance`, `sdd-planner:blind-spot-finder`.
 2. Dispatch them **in parallel** — a single message containing four Task tool calls.
 3. Give each sub-agent only the inputs for its lane. See Step 3 below for the exact input map. Passing extra context destroys the intent isolation that makes the review worthwhile.
 4. Wait for all four to return, then synthesize.
@@ -19,7 +19,7 @@ This skill's entire value comes from dispatching four intent-isolated sub-agents
 1. Read the full diff, the phase doc contents, spec contents, or design contents in the primary context and write findings yourself. That is a single-pass review cosplaying as a four-lane review. It is the bug this contract exists to prevent.
 2. Skip the Task dispatch because "you already know the answer" after loading context. The answer you'd produce is exactly the single-pass review this skill exists to replace.
 3. Fall back to self-synthesis if a Task dispatch fails. If dispatch fails, **STOP** and return a loud error to the user describing which sub-agent failed and why. Do not silently continue.
-4. Use bare sub-agent names (`drift-detector`, `quality-scanner`, etc.) in Task calls — plugin agents require the `planner:` prefix or they will not resolve.
+4. Use bare sub-agent names (`drift-detector`, `quality-scanner`, etc.) in Task calls — plugin agents require the `sdd-planner:` prefix or they will not resolve.
 
 If you find yourself reading a spec file or running `git diff` against the full patch in the primary context, stop. That work belongs in the sub-agents, not here.
 
@@ -47,10 +47,10 @@ A single reviewer juggling plan, specs, designs, code, and adversarial perspecti
 
 | Agent | Sees | Doesn't see | Role |
 |---|---|---|---|
-| `planner:drift-detector` | Diff + plan + phase doc + prior debriefs | Specs, designs, code-quality heuristics | Missing work, scope creep, approach drift |
-| `planner:quality-scanner` | Diff + code | Plan, specs, designs | Correctness, safety, maintainability, testing, over-engineering — intent-blind |
-| `planner:spec-compliance` | Diff + specs + designs | Plan, phase doc | Requirements coverage, contract violations |
-| `planner:blind-spot-finder` | Diff only | Everything else | Adversarial fresh eyes — scenarios the author didn't consider |
+| `sdd-planner:drift-detector` | Diff + plan + phase doc + prior debriefs | Specs, designs, code-quality heuristics | Missing work, scope creep, approach drift |
+| `sdd-planner:quality-scanner` | Diff + code | Plan, specs, designs | Correctness, safety, maintainability, testing, over-engineering — intent-blind |
+| `sdd-planner:spec-compliance` | Diff + specs + designs | Plan, phase doc | Requirements coverage, contract violations |
+| `sdd-planner:blind-spot-finder` | Diff only | Everything else | Adversarial fresh eyes — scenarios the author didn't consider |
 
 Each runs in its own fresh context. The whole point is that one reviewer's framing cannot contaminate another's.
 
@@ -94,7 +94,7 @@ You should NOT have read any spec contents, design contents, diff hunks, or the 
 
 **This is the step the contract at the top of this file is about.** Send a single message containing four Task tool calls. Each uses the plugin-namespaced name. Each receives only the inputs for its lane.
 
-**Task call 1 — `planner:drift-detector`**
+**Task call 1 — `sdd-planner:drift-detector`**
 - Plan path, phase doc path
 - Prior debrief paths
 - Target repo path
@@ -102,20 +102,20 @@ You should NOT have read any spec contents, design contents, diff hunks, or the 
 - Language-verification note (if applicable)
 - ❌ Do NOT pass spec paths, design paths, or any diff content.
 
-**Task call 2 — `planner:quality-scanner`**
+**Task call 2 — `sdd-planner:quality-scanner`**
 - Target repo path
 - Resolved diff scope
 - `mode: review`
 - Language-verification note (if applicable)
 - ❌ Do NOT pass plan path, phase path, spec paths, or design paths. Intent-blindness is the point.
 
-**Task call 3 — `planner:spec-compliance`**
+**Task call 3 — `sdd-planner:spec-compliance`**
 - Spec paths, design paths
 - Target repo path
 - Resolved diff scope
 - ❌ Do NOT pass plan path or phase path.
 
-**Task call 4 — `planner:blind-spot-finder`**
+**Task call 4 — `sdd-planner:blind-spot-finder`**
 - Target repo path
 - Resolved diff scope
 - ❌ Do NOT pass anything else. Not the plan, not the specs, not the designs, not the phase doc, not even the language-verification note. The diff-only guarantee is this reviewer's entire contribution.
@@ -125,7 +125,7 @@ Wait for all four to return before continuing.
 **If any Task call fails or returns an error** (e.g., "unknown subagent_type"), stop immediately and return a loud error to the user:
 
 ```
-ERROR: /code-review could not dispatch sub-agent `planner:<name>`.
+ERROR: /code-review could not dispatch sub-agent `sdd-planner:<name>`.
 Reason: <the exact error from Task>
 The four-lane review cannot proceed. Fix the dispatch issue and re-run.
 ```
@@ -172,7 +172,7 @@ Render the synthesis in the output format below. Include the raw sub-reports ver
 ### Diff Scope
 - Commits reviewed: [range, count]
 - Files changed: [count]
-- Reviewers dispatched: planner:drift-detector, planner:quality-scanner, planner:spec-compliance, planner:blind-spot-finder
+- Reviewers dispatched: sdd-planner:drift-detector, sdd-planner:quality-scanner, sdd-planner:spec-compliance, sdd-planner:blind-spot-finder
 
 ### Confirmed Findings (agreed by 2+ reviewers)
 These findings were caught independently by multiple lanes — high confidence.
@@ -289,4 +289,4 @@ No new artifact is created. This skill produces an inline review presented to th
 - Related designs: `Designs/`
 - Prior debriefs: `Plans/Active/<PlanName>/notes/`
 - Local repo paths: `planning-config.local.json`
-- Sub-agents (dispatched via Task from the primary context): `planner:drift-detector`, `planner:quality-scanner`, `planner:spec-compliance`, `planner:blind-spot-finder`
+- Sub-agents (dispatched via Task from the primary context): `sdd-planner:drift-detector`, `sdd-planner:quality-scanner`, `sdd-planner:spec-compliance`, `sdd-planner:blind-spot-finder`

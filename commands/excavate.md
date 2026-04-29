@@ -29,7 +29,7 @@ When you need to understand an unfamiliar codebase or subsystem before planning 
      - README/docs (understand intent)
 
 2. **Surface Survey**
-   - Invoke the `planner:researcher` agent to scan the target codebase:
+   - Invoke the `sdd-planner:researcher` agent to scan the target codebase:
      - Directory structure and file organization
      - Key modules/packages and their responsibilities
      - Entry points and public APIs
@@ -89,5 +89,5 @@ Research/<codebase-or-subsystem-slug>.md
 - Orchestration: `shared/orchestration.md`
 - Template: `shared/templates/research.md`
 - Schema: `shared/frontmatter-schema.md`
-- Agent: `planner:researcher`
+- Agent: `sdd-planner:researcher`
 - Local repo paths: `planning-config.local.json`

@@ -29,7 +29,7 @@ Repeated actions across this period that would benefit from being enshrined as a
 
 For each opportunity, note:
 - **Pattern observed** — the repeated action or sequence, and how often it came up
-- **Home for the skill** — new `/planner:*` slash command, project-level Claude skill, codebase utility, shell script, Makefile target, or saved query
+- **Home for the skill** — new `/sdd-planner:*` slash command, project-level Claude skill, codebase utility, shell script, Makefile target, or saved query
 - **Why a skill** — what pain it removes, what consistency it enforces, how much time it saves per use
 - **Rough shape** — inputs, outputs, when to invoke, which agents/tools it would wrap
 

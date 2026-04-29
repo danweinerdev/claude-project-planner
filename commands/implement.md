@@ -99,7 +99,7 @@ Before launching each wave, check whether two or more tasks in the same wave mig
 #### For Each Wave
 
 **a. Launch implementer agents (parallel)**
-- For each task in the wave, launch a `planner:code-implementer` agent via the Task tool (use the plugin-namespaced name — bare `code-implementer` will not resolve)
+- For each task in the wave, launch a `sdd-planner:code-implementer` agent via the Task tool (use the plugin-namespaced name — bare `code-implementer` will not resolve)
 - Each agent receives: task ID, title, subtasks, relevant spec/design context, target codebase path, any notes from prior task debriefs
 - Launch all tasks in the wave as concurrent Task tool calls
 - Update each task's status to `in-progress` in the phase frontmatter
@@ -110,13 +110,13 @@ Before launching each wave, check whether two or more tasks in the same wave mig
 - If an agent reports success → proceed to review
 
 **c. Review completed tasks**
-- For each successfully completed task, dispatch `planner:quality-scanner` via the Task tool (use the plugin-namespaced name — bare `quality-scanner` will not resolve)
+- For each successfully completed task, dispatch `sdd-planner:quality-scanner` via the Task tool (use the plugin-namespaced name — bare `quality-scanner` will not resolve)
 - Scope the review to that task's changes — pass the target repo path, the file list, and the commit range from the implementer's report
 - The scanner evaluates the code intent-blind: correctness, safety, maintainability, testing, over-engineering
 - Do **not** pass plan/spec/design context — `quality-scanner` is deliberately intent-blind, and the full orchestrated `/code-review` at end-of-phase covers the plan/spec/design perspective
 
 **d. Process review findings**
-- **Critical findings** → resume the `planner:code-implementer` agent to address the issue, then re-review
+- **Critical findings** → resume the `sdd-planner:code-implementer` agent to address the issue, then re-review
 - **Non-critical findings** (Major/Minor/Question) → collect and present to user after the wave completes
 - Maximum 2 review-fix cycles per task. If critical issues remain after 2 cycles, mark the task as `needs-attention` and move on.
 

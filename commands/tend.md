@@ -87,7 +87,7 @@ Each mode builds on prior work. Status must be accurate before tag analysis is m
 
 All modes follow delegate-scan → review-findings → confirm → apply:
 
-1. **Scan**: Invoke the `planner:researcher` agent to scan artifacts and gather findings (no changes made)
+1. **Scan**: Invoke the `sdd-planner:researcher` agent to scan artifacts and gather findings (no changes made)
 2. **Report**: Primary context presents the agent's findings in categorized format
 3. **Confirm**: Wait for user decisions on proposed changes
 4. **Apply**: Make confirmed changes and report final state
@@ -97,7 +97,7 @@ Never skip confirmation for changes to existing content.
 ## Mode Details
 
 ### Status Mode
-Invoke the `planner:researcher` agent to scan all four status folders (`Plans/New/`, `Plans/Ready/`, `Plans/Active/`, `Plans/Complete/`) and compare status fields against reality. The agent returns a list of findings — what is stale, what is inconsistent, and what should be updated. Checks to perform:
+Invoke the `sdd-planner:researcher` agent to scan all four status folders (`Plans/New/`, `Plans/Ready/`, `Plans/Active/`, `Plans/Complete/`) and compare status fields against reality. The agent returns a list of findings — what is stale, what is inconsistent, and what should be updated. Checks to perform:
 - Plans with all phases complete but plan status is still `active` → suggest `complete`
 - Phases where all tasks are complete but phase status is `in-progress` → suggest `complete`
 - Specs/designs marked `approved` but their plan is `complete` → suggest `implemented`
@@ -107,14 +107,14 @@ Invoke the `planner:researcher` agent to scan all four status folders (`Plans/Ne
 - Plans in `Active/` with all phases complete → suggest moving to `Complete/`
 
 ### Tags Mode
-Invoke the `planner:researcher` agent to scan all artifact frontmatter for tags and analyze for variants, orphans, missing tags, and clusters. The agent returns the analysis. Checks to perform:
+Invoke the `sdd-planner:researcher` agent to scan all artifact frontmatter for tags and analyze for variants, orphans, missing tags, and clusters. The agent returns the analysis. Checks to perform:
 - **Variants**: Find tags that are likely the same thing (`api`/`APIs`/`rest-api`)
 - **Orphans**: Tags used in only one document (might be too specific)
 - **Missing**: Artifacts with empty tags that could be inferred from content
 - **Clusters**: Groups of artifacts that share tag patterns (reveals implicit categories)
 
 ### Filenames Mode
-Invoke the `planner:researcher` agent to check naming conventions across all artifacts. The agent returns any violations found. Conventions to check (defined in CLAUDE.md):
+Invoke the `sdd-planner:researcher` agent to check naming conventions across all artifacts. The agent returns any violations found. Conventions to check (defined in CLAUDE.md):
 - Plans: `Plans/{New,Ready,Active,Complete}/<PlanName>/README.md`, phases `01-Phase-Name.md`
 - Specs: `Specs/<FeatureName>/README.md`
 - Designs: `Designs/<ComponentName>/README.md`
@@ -124,7 +124,7 @@ Invoke the `planner:researcher` agent to check naming conventions across all art
 - Phase numbering: zero-padded, sequential, no gaps
 
 ### Completeness Mode
-Invoke the `planner:researcher` agent to check each artifact against `shared/frontmatter-schema.md`. The agent returns missing fields and empty sections. Checks to perform:
+Invoke the `sdd-planner:researcher` agent to check each artifact against `shared/frontmatter-schema.md`. The agent returns missing fields and empty sections. Checks to perform:
 - Required frontmatter fields present (title, type, status, created, updated)
 - Body has expected sections per template
 - Plans have at least one phase defined
@@ -154,4 +154,4 @@ Modifies artifacts in place based on user-confirmed changes. No new artifacts cr
 - Orchestration: `shared/orchestration.md`
 - Schema: `shared/frontmatter-schema.md`
 - Conventions: `CLAUDE.md`
-- Agent: `planner:researcher`
+- Agent: `sdd-planner:researcher`

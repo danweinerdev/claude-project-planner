@@ -1,7 +1,7 @@
 {
-  "name": "planner",
+  "name": "sdd-planner",
   "version": "1.2.2",
-  "description": "Structured project planning with lifecycle skills, review agents, and an HTML dashboard",
+  "description": "Spec-driven development planning — lifecycle skills and review agents for structured plans, specs, designs, research, and retrospectives",
   "author": {
     "name": "Daniel Weiner"
   },

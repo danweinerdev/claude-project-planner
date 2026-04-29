@@ -112,7 +112,7 @@ If the optional `sdd-dashboard` plugin is installed:
 `/code-review` orchestrates the four specialized reviewers from the **primary context** (Claude Code doesn't allow subagents to spawn subagents, so orchestration must happen in the slash command, not in an intermediate orchestrator agent):
 
 1. **Primary** reads only metadata — plan's `related` frontmatter for spec/design paths, a concrete git diff range — without touching plan, spec, design bodies or full diff contents.
-2. **Primary** dispatches the four specialized reviewers in parallel via Task using plugin-namespaced names (`planner:drift-detector`, `planner:quality-scanner`, `planner:spec-compliance`, `planner:blind-spot-finder`). Each runs in its own fresh context with only the inputs for its lane — `quality-scanner` and `blind-spot-finder` never see the plan, `drift-detector` never sees specs, etc.
+2. **Primary** dispatches the four specialized reviewers in parallel via Task using plugin-namespaced names (`sdd-planner:drift-detector`, `sdd-planner:quality-scanner`, `sdd-planner:spec-compliance`, `sdd-planner:blind-spot-finder`). Each runs in its own fresh context with only the inputs for its lane — `quality-scanner` and `blind-spot-finder` never see the plan, `drift-detector` never sees specs, etc.
 3. **Primary** synthesizes the four reports: confirmed findings (caught by 2+ reviewers), disagreements, blind spots only `blind-spot-finder` caught.
 
 `drift-detector`, `quality-scanner`, and `blind-spot-finder` are required to validate findings against the full file and calling context, not just the diff hunk.

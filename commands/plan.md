@@ -21,7 +21,7 @@ When you need to break down a feature, project, or initiative into an actionable
 
 1. **Gather Context**
    - Ask the user what they want to plan (feature name, scope, goals)
-   - Invoke the `planner:researcher` agent to gather context from existing artifacts:
+   - Invoke the `sdd-planner:researcher` agent to gather context from existing artifacts:
      - Check `Specs/` for related specifications
      - Check `Designs/` for related architecture docs
      - Check `Research/` and `Brainstorm/` for background
@@ -46,7 +46,7 @@ When you need to break down a feature, project, or initiative into an actionable
    - **Use Mermaid diagrams** in the Architecture section and anywhere visual structure helps — prefer `graph TD` for phase dependencies, `flowchart LR` for data flow, etc. over ASCII art
 
 4. **Review**
-   - Invoke the `planner:plan-reviewer` agent to review the complete plan
+   - Invoke the `sdd-planner:plan-reviewer` agent to review the complete plan
    - Address any issues raised by the reviewer
    - Update plan status to `approved` once review passes
    - Move the plan folder from `Plans/New/` to `Plans/Ready/` (`git mv Plans/New/<PlanName> Plans/Ready/<PlanName>`)

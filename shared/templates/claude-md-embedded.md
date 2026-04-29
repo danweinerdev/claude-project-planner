@@ -1,6 +1,6 @@
 ## Planning
 
-Planning artifacts under `{{PLANNING_ROOT}}/` — managed by project-planner.
+Planning artifacts under `{{PLANNING_ROOT}}/` — managed by the `sdd-planner` plugin.
 
 ### Planning Structure
 ```

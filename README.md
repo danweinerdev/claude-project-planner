@@ -1,16 +1,16 @@
-# Project Planner
+# SDD Planner
 
-A [Claude Code](https://docs.anthropic.com/en/docs/claude-code) plugin for structured project planning. It provides slash commands that guide you through a full planning lifecycle — from research to retrospective — with YAML-frontmatter-driven artifacts.
+A [Claude Code](https://docs.anthropic.com/en/docs/claude-code) plugin for spec-driven development — structured project planning end-to-end. It provides slash commands that guide you through a full planning lifecycle — from research to retrospective — with YAML-frontmatter-driven artifacts.
 
 For the optional HTML dashboard view of these artifacts, install the companion [`sdd-dashboard`](https://github.com/danweinerdev/sdd-dashboard-plugin) plugin.
 
 ## How It Works
 
-Project Planner is a standalone Claude Code **plugin**. When loaded (via `--plugin-dir` or through a marketplace), it registers 16 slash commands (namespaced under `/planner:*`) and 8 review/implementation agents that Claude can delegate to. All artifacts are Markdown files with YAML frontmatter — companion tools (like `sdd-dashboard`) read frontmatter exclusively, so there's no brittle table parsing.
+SDD Planner is a standalone Claude Code **plugin**. When loaded (via `--plugin-dir` or through a marketplace), it registers 16 slash commands (namespaced under `/sdd-planner:*`) and 8 review/implementation agents that Claude can delegate to. All artifacts are Markdown files with YAML frontmatter — companion tools (like `sdd-dashboard`) read frontmatter exclusively, so there's no brittle table parsing.
 
 ```mermaid
 graph LR
-    subgraph Plugin ["project-planner (plugin)"]
+    subgraph Plugin ["sdd-planner (plugin)"]
         commands["commands/*.md"]
         agents["agents/*.md"]
         manifest[".claude-plugin/plugin.json"]
@@ -41,10 +41,10 @@ graph LR
 
 ```bash
 # From your project root
-claude --plugin-dir /path/to/project-planner
+claude --plugin-dir /path/to/sdd-planner
 
 # Then inside Claude:
-> /planner:setup
+> /sdd-planner:setup
 # Generates planning-config.json, bootstraps directories
 ```
 
@@ -53,57 +53,57 @@ claude --plugin-dir /path/to/project-planner
 ```bash
 # Create a new repo for planning
 mkdir my-planning && cd my-planning && git init
-claude --plugin-dir /path/to/project-planner
+claude --plugin-dir /path/to/sdd-planner
 
 # Then inside Claude:
-> /planner:setup
+> /sdd-planner:setup
 # Generates planning-config.json, bootstraps directories
 ```
 
 ### Use with git worktrees
 
-Run `/planner:setup` in each worktree. Setup auto-detects worktrees and inherits `planningRoot` from siblings:
+Run `/sdd-planner:setup` in each worktree. Setup auto-detects worktrees and inherits `planningRoot` from siblings:
 
 ```bash
 # In the first worktree — provide the planning root explicitly
-claude --plugin-dir /path/to/project-planner
-> /planner:setup /path/to/worktree --planning-root /path/to/planning-repo
+claude --plugin-dir /path/to/sdd-planner
+> /sdd-planner:setup /path/to/worktree --planning-root /path/to/planning-repo
 
 # In subsequent worktrees — settings are inherited automatically
-> /planner:setup /path/to/another-worktree
+> /sdd-planner:setup /path/to/another-worktree
 ```
 
 Each worktree gets its own `planning-config.json` and `claude.sh` launcher.
 
 ## Slash Commands
 
-All commands are namespaced as `/planner:*` automatically by the plugin system.
+All commands are namespaced as `/sdd-planner:*` automatically by the plugin system.
 
 ### Lifecycle Commands
 
 | Command | Purpose | Output |
 |---------|---------|--------|
-| `/planner:setup` | Set up a repo for planner | `planning-config.json`, `claude.sh`, directories |
-| `/planner:research` | Investigate a topic | `Research/<topic>.md` |
-| `/planner:brainstorm` | Explore possibilities | `Brainstorm/<topic>.md` |
-| `/planner:specify` | Write requirements | `Specs/<feature>/README.md` |
-| `/planner:design` | Technical architecture | `Designs/<component>/README.md` |
-| `/planner:plan` | Create implementation plan | `Plans/New/<Name>/README.md` + phase docs |
-| `/planner:breakdown` | Add detail to plan phases | Updates phase `.md` with tasks/subtasks |
-| `/planner:implement` | Execute a plan phase | Code + updated task/phase statuses |
-| `/planner:code-review` | Review code — orchestrated drift + quality + spec + blind-spot review | Unified report (synthesis + raw sub-reports) |
-| `/planner:simplify` | Post-implementation cleanup | Simplified code, tests verified |
-| `/planner:debrief` | After-action notes | `Plans/Active/<Name>/notes/<phase>.md` |
-| `/planner:retro` | Capture learnings | `Retro/YYYY-MM-DD-<slug>.md` |
+| `/sdd-planner:setup` | Set up a repo for planner | `planning-config.json`, `claude.sh`, directories |
+| `/sdd-planner:research` | Investigate a topic | `Research/<topic>.md` |
+| `/sdd-planner:brainstorm` | Explore possibilities | `Brainstorm/<topic>.md` |
+| `/sdd-planner:specify` | Write requirements | `Specs/<feature>/README.md` |
+| `/sdd-planner:design` | Technical architecture | `Designs/<component>/README.md` |
+| `/sdd-planner:plan` | Create implementation plan | `Plans/New/<Name>/README.md` + phase docs |
+| `/sdd-planner:breakdown` | Add detail to plan phases | Updates phase `.md` with tasks/subtasks |
+| `/sdd-planner:implement` | Execute a plan phase | Code + updated task/phase statuses |
+| `/sdd-planner:code-review` | Review code — orchestrated drift + quality + spec + blind-spot review | Unified report (synthesis + raw sub-reports) |
+| `/sdd-planner:simplify` | Post-implementation cleanup | Simplified code, tests verified |
+| `/sdd-planner:debrief` | After-action notes | `Plans/Active/<Name>/notes/<phase>.md` |
+| `/sdd-planner:retro` | Capture learnings | `Retro/YYYY-MM-DD-<slug>.md` |
 
 ### Utility Commands
 
 | Command | Purpose | Output |
 |---------|---------|--------|
-| `/planner:poke-holes` | Adversarial critical analysis | Inline findings (no artifact) |
-| `/planner:tend` | Artifact hygiene | Updates stale statuses, tags, conventions |
-| `/planner:diagram` | Generate Mermaid diagrams | `Diagrams/<subject>.md` or inline |
-| `/planner:excavate` | Progressive codebase discovery | `Research/<codebase>.md` |
+| `/sdd-planner:poke-holes` | Adversarial critical analysis | Inline findings (no artifact) |
+| `/sdd-planner:tend` | Artifact hygiene | Updates stale statuses, tags, conventions |
+| `/sdd-planner:diagram` | Generate Mermaid diagrams | `Diagrams/<subject>.md` or inline |
+| `/sdd-planner:excavate` | Progressive codebase discovery | `Research/<codebase>.md` |
 
 For the HTML dashboard and quick text status, install the companion [`sdd-dashboard`](https://github.com/danweinerdev/sdd-dashboard-plugin) plugin. It adds `/sdd-dashboard:dashboard` and `/sdd-dashboard:status`.
 
@@ -113,21 +113,21 @@ Commands follow a natural planning progression. You don't have to use every step
 
 ```mermaid
 graph TD
-    research["/planner:research"] --> brainstorm["/planner:brainstorm"]
-    brainstorm --> specify["/planner:specify"]
-    specify --> design["/planner:design"]
-    design --> plan["/planner:plan"]
-    plan --> breakdown["/planner:breakdown"]
-    breakdown --> implement["/planner:implement"]
-    implement --> codereview["/planner:code-review"]
-    codereview --> simplify["/planner:simplify"]
-    simplify --> debrief["/planner:debrief"]
-    debrief --> retro["/planner:retro"]
+    research["/sdd-planner:research"] --> brainstorm["/sdd-planner:brainstorm"]
+    brainstorm --> specify["/sdd-planner:specify"]
+    specify --> design["/sdd-planner:design"]
+    design --> plan["/sdd-planner:plan"]
+    plan --> breakdown["/sdd-planner:breakdown"]
+    breakdown --> implement["/sdd-planner:implement"]
+    implement --> codereview["/sdd-planner:code-review"]
+    codereview --> simplify["/sdd-planner:simplify"]
+    simplify --> debrief["/sdd-planner:debrief"]
+    debrief --> retro["/sdd-planner:retro"]
 
-    poke["⚡ /planner:poke-holes"]
-    tend["🔧 /planner:tend"]
-    diagram["📊 /planner:diagram"]
-    excavate["🔍 /planner:excavate"]
+    poke["⚡ /sdd-planner:poke-holes"]
+    tend["🔧 /sdd-planner:tend"]
+    diagram["📊 /sdd-planner:diagram"]
+    excavate["🔍 /sdd-planner:excavate"]
 
     poke -. "before approving" .-> specify
     poke -. "before approving" .-> design
@@ -214,10 +214,10 @@ The plugin includes review agents that Claude can delegate to:
 ```mermaid
 graph TD
     primary["Primary context<br/>(/code-review command)<br/>loads only metadata,<br/>dispatches + synthesizes"]
-    drift["planner:drift-detector<br/>diff + plan"]
-    qual["planner:quality-scanner<br/>diff + code<br/>(intent-blind)"]
-    spec["planner:spec-compliance<br/>diff + specs/designs"]
-    blind["planner:blind-spot-finder<br/>diff only"]
+    drift["sdd-planner:drift-detector<br/>diff + plan"]
+    qual["sdd-planner:quality-scanner<br/>diff + code<br/>(intent-blind)"]
+    spec["sdd-planner:spec-compliance<br/>diff + specs/designs"]
+    blind["sdd-planner:blind-spot-finder<br/>diff only"]
 
     primary -->|parallel Task dispatch| drift
     primary -->|parallel Task dispatch| qual
@@ -337,7 +337,7 @@ Point multiple code repos at one shared planning repo using an absolute `plannin
 
 ## Dashboard
 
-The HTML dashboard previously bundled with this plugin has moved to a companion plugin, [`sdd-dashboard`](https://github.com/danweinerdev/sdd-dashboard-plugin). Install it alongside `project-planner` to get:
+The HTML dashboard previously bundled with this plugin has moved to a companion plugin, [`sdd-dashboard`](https://github.com/danweinerdev/sdd-dashboard-plugin). Install it alongside `sdd-planner` to get:
 
 - `/sdd-dashboard:dashboard` — regenerate the static HTML dashboard from artifact frontmatter
 - `/sdd-dashboard:status` — quick text-only status summary (read-only)
@@ -347,10 +347,10 @@ The dashboard is opt-in via `"dashboard": true` in `planning-config.json` (plus 
 ## Directory Structure
 
 ```
-project-planner/                   # The plugin itself (not your project)
+sdd-planner/                       # The plugin itself (not your project)
 ├── .claude-plugin/
-│   └── plugin.json               # Plugin manifest (name: "planner")
-├── commands/                     # Slash commands → /planner:*
+│   └── plugin.json               # Plugin manifest (name: "sdd-planner")
+├── commands/                     # Slash commands → /sdd-planner:*
 │   ├── brainstorm.md
 │   ├── breakdown.md
 │   ├── code-review.md

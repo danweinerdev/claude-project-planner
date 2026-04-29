@@ -1,18 +1,18 @@
-# Project Planner
+# SDD Planner
 
-A Claude Code plugin for structured project planning with lifecycle skills and review agents. The optional HTML dashboard lives in a companion plugin: [sdd-dashboard](https://github.com/danweinerdev/sdd-dashboard-plugin).
+A Claude Code plugin for spec-driven development — structured project planning with lifecycle skills and review agents. The optional HTML dashboard lives in a companion plugin: [sdd-dashboard](https://github.com/danweinerdev/sdd-dashboard-plugin).
 
 ## Directory Structure
 
 ```
-project-planner/                  # Repository root = plugin root
+sdd-planner/                      # Repository root = plugin root
 ├── .claude-plugin/
-│   └── plugin.json               # Plugin manifest (name: "planner")
+│   └── plugin.json               # Plugin manifest (name: "sdd-planner")
 ├── CLAUDE.md                     # This file
 ├── Makefile                      # make bump-patch / bump-minor / bump-major
 ├── planning-config.json          # Planning configuration
 ├── .gitignore
-├── commands/                     # Slash commands (auto-namespaced /planner:*)
+├── commands/                     # Slash commands (auto-namespaced /sdd-planner:*)
 ├── agents/                       # Subagent definitions
 ├── shared/
 │   ├── frontmatter-schema.md     # Single source of truth for artifact metadata
@@ -87,22 +87,22 @@ Always use templates from `shared/templates/` when creating new artifacts. Repla
 
 | Skill | Purpose |
 |-------|---------|
-| `/planner:research` | Investigate a topic → `Research/<topic>.md` |
-| `/planner:brainstorm` | Explore possibilities → `Brainstorm/<topic>.md` |
-| `/planner:specify` | Write requirements → `Specs/<feature>/README.md` |
-| `/planner:design` | Technical architecture → `Designs/<component>/README.md` |
-| `/planner:plan` | Create implementation plan → `Plans/New/<Name>/` |
-| `/planner:breakdown` | Add detail to plan phases |
-| `/planner:implement` | Execute a plan phase — implement tasks, track progress |
-| `/planner:simplify` | Post-implementation code cleanup and simplification |
-| `/planner:code-review` | Review code against the plan — drift, gaps, blind spots |
-| `/planner:debrief` | After-action notes for completed phases |
-| `/planner:retro` | Capture learnings → `Retro/YYYY-MM-DD-<slug>.md` |
-| `/planner:poke-holes` | Adversarial critical analysis of any artifact |
-| `/planner:tend` | Artifact hygiene — verify statuses, tags, conventions |
-| `/planner:diagram` | Generate Mermaid diagrams from artifacts |
-| `/planner:excavate` | Progressive codebase discovery → `Research/<slug>.md` |
-| `/planner:setup` | Set up a repo — generates planning-config.json, bootstraps directories, creates launcher |
+| `/sdd-planner:research` | Investigate a topic → `Research/<topic>.md` |
+| `/sdd-planner:brainstorm` | Explore possibilities → `Brainstorm/<topic>.md` |
+| `/sdd-planner:specify` | Write requirements → `Specs/<feature>/README.md` |
+| `/sdd-planner:design` | Technical architecture → `Designs/<component>/README.md` |
+| `/sdd-planner:plan` | Create implementation plan → `Plans/New/<Name>/` |
+| `/sdd-planner:breakdown` | Add detail to plan phases |
+| `/sdd-planner:implement` | Execute a plan phase — implement tasks, track progress |
+| `/sdd-planner:simplify` | Post-implementation code cleanup and simplification |
+| `/sdd-planner:code-review` | Review code against the plan — drift, gaps, blind spots |
+| `/sdd-planner:debrief` | After-action notes for completed phases |
+| `/sdd-planner:retro` | Capture learnings → `Retro/YYYY-MM-DD-<slug>.md` |
+| `/sdd-planner:poke-holes` | Adversarial critical analysis of any artifact |
+| `/sdd-planner:tend` | Artifact hygiene — verify statuses, tags, conventions |
+| `/sdd-planner:diagram` | Generate Mermaid diagrams from artifacts |
+| `/sdd-planner:excavate` | Progressive codebase discovery → `Research/<slug>.md` |
+| `/sdd-planner:setup` | Set up a repo — generates planning-config.json, bootstraps directories, creates launcher |
 
 ## Agents
 
@@ -122,7 +122,7 @@ Always use templates from `shared/templates/` when creating new artifacts. Repla
 `/code-review` orchestrates the four specialized reviewers **from the primary context**. Claude Code does not allow subagents to spawn subagents, so the orchestration has to live in the slash command (which runs in the primary context), not in an orchestrator subagent.
 
 1. **`/code-review` (primary context)** identifies the minimum references — plan path, phase doc path, target repo path, diff scope — and resolves just enough planning metadata to dispatch with the right inputs (plan's `related` frontmatter for spec/design paths, a concrete git diff range). It does **not** read plan/spec/design bodies or diff contents.
-2. **Four specialized reviewers** are dispatched in parallel via `Task` (a single message with four tool calls) using the plugin-namespaced form: `planner:drift-detector`, `planner:quality-scanner`, `planner:spec-compliance`, `planner:blind-spot-finder`. Each runs in its own fresh context. Intent isolation is enforced by what they're given:
+2. **Four specialized reviewers** are dispatched in parallel via `Task` (a single message with four tool calls) using the plugin-namespaced form: `sdd-planner:drift-detector`, `sdd-planner:quality-scanner`, `sdd-planner:spec-compliance`, `sdd-planner:blind-spot-finder`. Each runs in its own fresh context. Intent isolation is enforced by what they're given:
    - `drift-detector` sees diff + plan (no specs/designs)
    - `quality-scanner` sees diff + code only (intent-blind)
    - `spec-compliance` sees diff + specs/designs (no plan)
@@ -133,7 +133,7 @@ Always use templates from `shared/templates/` when creating new artifacts. Repla
 
 `drift-detector`, `quality-scanner`, and `blind-spot-finder` are required to validate every finding against the actual code (full file + calling context), not just the diff hunk, because diffs lie by omission.
 
-`/implement` dispatches `quality-scanner` directly (via `planner:quality-scanner`) for per-task reviews, and `/simplify` dispatches it in `simplify` mode for complexity analysis. Both bypass the full four-lane review because the question they're asking is local to the code at hand.
+`/implement` dispatches `quality-scanner` directly (via `sdd-planner:quality-scanner`) for per-task reviews, and `/simplify` dispatches it in `simplify` mode for complexity analysis. Both bypass the full four-lane review because the question they're asking is local to the code at hand.
 
 ### MCP Server Inheritance
 
@@ -154,11 +154,11 @@ The inheriting agents carry behavioral guardrails in their bodies (`researcher` 
 
 The typical flow through skills:
 ```
-/planner:setup → /planner:research → /planner:brainstorm → /planner:specify → /planner:design → /planner:plan → /planner:breakdown → /planner:implement → /planner:code-review → /planner:simplify → /planner:debrief → /planner:retro
+/sdd-planner:setup → /sdd-planner:research → /sdd-planner:brainstorm → /sdd-planner:specify → /sdd-planner:design → /sdd-planner:plan → /sdd-planner:breakdown → /sdd-planner:implement → /sdd-planner:code-review → /sdd-planner:simplify → /sdd-planner:debrief → /sdd-planner:retro
 ```
 Install the companion [`sdd-dashboard`](https://github.com/danweinerdev/sdd-dashboard-plugin) plugin to add `/sdd-dashboard:dashboard` (HTML dashboard) and `/sdd-dashboard:status` (quick text summary) for checking progress.
-Use `/planner:poke-holes` before approving any artifact. Use `/planner:tend` periodically for hygiene.
-Use `/planner:excavate` to understand unfamiliar codebases. Use `/planner:diagram` to visualize any artifact.
+Use `/sdd-planner:poke-holes` before approving any artifact. Use `/sdd-planner:tend` periodically for hygiene.
+Use `/sdd-planner:excavate` to understand unfamiliar codebases. Use `/sdd-planner:diagram` to visualize any artifact.
 
 ## Artifact Status Values
 
@@ -191,7 +191,7 @@ Local filesystem paths for external repositories:
 
 ## Dashboard
 
-The HTML dashboard previously lived here has moved to a companion plugin: [`sdd-dashboard`](https://github.com/danweinerdev/sdd-dashboard-plugin). Install it alongside `project-planner` to get `/sdd-dashboard:dashboard` (HTML) and `/sdd-dashboard:status` (text summary). The dashboard is opt-in via `"dashboard": true` in `planning-config.json`.
+The HTML dashboard previously lived here has moved to a companion plugin: [`sdd-dashboard`](https://github.com/danweinerdev/sdd-dashboard-plugin). Install it alongside `sdd-planner` to get `/sdd-dashboard:dashboard` (HTML) and `/sdd-dashboard:status` (text summary). The dashboard is opt-in via `"dashboard": true` in `planning-config.json`.
 
 ## Maintenance Rules
 

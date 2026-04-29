@@ -42,7 +42,7 @@ When a plan phase has been completed (or substantially completed) and you want t
    - Codebase operations that lacked a helper/script and had to be redone in each task
    - Checks or validations that should have been automated but were done mentally
 
-   For each opportunity, capture: what the repeated action was, where the skill should live (new `/planner:*` slash command, a project-level Claude skill, a codebase helper, a shell script, a Makefile target), why a skill would help, and a rough shape (inputs, outputs, when to invoke).
+   For each opportunity, capture: what the repeated action was, where the skill should live (new `/sdd-planner:*` slash command, a project-level Claude skill, a codebase helper, a shell script, a Makefile target), why a skill would help, and a rough shape (inputs, outputs, when to invoke).
 
    Ask the user to confirm or extend the list before writing — they may have noticed patterns you didn't.
 

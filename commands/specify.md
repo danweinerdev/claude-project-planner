@@ -21,7 +21,7 @@ When you need to define the requirements for a feature before designing or imple
 
 1. **Gather Context**
    - Ask what feature to specify
-   - Invoke the `planner:researcher` agent to gather context from existing artifacts and codebase
+   - Invoke the `sdd-planner:researcher` agent to gather context from existing artifacts and codebase
    - Review any related research or brainstorm documents
 
 2. **Draft Specification**
@@ -30,7 +30,7 @@ When you need to define the requirements for a feature before designing or imple
    - Set status to `draft`
 
 3. **Review**
-   - Invoke the `planner:spec-reviewer` agent to review the specification
+   - Invoke the `sdd-planner:spec-reviewer` agent to review the specification
    - Address critical and major issues
    - Update status to `review` once addressed
 
@@ -56,4 +56,4 @@ See `shared/templates/spec.md`:
 - Orchestration: `shared/orchestration.md`
 - Template: `shared/templates/spec.md`
 - Schema: `shared/frontmatter-schema.md`
-- Agents: `planner:researcher`, `planner:spec-reviewer`
+- Agents: `sdd-planner:researcher`, `sdd-planner:spec-reviewer`
